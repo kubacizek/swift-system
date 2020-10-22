@@ -12,6 +12,14 @@
 
 import PackageDescription
 
+#if os(Linux)
+let libraryName = "System"
+let libraryType: PackageDescription.Product.Library.LibraryType = .dynamic
+#else
+let libraryName = "SystemPackage"
+let libraryType: PackageDescription.Product.Library.LibraryType = .static
+#endif
+
 let targets: [PackageDescription.Target] = [
   .target(
     name: "SystemPackage",
@@ -35,7 +43,11 @@ let targets: [PackageDescription.Target] = [
 let package = Package(
     name: "swift-system",
     products: [
-        .library(name: "SystemPackage", targets: ["SystemPackage"]),
+        .library(
+            name: libraryName,
+            type: libraryType,
+            targets: ["SystemPackage"]
+        ),
     ],
     dependencies: [],
     targets: targets
