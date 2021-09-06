@@ -1,17 +1,28 @@
 /*
  This source file is part of the Swift System open source project
 
- Copyright (c) 2020 Apple Inc. and the Swift System project authors
+ Copyright (c) 2020 - 2021 Apple Inc. and the Swift System project authors
  Licensed under Apache License v2.0 with Runtime Library Exception
 
  See https://swift.org/LICENSE.txt for license information
 */
 
 import XCTest
+
+#if SYSTEM_PACKAGE
 import SystemPackage
+#else
+import System
+#endif
 
 // @available(macOS 10.16, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
 final class FileDescriptorTest: XCTestCase {
+  func testStandardDescriptors() {
+    XCTAssertEqual(FileDescriptor.standardInput.rawValue, 0)
+    XCTAssertEqual(FileDescriptor.standardOutput.rawValue, 1)
+    XCTAssertEqual(FileDescriptor.standardError.rawValue, 2)
+  }
+
   // Test the constants match the C header values. For various reasons,
   func testConstants() {
     XCTAssertEqual(O_RDONLY, FileDescriptor.AccessMode.readOnly.rawValue)

@@ -9,14 +9,14 @@
 
 // Results in errno if i == -1
 // @available(macOS 10.16, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
-internal func valueOrErrno<I: FixedWidthInteger>(
+private func valueOrErrno<I: FixedWidthInteger>(
   _ i: I
 ) -> Result<I, Errno> {
   i == -1 ? .failure(Errno.current) : .success(i)
 }
 
 // @available(macOS 10.16, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
-internal func nothingOrErrno<I: FixedWidthInteger>(
+private func nothingOrErrno<I: FixedWidthInteger>(
   _ i: I
 ) -> Result<(), Errno> {
   valueOrErrno(i).map { _ in () }
@@ -36,17 +36,30 @@ internal func valueOrErrno<I: FixedWidthInteger>(
   } while true
 }
 
+// @available(macOS 10.16, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
+internal func nothingOrErrno<I: FixedWidthInteger>(
+  retryOnInterrupt: Bool, _ f: () -> I
+) -> Result<(), Errno> {
+  valueOrErrno(retryOnInterrupt: retryOnInterrupt, f).map { _ in () }
+}
+
 // Run a precondition for debug client builds
 internal func _debugPrecondition(
-  _ condition: @autoclosure () -> Bool, _ message: StaticString = StaticString(),
+  _ condition: @autoclosure () -> Bool,
+  _ message: StaticString = StaticString(),
   file: StaticString = #file, line: UInt = #line
 ) {
   // Only check in debug mode.
-  if _slowPath(_isDebugAssertConfiguration()) { precondition(condition()) }
+  if _slowPath(_isDebugAssertConfiguration()) {
+    precondition(
+      condition(), String(describing: message), file: file, line: line)
+  }
 }
 
 extension OpaquePointer {
-  internal var _isNULL: Bool { OpaquePointer(bitPattern: Int(bitPattern: self)) == nil }
+  internal var _isNULL: Bool {
+    OpaquePointer(bitPattern: Int(bitPattern: self)) == nil
+  }
 }
 
 extension Sequence {
@@ -92,5 +105,25 @@ extension OptionSet {
     }
     result += "]"
     return result
+  }
+}
+
+internal func _dropCommonPrefix<C: Collection>(
+  _ lhs: C, _ rhs: C
+) -> (C.SubSequence, C.SubSequence)
+where C.Element: Equatable {
+  var (lhs, rhs) = (lhs[...], rhs[...])
+  while lhs.first != nil && lhs.first == rhs.first {
+    lhs.removeFirst()
+    rhs.removeFirst()
+  }
+  return (lhs, rhs)
+}
+
+extension MutableCollection where Element: Equatable {
+  mutating func _replaceAll(_ e: Element, with new: Element) {
+    for idx in self.indices {
+      if self[idx] == e { self[idx] = new }
+    }
   }
 }

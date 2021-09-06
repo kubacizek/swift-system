@@ -8,8 +8,15 @@
 */
 
 import XCTest
-import SystemInternals
-import SystemPackage
+
+#if SYSTEM_PACKAGE
+@testable import SystemPackage
+#else
+@testable import System
+#endif
+
+// To aid debugging, force failures to fatal error
+internal var forceFatalFailures = false
 
 internal protocol TestCase {
   // TODO: want a source location stack, more fidelity, kinds of stack entries, etc
@@ -18,21 +25,58 @@ internal protocol TestCase {
 
   // TODO: Instead have an attribute to register a test in a allTests var, similar to the argument parser.
   func runAllTests()
+
+  // Customization hook: add adornment to reported failure reason
+  // Defaut: reason or empty
+  func failureMessage(_ reason: String?) -> String
 }
+
 extension TestCase {
+  // Default implementation
+  func failureMessage(_ reason: String?) -> String { reason ?? "" }
+
   func expectEqualSequence<S1: Sequence, S2: Sequence>(
-    _ actual: S1, _ expected: S2,
+    _ expected: S1, _ actual: S2,
     _ message: String? = nil
   ) where S1.Element: Equatable, S1.Element == S2.Element {
-    if !actual.elementsEqual(expected) {
+    if !expected.elementsEqual(actual) {
+      defer { print("expected: \(expected), actual: \(actual)") }
       fail(message)
     }
   }
   func expectEqual<E: Equatable>(
-    _ actual: E, _ expected: E,
+    _ expected: E, _ actual: E,
     _ message: String? = nil
   ) {
     if actual != expected {
+      defer { print("expected: \(expected), actual: \(actual)") }
+      fail(message)
+    }
+  }
+  func expectNotEqual<E: Equatable>(
+    _ expected: E, _ actual: E,
+    _ message: String? = nil
+  ) {
+    if actual == expected {
+      defer { print("expected not equal: \(expected) and \(actual)") }
+      fail(message)
+    }
+  }
+  func expectNil<T>(
+    _ actual: T?,
+    _ message: String? = nil
+  ) {
+    if actual != nil {
+      defer { print("expected nil: \(actual!)") }
+      fail(message)
+    }
+  }
+  func expectNotNil<T>(
+    _ actual: T?,
+    _ message: String? = nil
+  ) {
+    if actual == nil {
+      defer { print("expected non-nil") }
       fail(message)
     }
   }
@@ -40,18 +84,22 @@ extension TestCase {
     _ actual: Bool,
     _ message: String? = nil
   ) {
-    expectEqual(true, actual, message)
+    if !actual { fail(message) }
   }
   func expectFalse(
     _ actual: Bool,
     _ message: String? = nil
   ) {
-    expectEqual(false, actual, message)
+    if actual { fail(message) }
   }
 
   func fail(_ reason: String? = nil) {
-    XCTAssert(false, reason ?? "", file: file, line: line)
+    XCTAssert(false, failureMessage(reason), file: file, line: line)
+    if forceFatalFailures {
+      fatalError(reason ?? "<no reason>")
+    }
   }
+
 }
 
 internal struct MockTestCase: TestCase {
@@ -59,7 +107,20 @@ internal struct MockTestCase: TestCase {
   var line: UInt
 
   var expected: Trace.Entry
-  var interruptable: Bool
+  var interruptBehavior: InterruptBehavior
+
+  var interruptable: Bool { return interruptBehavior == .interruptable }
+
+  internal enum InterruptBehavior {
+    // Retry the syscall on EINTR
+    case interruptable
+
+    // Cannot return EINTR
+    case noInterrupt
+
+    // Cannot error at all
+    case noError
+  }
 
   var body: (_ retryOnInterrupt: Bool) throws -> ()
 
@@ -67,14 +128,14 @@ internal struct MockTestCase: TestCase {
     _ file: StaticString = #file,
     _ line: UInt = #line,
     name: String,
+    _ interruptable: InterruptBehavior,
     _ args: AnyHashable...,
-    interruptable: Bool,
-    _ body: @escaping (_ retryOnInterrupt: Bool) throws -> ()
+    body: @escaping (_ retryOnInterrupt: Bool) throws -> ()
   ) {
     self.file = file
     self.line = line
     self.expected = Trace.Entry(name: name, args)
-    self.interruptable = interruptable
+    self.interruptBehavior = interruptable
     self.body = body
   }
 
@@ -88,9 +149,22 @@ internal struct MockTestCase: TestCase {
       // Test our API mappings to the lower-level syscall invocation
       do {
         try body(true)
-        self.expectEqual(mocking.trace.dequeue(), self.expected)
+        self.expectEqual(self.expected, mocking.trace.dequeue())
       } catch {
         self.fail()
+      }
+
+      // Non-error-ing syscalls shouldn't ever throw
+      guard interruptBehavior != .noError else {
+        do {
+          try body(interruptable)
+          self.expectEqual(self.expected, mocking.trace.dequeue())
+          try body(!interruptable)
+          self.expectEqual(self.expected, mocking.trace.dequeue())
+        } catch {
+          self.fail()
+        }
+        return
       }
 
       // Test interupt behavior. Interruptable calls will be told not to
@@ -103,7 +177,7 @@ internal struct MockTestCase: TestCase {
         self.fail()
       } catch Errno.interrupted {
         // Success!
-        self.expectEqual(mocking.trace.dequeue(), self.expected)
+        self.expectEqual(self.expected, mocking.trace.dequeue())
       } catch {
         self.fail()
       }
@@ -114,16 +188,20 @@ internal struct MockTestCase: TestCase {
         mocking.forceErrno = .counted(errno: EINTR, count: 3)
 
         try body(interruptable)
-        self.expectEqual(mocking.trace.dequeue(), self.expected) // EINTR
-        self.expectEqual(mocking.trace.dequeue(), self.expected) // EINTR
-        self.expectEqual(mocking.trace.dequeue(), self.expected) // EINTR
-        self.expectEqual(mocking.trace.dequeue(), self.expected) // Success
+        self.expectEqual(self.expected, mocking.trace.dequeue()) // EINTR
+        self.expectEqual(self.expected, mocking.trace.dequeue()) // EINTR
+        self.expectEqual(self.expected, mocking.trace.dequeue()) // EINTR
+        self.expectEqual(self.expected, mocking.trace.dequeue()) // Success
       } catch Errno.interrupted {
         self.expectFalse(interruptable)
-        self.expectEqual(mocking.trace.dequeue(), self.expected) // EINTR
+        self.expectEqual(self.expected, mocking.trace.dequeue()) // EINTR
       } catch {
         self.fail()
       }
     }
   }
+}
+
+internal func withWindowsPaths(enabled: Bool, _ body: () -> ()) {
+  _withWindowsPaths(enabled: enabled, body)
 }

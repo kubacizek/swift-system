@@ -8,13 +8,12 @@
 */
 
 import XCTest
-import SystemPackage
 
-extension UnsafePointer where Pointee == UInt8 {
-  internal var _asCChar: UnsafePointer<CChar> {
-    UnsafeRawPointer(self).assumingMemoryBound(to: CChar.self)
-  }
-}
+#if SYSTEM_PACKAGE
+import SystemPackage
+#else
+import System
+#endif
 
 // @available(macOS 10.16, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
 func filePathFromUnterminatedBytes<S: Sequence>(_ bytes: S) -> FilePath where S.Element == UInt8 {
@@ -23,12 +22,12 @@ func filePathFromUnterminatedBytes<S: Sequence>(_ bytes: S) -> FilePath where S.
   array += [0]
 
   return array.withUnsafeBufferPointer {
-    FilePath(cString: $0.baseAddress!._asCChar)
+    FilePath(platformString: $0.baseAddress!._asCChar)
   }
 }
 let invalidBytes: [UInt8] = [0x2F, 0x61, 0x2F, 0x62, 0x2F, 0x83]
 
-// @available(macOS 10.16, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
+// @available(macOS 9999, iOS 9999, watchOS 9999, tvOS 9999, *)
 final class FilePathTest: XCTestCase {
   struct TestPath {
     let filePath: FilePath
@@ -58,17 +57,18 @@ final class FilePathTest: XCTestCase {
 
       XCTAssertEqual(testPath.string, String(decoding: testPath.filePath))
 
+      // TODO: test component UTF8 validation
       if testPath.validUTF8 {
         XCTAssertEqual(testPath.filePath, FilePath(testPath.string))
-        XCTAssertEqual(testPath.string, String(validatingUTF8: testPath.filePath))
+        XCTAssertEqual(testPath.string, String(validating: testPath.filePath))
       } else {
         XCTAssertNotEqual(testPath.filePath, FilePath(testPath.string))
-        XCTAssertNil(String(validatingUTF8: testPath.filePath))
+        XCTAssertNil(String(validating: testPath.filePath))
       }
 
-      testPath.filePath.withCString {
+      testPath.filePath.withPlatformString {
         XCTAssertEqual(testPath.string, String(cString: $0))
-        XCTAssertEqual(testPath.filePath, FilePath(cString: $0))
+        XCTAssertEqual(testPath.filePath, FilePath(platformString: $0))
       }
     }
   }

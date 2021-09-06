@@ -634,7 +634,6 @@ public struct Errno: RawRepresentable, Error, Hashable, Codable {
   @available(*, unavailable, renamed: "socketTypeNotSupported")
   public static var ESOCKTNOSUPPORT: Errno { socketTypeNotSupported }
 
-#if !os(Windows)
   /// Not supported.
   ///
   /// The attempted operation isn't supported
@@ -647,7 +646,6 @@ public struct Errno: RawRepresentable, Error, Hashable, Codable {
   @_alwaysEmitIntoClient
   @available(*, unavailable, renamed: "notSupported")
   public static var ENOTSUP: Errno { notSupported }
-#endif
 
   /// Protocol family not supported.
   ///
@@ -1472,7 +1470,6 @@ extension Errno {
 #endif
 }
 
-@_implementationOnly import SystemInternals
 // @available(macOS 10.16, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
 extension Errno {
   // TODO: We want to provide safe access to `errno`, but we need a

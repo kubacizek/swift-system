@@ -7,8 +7,6 @@
  See https://swift.org/LICENSE.txt for license information
 */
 
-@_implementationOnly import SystemInternals
-
 // @available(macOS 10.16, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
 extension FileDescriptor {
   /// Opens or creates a file for reading or writing.
@@ -33,7 +31,7 @@ extension FileDescriptor {
     permissions: FilePermissions? = nil,
     retryOnInterrupt: Bool = true
   ) throws -> FileDescriptor {
-    try path.withCString {
+    try path.withPlatformString {
       try FileDescriptor.open(
         $0, mode, options: options, permissions: permissions, retryOnInterrupt: retryOnInterrupt)
     }
@@ -55,7 +53,7 @@ extension FileDescriptor {
   /// The corresponding C function is `open`.
   @_alwaysEmitIntoClient
   public static func open(
-    _ path: UnsafePointer<CChar>,
+    _ path: UnsafePointer<CInterop.PlatformChar>,
     _ mode: FileDescriptor.AccessMode,
     options: FileDescriptor.OpenOptions = FileDescriptor.OpenOptions(),
     permissions: FilePermissions? = nil,
@@ -68,11 +66,11 @@ extension FileDescriptor {
 
   @usableFromInline
   internal static func _open(
-    _ path: UnsafePointer<CChar>,
+    _ path: UnsafePointer<CInterop.PlatformChar>,
     _ mode: FileDescriptor.AccessMode,
     options: FileDescriptor.OpenOptions,
     permissions: FilePermissions?,
-    retryOnInterrupt: Bool = true
+    retryOnInterrupt: Bool
   ) -> Result<FileDescriptor, Errno> {
     let oFlag = mode.rawValue | options.rawValue
     let descOrError: Result<CInt, Errno> = valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
@@ -98,7 +96,7 @@ extension FileDescriptor {
 
   @usableFromInline
   internal func _close() -> Result<(), Errno> {
-    nothingOrErrno(system_close(self.rawValue))
+    nothingOrErrno(retryOnInterrupt: false) { system_close(self.rawValue) }
   }
 
   /// Reposition the offset for the given file descriptor.
@@ -122,8 +120,9 @@ extension FileDescriptor {
   internal func _seek(
     offset: Int64, from whence: FileDescriptor.SeekOrigin
   ) -> Result<Int64, Errno> {
-    let newOffset = system_lseek(self.rawValue, COffT(offset), whence.rawValue)
-    return valueOrErrno(Int64(newOffset))
+    valueOrErrno(retryOnInterrupt: false) {
+      Int64(system_lseek(self.rawValue, _COffT(offset), whence.rawValue))
+    }
   }
 
 
@@ -165,7 +164,7 @@ extension FileDescriptor {
   @usableFromInline
   internal func _read(
     into buffer: UnsafeMutableRawBufferPointer,
-    retryOnInterrupt: Bool = true
+    retryOnInterrupt: Bool
   ) throws -> Result<Int, Errno> {
     valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
       system_read(self.rawValue, buffer.baseAddress, buffer.count)
@@ -210,7 +209,7 @@ extension FileDescriptor {
     retryOnInterrupt: Bool
   ) -> Result<Int, Errno> {
     valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
-      system_pread(self.rawValue, buffer.baseAddress, buffer.count, COffT(offset))
+      system_pread(self.rawValue, buffer.baseAddress, buffer.count, _COffT(offset))
     }
   }
 
@@ -292,7 +291,7 @@ extension FileDescriptor {
     retryOnInterrupt: Bool
   ) -> Result<Int, Errno> {
     valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
-      system_pwrite(self.rawValue, buffer.baseAddress, buffer.count, COffT(offset))
+      system_pwrite(self.rawValue, buffer.baseAddress, buffer.count, _COffT(offset))
     }
   }
 
@@ -308,5 +307,67 @@ extension FileDescriptor {
       toAbsoluteOffset: offset,
       buffer,
       retryOnInterrupt: retryOnInterrupt)
+  }
+
+  /// Duplicate this file descriptor and return the newly created copy.
+  ///
+  /// - Parameters:
+  ///   - `target`: The desired target file descriptor, or `nil`, in which case
+  ///      the copy is assigned to the file descriptor with the lowest raw value
+  ///      that is not currently in use by the process.
+  ///   - retryOnInterrupt: Whether to retry the write operation
+  ///      if it throws ``Errno/interrupted``. The default is `true`.
+  ///      Pass `false` to try only once and throw an error upon interruption.
+  /// - Returns: The new file descriptor.
+  ///
+  /// If the `target` descriptor is already in use, then it is first
+  /// deallocated as if a close(2) call had been done first.
+  ///
+  /// File descriptors are merely references to some underlying system resource.
+  /// The system does not distinguish between the original and the new file
+  /// descriptor in any way. For example, read, write and seek operations on
+  /// one of them also affect the logical file position in the other, and
+  /// append mode, non-blocking I/O and asynchronous I/O options are shared
+  /// between the references. If a separate pointer into the file is desired,
+  /// a different object reference to the file must be obtained by issuing an
+  /// additional call to `open`.
+  ///
+  /// However, each file descriptor maintains its own close-on-exec flag.
+  ///
+  ///
+  /// The corresponding C functions are `dup` and `dup2`.
+  @_alwaysEmitIntoClient
+  // @available(macOS 9999, iOS 9999, watchOS 9999, tvOS 9999, *)
+  public func duplicate(
+    as target: FileDescriptor? = nil,
+    retryOnInterrupt: Bool = true
+  ) throws -> FileDescriptor {
+    try _duplicate(as: target, retryOnInterrupt: retryOnInterrupt).get()
+  }
+
+  // @available(macOS 9999, iOS 9999, watchOS 9999, tvOS 9999, *)
+  @usableFromInline
+  internal func _duplicate(
+    as target: FileDescriptor?,
+    retryOnInterrupt: Bool
+  ) throws -> Result<FileDescriptor, Errno> {
+    valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
+      if let target = target {
+        return system_dup2(self.rawValue, target.rawValue)
+      }
+      return system_dup(self.rawValue)
+    }.map(FileDescriptor.init(rawValue:))
+  }
+
+  @_alwaysEmitIntoClient
+  @available(*, unavailable, renamed: "duplicate")
+  public func dup() throws -> FileDescriptor {
+    fatalError("Not implemented")
+  }
+
+  @_alwaysEmitIntoClient
+  @available(*, unavailable, renamed: "duplicate")
+  public func dup2() throws -> FileDescriptor {
+    fatalError("Not implemented")
   }
 }
