@@ -665,3 +665,23 @@ internal var _AF_IRDA: CInt { AF_IRDA }
 @_alwaysEmitIntoClient
 internal var _AF_BTH: CInt { AF_BTH }
 #endif
+
+@_alwaysEmitIntoClient
+internal var _SOCK_STREAM: CInt { SOCK_STREAM }
+
+@_alwaysEmitIntoClient
+internal var _SOCK_DGRAM: CInt { SOCK_DGRAM }
+
+@_alwaysEmitIntoClient
+internal var _SOCK_RAW: CInt { SOCK_RAW }
+
+@_alwaysEmitIntoClient
+internal var _SOCK_RDM: CInt { SOCK_RDM }
+
+@_alwaysEmitIntoClient
+internal var _SOCK_SEQPACKET: CInt { SOCK_SEQPACKET }
+
+#if os(Linux)
+@_alwaysEmitIntoClient
+internal var _SOCK_DCCP: CInt { SOCK_DCCP }
+#endif
