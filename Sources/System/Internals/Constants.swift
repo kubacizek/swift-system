@@ -529,3 +529,139 @@ internal var _SEEK_HOLE: CInt { SEEK_HOLE }
 internal var _SEEK_DATA: CInt { SEEK_DATA }
 #endif
 
+@_alwaysEmitIntoClient
+internal var _AF_UNIX: CInt { AF_UNIX }
+
+@_alwaysEmitIntoClient
+internal var _AF_INET: CInt { AF_INET }
+
+@_alwaysEmitIntoClient
+internal var _AF_INET6: CInt { AF_INET6 }
+
+@_alwaysEmitIntoClient
+internal var _AF_IPX: CInt { AF_IPX }
+
+@_alwaysEmitIntoClient
+internal var _AF_APPLETALK: CInt { AF_APPLETALK }
+
+#if !os(Windows)
+@_alwaysEmitIntoClient
+internal var _AF_DECnet: CInt { AF_DECnet }
+
+@_alwaysEmitIntoClient
+internal var _AF_VSOCK: CInt { AF_VSOCK }
+
+@_alwaysEmitIntoClient
+internal var _AF_ISDN: CInt { AF_ISDN }
+#endif
+
+#if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
+@_alwaysEmitIntoClient
+internal var _AF_IMPLINK: CInt { AF_IMPLINK }
+
+@_alwaysEmitIntoClient
+internal var _AF_PUP: CInt { AF_PUP }
+
+@_alwaysEmitIntoClient
+internal var _AF_CHAOS: CInt { AF_CHAOS }
+
+@_alwaysEmitIntoClient
+internal var _AF_NS: CInt { AF_NS }
+
+@_alwaysEmitIntoClient
+internal var _AF_ISO: CInt { AF_ISO }
+
+@_alwaysEmitIntoClient
+internal var _AF_PPP: CInt { AF_PPP }
+
+@_alwaysEmitIntoClient
+internal var _AF_LINK: CInt { AF_LINK }
+
+@_alwaysEmitIntoClient
+internal var _AF_NETBIOS: CInt { AF_NETBIOS }
+#endif
+
+#if os(Linux)
+@_alwaysEmitIntoClient
+internal var _AF_AX25: CInt { AF_AX25 }
+
+@_alwaysEmitIntoClient
+internal var _AF_X25: CInt { AF_X25 }
+
+@_alwaysEmitIntoClient
+internal var _AF_KEY: CInt { AF_KEY }
+
+@_alwaysEmitIntoClient
+internal var _AF_NETLINK: CInt { AF_NETLINK }
+
+@_alwaysEmitIntoClient
+internal var _AF_PACKET: CInt { AF_PACKET }
+
+@_alwaysEmitIntoClient
+internal var _AF_ATMSVC: CInt { AF_ATMSVC }
+
+@_alwaysEmitIntoClient
+internal var _AF_RDS: CInt { AF_RDS }
+
+@_alwaysEmitIntoClient
+internal var _AF_PPPOX: CInt { AF_PPPOX }
+
+@_alwaysEmitIntoClient
+internal var _AF_WANPIPE: CInt { AF_WANPIPE }
+
+@_alwaysEmitIntoClient
+internal var _AF_LLC: CInt { AF_LLC }
+
+@_alwaysEmitIntoClient
+internal var _AF_IB: CInt { AF_IB }
+
+@_alwaysEmitIntoClient
+internal var _AF_MPLS: CInt { AF_MPLS }
+
+@_alwaysEmitIntoClient
+internal var _AF_CAN: CInt { AF_CAN }
+
+@_alwaysEmitIntoClient
+internal var _AF_TIPC: CInt { AF_TIPC }
+
+@_alwaysEmitIntoClient
+internal var _AF_BLUETOOTH: CInt { AF_BLUETOOTH }
+
+@_alwaysEmitIntoClient
+internal var _AF_IUCV: CInt { AF_IUCV }
+
+@_alwaysEmitIntoClient
+internal var _AF_RXRPC: CInt { AF_RXRPC }
+
+@_alwaysEmitIntoClient
+internal var _AF_PHONET: CInt { AF_PHONET }
+
+@_alwaysEmitIntoClient
+internal var _AF_IEEE802154: CInt { AF_IEEE802154 }
+
+@_alwaysEmitIntoClient
+internal var _AF_CAIF: CInt { AF_CAIF }
+
+@_alwaysEmitIntoClient
+internal var _AF_ALG: CInt { AF_ALG }
+
+@_alwaysEmitIntoClient
+internal var _AF_KCM: CInt { AF_KCM }
+
+@_alwaysEmitIntoClient
+internal var _AF_QIPCRTR: CInt { AF_QIPCRTR }
+
+@_alwaysEmitIntoClient
+internal var _AF_SMC: CInt { AF_SMC }
+
+@_alwaysEmitIntoClient
+internal var _AF_XDP: CInt { AF_XDP }
+#endif
+
+#if os(Windows)
+@_alwaysEmitIntoClient
+internal var _AF_IRDA: CInt { AF_IRDA }
+
+@_alwaysEmitIntoClient
+internal var _AF_BTH: CInt { AF_BTH }
+#endif
