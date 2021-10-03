@@ -31,11 +31,11 @@ public extension SocketAddressFamily {
     
     /// IPv4 Internet protocol
     @_alwaysEmitIntoClient
-    static var inet: SocketAddressFamily { SocketAddressFamily(_AF_INET) }
+    static var ipv4: SocketAddressFamily { SocketAddressFamily(_AF_INET) }
     
     /// IPv6 Internet protocol
     @_alwaysEmitIntoClient
-    static var inet6: SocketAddressFamily { SocketAddressFamily(_AF_INET6) }
+    static var ipv6: SocketAddressFamily { SocketAddressFamily(_AF_INET6) }
     
     /// IPX - Novell protocol
     @_alwaysEmitIntoClient
