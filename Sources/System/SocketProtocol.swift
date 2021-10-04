@@ -128,4 +128,23 @@ public enum BluetoothProtocol: Int32, Codable, SocketProtocol {
         }
     }
 }
+
+/// Netlink Socket Protocol
+public enum NetLinkProtocol: Int32, Codable, SocketProtocol {
+        
+    case generic
+    case route
+    
+    public static var family: SocketAddressFamily { .netlink }
+    
+    public var type: SocketType { return .raw }
+    
+    public var rawValue: Int32 {
+        switch self {
+        case .generic: return NETLINK_GENERIC
+        case .route: return NETLINK_ROUTE
+        }
+    }
+}
+
 #endif
