@@ -685,3 +685,12 @@ internal var _SOCK_SEQPACKET: CInt { SOCK_SEQPACKET }
 @_alwaysEmitIntoClient
 internal var _SOCK_DCCP: CInt { SOCK_DCCP }
 #endif
+
+@_alwaysEmitIntoClient
+internal var _IPPROTO_RAW: CInt { IPPROTO_RAW }
+
+@_alwaysEmitIntoClient
+internal var _IPPROTO_TCP: CInt { IPPROTO_TCP }
+
+@_alwaysEmitIntoClient
+internal var _IPPROTO_UDP: CInt { IPPROTO_UDP }
