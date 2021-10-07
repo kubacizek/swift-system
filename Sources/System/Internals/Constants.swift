@@ -530,6 +530,15 @@ internal var _SEEK_DATA: CInt { SEEK_DATA }
 #endif
 
 @_alwaysEmitIntoClient
+internal var _INET_ADDRSTRLEN: CInt { INET_ADDRSTRLEN }
+
+@_alwaysEmitIntoClient
+internal var _INET6_ADDRSTRLEN: CInt { INET6_ADDRSTRLEN }
+
+@_alwaysEmitIntoClient
+internal var _INADDR_ANY: CInterop.IPv4Address {  CInterop.IPv4Address(s_addr: INADDR_ANY) }
+
+@_alwaysEmitIntoClient
 internal var _AF_UNIX: CInt { AF_UNIX }
 
 @_alwaysEmitIntoClient

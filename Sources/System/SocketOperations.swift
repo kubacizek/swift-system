@@ -37,7 +37,7 @@ extension FileDescriptor {
         retryOnInterrupt: Bool
     ) throws -> Result<FileDescriptor, Errno> {
         valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
-            system_socket(family.rawValue, type.rawValue, fd3: protocolID)
+            system_socket(family.rawValue, type.rawValue, protocolID)
         }.map { FileDescriptor(rawValue: $0) }
     }
     
@@ -56,7 +56,7 @@ extension FileDescriptor {
     ) -> Result<(), Errno> {
         nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
             option.withUnsafeBytes { bufferPointer in
-                system_setsockopt(self.rawValue, T.ID.optionLevel.rawValue, fd3: option.id.rawValue, bufferPointer.baseAddress!, UInt32(bufferPointer.count))
+                system_setsockopt(self.rawValue, T.ID.optionLevel.rawValue, option.id.rawValue, bufferPointer.baseAddress!, UInt32(bufferPointer.count))
             }
         }
     }
