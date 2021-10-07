@@ -122,3 +122,10 @@ internal func system_socket(_ fd: Int32, _ fd2: Int32, fd3: Int32) -> Int32 {
   #endif
   return socket(fd, fd2, fd3)
 }
+
+internal func system_setsockopt(_ fd: Int32, _ fd2: Int32, fd3: Int32, _ pointer: UnsafeRawPointer, _ dataLength: UInt32) -> Int32 {
+  #if ENABLE_MOCKING
+  if mockingEnabled { return _mock(fd, fd2, fd3, pointer, dataLength) }
+  #endif
+  return setsockopt(fd, fd2, fd3, pointer, dataLength)
+}

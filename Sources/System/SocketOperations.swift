@@ -40,4 +40,24 @@ extension FileDescriptor {
             system_socket(family.rawValue, type.rawValue, fd3: protocolID)
         }.map { FileDescriptor(rawValue: $0) }
     }
+    
+    @_alwaysEmitIntoClient
+    public func setSocketOption<T: SocketOption>(
+        _ option: T,
+        retryOnInterrupt: Bool = true
+    ) throws {
+        try _setSocketOption(option, retryOnInterrupt: retryOnInterrupt).get()
+    }
+    
+    @usableFromInline
+    internal func _setSocketOption<T: SocketOption>(
+        _ option: T,
+        retryOnInterrupt: Bool
+    ) -> Result<(), Errno> {
+        nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
+            option.withUnsafeBytes { bufferPointer in
+                system_setsockopt(self.rawValue, T.ID.optionLevel.rawValue, fd3: option.id.rawValue, bufferPointer.baseAddress!, UInt32(bufferPointer.count))
+            }
+        }
+    }
 }

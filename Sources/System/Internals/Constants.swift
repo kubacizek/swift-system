@@ -694,3 +694,64 @@ internal var _IPPROTO_TCP: CInt { IPPROTO_TCP }
 
 @_alwaysEmitIntoClient
 internal var _IPPROTO_UDP: CInt { IPPROTO_UDP }
+
+@_alwaysEmitIntoClient
+internal var _SOL_SOCKET: CInt { SOL_SOCKET }
+
+@_alwaysEmitIntoClient
+internal var _SOL_LOCAL: CInt { SOL_LOCAL }
+
+@_alwaysEmitIntoClient
+internal var _SO_DEBUG: CInt { SO_DEBUG }
+
+@_alwaysEmitIntoClient
+internal var _SO_ACCEPTCONN: CInt { SO_ACCEPTCONN }
+
+@_alwaysEmitIntoClient
+internal var _SO_REUSEADDR: CInt { SO_REUSEADDR }
+
+@_alwaysEmitIntoClient
+internal var _SO_KEEPALIVE: CInt { SO_KEEPALIVE }
+
+@_alwaysEmitIntoClient
+internal var _SO_DONTROUTE: CInt { SO_DONTROUTE }
+
+@_alwaysEmitIntoClient
+internal var _SO_BROADCAST: CInt { SO_BROADCAST }
+
+@_alwaysEmitIntoClient
+internal var _SO_USELOOPBACK: CInt { SO_USELOOPBACK }
+
+@_alwaysEmitIntoClient
+internal var _SO_LINGER: CInt { SO_LINGER }
+
+#if os(Linux)
+@_alwaysEmitIntoClient
+internal var _SOL_NETLINK: CInt { SOL_NETLINK }
+#endif
+
+#if os(Linux)
+@_alwaysEmitIntoClient
+internal var _NETLINK_PKTINFO: CInt { NETLINK_PKTINFO }
+
+@_alwaysEmitIntoClient
+internal var _NETLINK_ADD_MEMBERSHIP: CInt { NETLINK_ADD_MEMBERSHIP }
+
+@_alwaysEmitIntoClient
+internal var _NETLINK_DROP_MEMBERSHIP: CInt { NETLINK_DROP_MEMBERSHIP }
+
+@_alwaysEmitIntoClient
+internal var _NETLINK_LIST_MEMBERSHIPS: CInt { NETLINK_LIST_MEMBERSHIPS }
+
+@_alwaysEmitIntoClient
+internal var _NETLINK_BROADCAST_ERRORS: CInt { NETLINK_BROADCAST_ERROR }
+
+@_alwaysEmitIntoClient
+internal var _NETLINK_NO_ENOBUFS: CInt { NETLINK_NO_ENOBUFS }
+
+@_alwaysEmitIntoClient
+internal var _NETLINK_LISTEN_ALL_NSID: CInt { NETLINK_LISTEN_ALL_NSID }
+
+@_alwaysEmitIntoClient
+internal var _NETLINK_CAP_ACK: CInt { NETLINK_CAP_ACK }
+#endif
