@@ -56,7 +56,7 @@ extension FileDescriptor {
     ) -> Result<(), Errno> {
         nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
             option.withUnsafeBytes { bufferPointer in
-                system_setsockopt(self.rawValue, T.ID.optionLevel.rawValue, option.id.rawValue, bufferPointer.baseAddress!, UInt32(bufferPointer.count))
+                system_setsockopt(self.rawValue, T.ID.optionLevel.rawValue, T.id.rawValue, bufferPointer.baseAddress!, UInt32(bufferPointer.count))
             }
         }
     }
