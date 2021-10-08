@@ -69,4 +69,16 @@ public enum CInterop {
     
   /// The C `in6_addr` type
   public typealias IPv6Address = in6_addr
+    
+  /// The C `sockaddr_in` type
+  public typealias SocketAddress = sockaddr
+    
+  /// The C `sockaddr_in` type
+  public typealias UnixSocketAddress = sockaddr_un
+  
+  /// The C `sockaddr_in` type
+  public typealias IPv4SocketAddress = sockaddr_in
+    
+  /// The C `sockaddr_in6` type
+  public typealias IPv6SocketAddress = sockaddr_in6
 }

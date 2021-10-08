@@ -539,6 +539,10 @@ internal var _INET6_ADDRSTRLEN: CInt { INET6_ADDRSTRLEN }
 internal var _INADDR_ANY: CInterop.IPv4Address {  CInterop.IPv4Address(s_addr: INADDR_ANY) }
 
 @_alwaysEmitIntoClient
+internal var _INADDR_LOOPBACK: CInterop.IPv4Address {  CInterop.IPv4Address(s_addr: INADDR_LOOPBACK) }
+
+
+@_alwaysEmitIntoClient
 internal var _INADDR6_ANY: CInterop.IPv6Address { in6addr_any }
 
 @_alwaysEmitIntoClient
@@ -743,6 +747,12 @@ internal var _SO_LINGER: CInt { SO_LINGER }
 #if os(Linux)
 @_alwaysEmitIntoClient
 internal var _SOL_NETLINK: CInt { SOL_NETLINK }
+
+@_alwaysEmitIntoClient
+internal var _SOL_BLUETOOTH: CInt { 274 }
+
+@_alwaysEmitIntoClient
+internal var _SOL_L2CAP: CInt { 6 }
 #endif
 
 #if os(Linux)

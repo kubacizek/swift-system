@@ -18,6 +18,19 @@ public enum IPAddress: Equatable, Hashable {
     case v6(IPv6Address)
 }
 
+public extension IPAddress {
+    
+    @_alwaysEmitIntoClient
+    func withUnsafeBytes<Result>(_ body: ((UnsafeRawBufferPointer) -> (Result))) -> Result {
+        switch self {
+        case let .v4(address):
+            return address.withUnsafeBytes(body)
+        case let .v6(address):
+            return address.withUnsafeBytes(body)
+        }
+    }
+}
+
 extension IPAddress: RawRepresentable {
     
     public init?(rawValue: String) {
@@ -68,6 +81,9 @@ public extension IPv4Address {
     
     @_alwaysEmitIntoClient
     static var any: IPv4Address { IPv4Address(_INADDR_ANY) }
+    
+    @_alwaysEmitIntoClient
+    static var loopback: IPv4Address { IPv4Address(_INADDR_LOOPBACK) }
 }
 
 extension IPv4Address: RawRepresentable {
