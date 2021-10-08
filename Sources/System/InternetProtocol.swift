@@ -8,9 +8,13 @@
 */
 
 /// Internet Protocol Address
-public enum IPAddress: Equatable, Hashable, Codable {
+@frozen
+public enum IPAddress: Equatable, Hashable {
     
+    /// IPv4
     case v4(IPv4Address)
+    
+    /// IPv6
     case v6(IPv6Address)
 }
 
@@ -91,6 +95,7 @@ extension IPv4Address: CustomStringConvertible {
 }
 
 /// IPv6 Socket Address
+@frozen
 public struct IPv6Address: Equatable, Hashable {
     
     @usableFromInline
