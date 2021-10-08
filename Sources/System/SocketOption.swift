@@ -12,69 +12,54 @@ public protocol SocketOption {
     
     associatedtype ID: SocketOptionID
     
-    var id: ID { get }
+    static var id: ID { get }
     
     func withUnsafeBytes<T>(_: ((UnsafeRawBufferPointer) -> (T))) -> T
 }
 
-public enum GenericSocketOption: SocketOption, Equatable, Hashable {
+/// Platform Socket Option
+@frozen
+public enum GenericSocketOption {
     
-    public typealias ID = GenericSocketOptionID
-    
-    case debug(Bool)
-    case keepAlive(Bool)
-    
-    @_alwaysEmitIntoClient
-    public var id: ID {
-        switch self {
-        case .debug: return .debug
-        case .keepAlive: return .keepAlive
+    @frozen
+    public struct Debug: SocketOption, Equatable, Hashable {
+        
+        @_alwaysEmitIntoClient
+        public static var id: GenericSocketOptionID { .debug }
+        
+        public var isEnabled: Bool
+        
+        @_alwaysEmitIntoClient
+        public init(isEnabled: Bool) {
+            self.isEnabled = true
         }
-    }
-    
-    @_alwaysEmitIntoClient
-    public func withUnsafeBytes<T>(_ pointer: ((UnsafeRawBufferPointer) -> (T))) -> T {
-        switch self {
-        case let .debug(value):
-            return Swift.withUnsafeBytes(of: value.cInt) { bufferPointer in
-                pointer(bufferPointer)
-            }
-        case let .keepAlive(value):
-            return Swift.withUnsafeBytes(of: value.cInt) { bufferPointer in
+        
+        @_alwaysEmitIntoClient
+        public func withUnsafeBytes<T>(_ pointer: ((UnsafeRawBufferPointer) -> (T))) -> T {
+            return Swift.withUnsafeBytes(of: isEnabled.cInt) { bufferPointer in
                 pointer(bufferPointer)
             }
         }
     }
-}
-
-#if os(Linux)
-public enum NetlinkSocketOption: SocketOption, Equatable, Hashable {
     
-    public typealias ID = NetlinkSocketOptionID
-    
-    case addMembership(group: Int32)
-    case removeMembership(group: Int32)
-    
-    @_alwaysEmitIntoClient
-    public var id: ID {
-        switch self {
-        case .addMembership: return .addMembership
-        case .removeMembership: return .removeMembership
+    @frozen
+    public struct KeepAlive: SocketOption, Equatable, Hashable {
+        
+        @_alwaysEmitIntoClient
+        public static var id: GenericSocketOptionID { .keepAlive }
+        
+        public var isEnabled: Bool
+        
+        @_alwaysEmitIntoClient
+        public init(isEnabled: Bool) {
+            self.isEnabled = true
         }
-    }
-    
-    @_alwaysEmitIntoClient
-    public func withUnsafeBytes<T>(_ pointer: ((UnsafeRawBufferPointer) -> (T))) -> T {
-        switch self {
-        case let .addMembership(group: group):
-            withUnsafeBytes(of: group) { bufferPointer in
-                pointer(bufferPointer)
-            }
-        case let .removeMembership(group: group):
-            withUnsafeBytes(of: group) { bufferPointer in
+        
+        @_alwaysEmitIntoClient
+        public func withUnsafeBytes<T>(_ pointer: ((UnsafeRawBufferPointer) -> (T))) -> T {
+            return Swift.withUnsafeBytes(of: isEnabled.cInt) { bufferPointer in
                 pointer(bufferPointer)
             }
         }
     }
 }
-#endif
