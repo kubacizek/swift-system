@@ -749,7 +749,7 @@ internal var _SO_LINGER: CInt { SO_LINGER }
 internal var _SOL_NETLINK: CInt { SOL_NETLINK }
 
 @_alwaysEmitIntoClient
-internal var _SOL_BLUETOOTH: CInt { 274 }
+internal var _SOL_BLUETOOTH: CInt { SOL_BLUETOOTH }
 
 @_alwaysEmitIntoClient
 internal var _SOL_L2CAP: CInt { 6 }
