@@ -146,3 +146,84 @@ internal func system_setsockopt(_ fd: Int32, _ fd2: Int32, _ fd3: Int32, _ point
   #endif
   return setsockopt(fd, fd2, fd3, pointer, dataLength)
 }
+
+internal func system_bind(_ family: Int32, _ address: UnsafePointer<sockaddr>, _ length: socklen_t) -> Int32 {
+  #if ENABLE_MOCKING
+  if mockingEnabled { return _mock(family, address, length) }
+  #endif
+  return bind(family, address, length)
+}
+
+internal func system_connect(
+  _ socket: CInt, _ addr: UnsafePointer<sockaddr>?, _ len: socklen_t
+) -> CInt {
+  #if ENABLE_MOCKING
+  if mockingEnabled { return _mock(socket, addr, len) }
+  #endif
+  return connect(socket, addr, len)
+}
+
+internal func system_accept(
+  _ socket: CInt,
+  _ addr: UnsafeMutablePointer<sockaddr>?,
+  _ len: UnsafeMutablePointer<socklen_t>?
+) -> CInt {
+  #if ENABLE_MOCKING
+  if mockingEnabled { return _mock(socket, addr, len) }
+  #endif
+  return accept(socket, addr, len)
+}
+
+internal func system_getaddrinfo(
+  _ hostname: UnsafePointer<CChar>?,
+  _ servname: UnsafePointer<CChar>?,
+  _ hints: UnsafePointer<CInterop.AddressInfo>?,
+  _ res: UnsafeMutablePointer<UnsafeMutablePointer<CInterop.AddressInfo>?>?
+) -> CInt {
+  #if ENABLE_MOCKING
+  if mockingEnabled {
+    return _mock(hostname,
+                 servname,
+                 hints, res)
+  }
+  #endif
+  return getaddrinfo(hostname, servname, hints, res)
+}
+
+internal func system_getnameinfo(
+  _ sa: UnsafePointer<CInterop.SocketAddress>?,
+  _ salen: UInt32,
+  _ host: UnsafeMutablePointer<CChar>?,
+  _ hostlen: UInt32,
+  _ serv: UnsafeMutablePointer<CChar>?,
+  _ servlen: UInt32,
+  _ flags: CInt
+) -> CInt {
+  #if ENABLE_MOCKING
+  if mockingEnabled {
+    return _mock(sa, salen, host, hostlen, serv, servlen, flags)
+  }
+  #endif
+  return getnameinfo(sa, salen, host, hostlen, serv, servlen, flags)
+}
+
+internal func system_freeaddrinfo(
+  _ addrinfo: UnsafeMutablePointer<CInterop.AddressInfo>?
+) {
+  #if ENABLE_MOCKING
+  if mockingEnabled {
+    _ = _mock(addrinfo)
+    return
+  }
+  #endif
+  return freeaddrinfo(addrinfo)
+}
+
+internal func system_gai_strerror(_ error: CInt) -> UnsafePointer<CChar> {
+  #if ENABLE_MOCKING
+  // FIXME
+  #endif
+  return gai_strerror(error)
+}
+
+

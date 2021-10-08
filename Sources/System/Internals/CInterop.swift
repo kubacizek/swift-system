@@ -64,6 +64,9 @@ public enum CInterop {
   public typealias PlatformUnicodeEncoding = UTF8
   #endif
     
+  /// The C `addrinfo` type
+  public typealias AddressInfo = addrinfo
+    
   /// The C `in_addr` type
   public typealias IPv4Address = in_addr
     
