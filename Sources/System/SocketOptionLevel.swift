@@ -35,6 +35,10 @@ public extension SocketOptionLevel {
 #if os(Linux)
 public extension SocketOptionLevel {
     
+    @_alwaysEmitIntoClient
     static var netlink: SocketOptionLevel { SocketOptionLevel(_SOL_NETLINK) }
+    
+    @_alwaysEmitIntoClient
+    static var bluetooth: SocketOptionLevel { SocketOptionLevel(_SOL_BLUETOOTH) }
 }
 #endif
