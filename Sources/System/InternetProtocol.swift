@@ -9,7 +9,7 @@
 
 /// Internet Protocol Address
 @frozen
-public enum IPAddress: Equatable, Hashable {
+public enum IPAddress: Equatable, Hashable, Codable {
     
     /// IPv4
     case v4(IPv4Address)
@@ -61,7 +61,7 @@ extension IPAddress: CustomStringConvertible {
 
 /// IPv4 Socket Address
 @frozen
-public struct IPv4Address: Equatable, Hashable {
+public struct IPv4Address: Equatable, Hashable, Codable {
     
     @usableFromInline
     internal let bytes: CInterop.IPv4Address
@@ -112,7 +112,7 @@ extension IPv4Address: CustomStringConvertible {
 
 /// IPv6 Socket Address
 @frozen
-public struct IPv6Address: Equatable, Hashable {
+public struct IPv6Address: Equatable, Hashable, Codable {
     
     @usableFromInline
     internal let bytes: CInterop.IPv6Address
