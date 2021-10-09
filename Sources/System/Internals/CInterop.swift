@@ -63,6 +63,17 @@ public enum CInterop {
   /// on API.
   public typealias PlatformUnicodeEncoding = UTF8
   #endif
+  
+  #if os(Windows)
+  /// The platform socket descriptor.
+  public typealias SocketDescriptor = SOCKET
+  #else
+    /// The platform socket descriptor, which is the same as a file desciptor on Unix systems.
+  public typealias SocketDescriptor = CInt
+  #endif
+    
+  /// The C `sa_family_t` type
+  public typealias SocketAddressFamily = sa_family_t
     
   /// The C `addrinfo` type
   public typealias AddressInfo = addrinfo

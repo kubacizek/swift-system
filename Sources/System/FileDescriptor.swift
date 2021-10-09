@@ -16,6 +16,7 @@
 @frozen
 // @available(macOS 10.16, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
 public struct FileDescriptor: RawRepresentable, Hashable, Codable {
+  
   /// The raw C file handle.
   @_alwaysEmitIntoClient
   public let rawValue: CInt
@@ -23,6 +24,20 @@ public struct FileDescriptor: RawRepresentable, Hashable, Codable {
   /// Creates a strongly-typed file handle from a raw C file handle.
   @_alwaysEmitIntoClient
   public init(rawValue: CInt) { self.rawValue = rawValue }
+}
+
+internal extension FileDescriptor {
+    
+    init(socket: CInterop.SocketDescriptor) {
+        // On Unix a file descriptor can be a file, pipe, socket, etc
+        // On windows file descriptors and sockets are different types
+        #if os(Windows)
+        #error("Windows sockets not implemented")
+        fatalError()
+        #else
+        self.init(rawValue: socket)
+        #endif
+    }
 }
 
 // Standard file descriptors

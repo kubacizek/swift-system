@@ -38,7 +38,7 @@ extension FileDescriptor {
     ) throws -> Result<FileDescriptor, Errno> {
         valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
             system_socket(family.rawValue, type.rawValue, protocolID)
-        }.map { FileDescriptor(rawValue: $0) }
+        }.map { FileDescriptor(socket: $0) }
     }
     
     @_alwaysEmitIntoClient
@@ -57,6 +57,25 @@ extension FileDescriptor {
         nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
             option.withUnsafeBytes { bufferPointer in
                 system_setsockopt(self.rawValue, T.ID.optionLevel.rawValue, T.id.rawValue, bufferPointer.baseAddress!, UInt32(bufferPointer.count))
+            }
+        }
+    }
+    @_alwaysEmitIntoClient
+    public func bind<T: SocketAddress>(
+        _ address: T,
+        retryOnInterrupt: Bool = true
+    ) throws {
+        try _bind(address, retryOnInterrupt: retryOnInterrupt).get()
+    }
+    
+    @usableFromInline
+    internal func _bind<T: SocketAddress>(
+        _ address: T,
+        retryOnInterrupt: Bool
+    ) -> Result<(), Errno> {
+        nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
+            address.withUnsafePointer { (addressPointer, length) in
+                system_bind(T.family.rawValue, addressPointer, length)
             }
         }
     }

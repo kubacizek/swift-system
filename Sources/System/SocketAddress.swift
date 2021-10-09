@@ -13,16 +13,46 @@ public protocol SocketAddress {
     /// Socket Address Family
     static var family: SocketAddressFamily { get }
     
-    func withUnsafePointer<Result>(_ body: ((UnsafePointer<CInterop.SocketAddress>) -> (Result))) -> Result
+    /// Unsafe pointer closure
+    func withUnsafePointer<Result>(
+      _ body: (UnsafePointer<CInterop.SocketAddress>, UInt32) throws -> Result
+    ) rethrows -> Result
+}
+
+/// IPv4 Socket Address
+public struct UnixSocketAddress: SocketAddress, Equatable, Hashable {
+    
+    public static var family: SocketAddressFamily { .unix }
+    
+    public var path: FilePath
+    
+    public init(path: FilePath) {
+        self.path = path
+    }
+    
+    public func withUnsafePointer<Result>(
+      _ body: (UnsafePointer<CInterop.SocketAddress>, UInt32) throws -> Result
+    ) rethrows -> Result {
+        return try path.withPlatformString { platformString in
+            var socketAddress = CInterop.UnixSocketAddress()
+            socketAddress.sun_family = numericCast(Self.family.rawValue)
+            socketAddress.sun_len = 0
+            withUnsafeMutableBytes(of: &socketAddress.sun_path) { pathBytes in
+                pathBytes
+                    .bindMemory(to: CInterop.PlatformChar.self)
+                    .baseAddress!
+                    .assign(from: platformString, count: path.length)
+            }
+            return try socketAddress.withUnsafePointer(body)
+        }
+    }
 }
 
 /// IPv4 Socket Address
 public struct IPv4SocketAddress: SocketAddress, Equatable, Hashable {
     
-    @_alwaysEmitIntoClient
     public static var family: SocketAddressFamily { .ipv4 }
     
-    @_alwaysEmitIntoClient
     public var address: IPv4Address
     
     public var port: UInt16
@@ -34,15 +64,15 @@ public struct IPv4SocketAddress: SocketAddress, Equatable, Hashable {
         self.port = port
     }
     
-    public func withUnsafePointer<Result>(_ body: ((UnsafePointer<CInterop.SocketAddress>) -> (Result))) -> Result {
+    public func withUnsafePointer<Result>(
+      _ body: (UnsafePointer<CInterop.SocketAddress>, UInt32) throws -> Result
+    ) rethrows -> Result {
         
         var socketAddress = CInterop.IPv4SocketAddress()
         socketAddress.sin_family = numericCast(Self.family.rawValue)
-        socketAddress.sin_port = port.bigEndian
+        socketAddress.sin_port = port.networkOrder
         socketAddress.sin_addr = address.bytes
-        socketAddress.sin_len = 0
-        assert(MemoryLayout.size(ofValue: socketAddress) == MemoryLayout<CInterop.SocketAddress>.size)
-        return Swift.withUnsafePointer(to: unsafeBitCast(socketAddress, to: CInterop.SocketAddress.self), body)
+        return try socketAddress.withUnsafePointer(body)
     }
 }
 
@@ -62,14 +92,14 @@ public struct IPv6SocketAddress: SocketAddress, Equatable, Hashable {
         self.port = port
     }
     
-    public func withUnsafePointer<Result>(_ body: ((UnsafePointer<CInterop.SocketAddress>) -> (Result))) -> Result {
+    public func withUnsafePointer<Result>(
+      _ body: (UnsafePointer<CInterop.SocketAddress>, UInt32) throws -> Result
+    ) rethrows -> Result {
         
         var socketAddress = CInterop.IPv6SocketAddress()
         socketAddress.sin6_family = numericCast(Self.family.rawValue)
-        socketAddress.sin6_port = port.bigEndian
+        socketAddress.sin6_port = port.networkOrder
         socketAddress.sin6_addr = address.bytes
-        socketAddress.sin6_len = 0
-        assert(MemoryLayout.size(ofValue: socketAddress) == MemoryLayout<CInterop.SocketAddress>.size)
-        return Swift.withUnsafePointer(to: unsafeBitCast(socketAddress, to: CInterop.SocketAddress.self), body)
+        return try socketAddress.withUnsafePointer(body)
     }
 }
