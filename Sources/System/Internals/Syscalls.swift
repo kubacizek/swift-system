@@ -20,6 +20,13 @@ import ucrt
 // Interacting with the mocking system, tracing, etc., is a potentially significant
 // amount of code size, so we hand outline that code for every syscall
 
+internal func system_strcpy(_ destination: UnsafeMutablePointer<CChar>, _ source: UnsafePointer<CChar>) -> UnsafeMutablePointer<CChar> {
+  #if ENABLE_MOCKING
+  // FIXME
+  #endif
+  return strcpy(destination, source)
+}
+
 // open
 internal func system_open(
   _ path: UnsafePointer<CInterop.PlatformChar>, _ oflag: Int32
@@ -146,6 +153,20 @@ internal func system_setsockopt(_ fd: Int32, _ fd2: Int32, _ fd3: Int32, _ point
   #endif
   return setsockopt(fd, fd2, fd3, pointer, dataLength)
 }
+
+internal func system_getsockopt(
+  _ socket: CInt,
+  _ level: CInt,
+  _ option: CInt,
+  _ value: UnsafeMutableRawPointer?,
+  _ length: UnsafeMutablePointer<UInt32>?
+) -> CInt {
+  #if ENABLE_MOCKING
+  if mockingEnabled { return _mock(socket, level, option, value, length) }
+  #endif
+  return getsockopt(socket, level, option, value, length)
+}
+
 
 internal func system_bind(_ family: Int32, _ address: UnsafePointer<sockaddr>, _ length: socklen_t) -> Int32 {
   #if ENABLE_MOCKING
