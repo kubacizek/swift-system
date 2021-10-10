@@ -15,6 +15,15 @@ public protocol SocketOption {
     static var id: ID { get }
     
     func withUnsafeBytes<Result>(_ pointer: ((UnsafeRawBufferPointer) throws -> (Result))) rethrows -> Result
+    
+    static func withUnsafeBytes(
+        _ body: (UnsafeRawBufferPointer) throws -> ()
+    ) rethrows -> Self
+}
+
+public protocol BooleanSocketOption: SocketOption, RawRepresentable {
+    
+    
 }
 
 /// Platform Socket Option
@@ -40,6 +49,13 @@ public enum GenericSocketOption {
                 try pointer(bufferPointer)
             }
         }
+        
+        @_alwaysEmitIntoClient
+        public static func withUnsafeBytes(_ body: (UnsafeRawBufferPointer) throws -> ()) rethrows -> Self {
+            var value: CInt = 0
+            try Swift.withUnsafeBytes(of: &value, body)
+            return Self(isEnabled: Bool(value))
+        }
     }
     
     @frozen
@@ -60,6 +76,13 @@ public enum GenericSocketOption {
             return try Swift.withUnsafeBytes(of: isEnabled.cInt) { bufferPointer in
                 try pointer(bufferPointer)
             }
+        }
+        
+        @_alwaysEmitIntoClient
+        public static func withUnsafeBytes(_ body: (UnsafeRawBufferPointer) throws -> ()) throws -> Self {
+            var value: CInt = 0
+            try Swift.withUnsafeBytes(of: &value, body)
+            return Self(isEnabled: Bool(value))
         }
     }
 }
