@@ -60,6 +60,28 @@ extension FileDescriptor {
             }
         }
     }
+    
+    @_alwaysEmitIntoClient
+    public func getSocketOption<T: SocketOption>(
+        _ option: T.Type,
+        retryOnInterrupt: Bool = true
+    ) throws -> T {
+        return try _getSocketOption(option, retryOnInterrupt: retryOnInterrupt)
+    }
+    
+    @usableFromInline
+    internal func _getSocketOption<T: SocketOption>(
+        _ option: T.Type,
+        retryOnInterrupt: Bool
+    ) throws -> T {
+        return try T.withUnsafeBytes { bufferPointer in
+            var length = UInt32(bufferPointer.count)
+            guard system_getsockopt(self.rawValue, T.ID.optionLevel.rawValue, T.id.rawValue, .init(mutating: bufferPointer.baseAddress!), &length) != -1 else {
+                throw Errno.current
+            }
+        }
+    }
+    
     @_alwaysEmitIntoClient
     public func bind<T: SocketAddress>(
         _ address: T,

@@ -17,13 +17,38 @@ public protocol SocketOption {
     func withUnsafeBytes<Result>(_ pointer: ((UnsafeRawBufferPointer) throws -> (Result))) rethrows -> Result
     
     static func withUnsafeBytes(
-        _ body: (UnsafeRawBufferPointer) throws -> ()
+        _ body: (UnsafeMutableRawBufferPointer) throws -> ()
     ) rethrows -> Self
 }
 
-public protocol BooleanSocketOption: SocketOption, RawRepresentable {
+public protocol BooleanSocketOption: SocketOption {
     
+    init(_ boolValue: Bool)
     
+    var boolValue: Bool { get }
+}
+
+extension BooleanSocketOption where Self: ExpressibleByBooleanLiteral {
+    
+    @_alwaysEmitIntoClient
+    public init(booleanLiteral boolValue: Bool) {
+        self.init(boolValue)
+    }
+}
+
+public extension BooleanSocketOption {
+    
+    func withUnsafeBytes<Result>(_ pointer: ((UnsafeRawBufferPointer) throws -> (Result))) rethrows -> Result {
+        return try Swift.withUnsafeBytes(of: boolValue.cInt) { bufferPointer in
+            try pointer(bufferPointer)
+        }
+    }
+    
+    static func withUnsafeBytes(_ body: (UnsafeMutableRawBufferPointer) throws -> ()) rethrows -> Self {
+        var value: CInt = 0
+        try Swift.withUnsafeMutableBytes(of: &value, body)
+        return Self.init(Bool(value))
+    }
 }
 
 /// Platform Socket Option
@@ -31,58 +56,30 @@ public protocol BooleanSocketOption: SocketOption, RawRepresentable {
 public enum GenericSocketOption {
     
     @frozen
-    public struct Debug: SocketOption, Equatable, Hashable {
+    public struct Debug: BooleanSocketOption, Equatable, Hashable, ExpressibleByBooleanLiteral {
         
         @_alwaysEmitIntoClient
         public static var id: GenericSocketOptionID { .debug }
         
-        public var isEnabled: Bool
+        public var boolValue: Bool
         
         @_alwaysEmitIntoClient
-        public init(isEnabled: Bool) {
-            self.isEnabled = true
-        }
-        
-        @_alwaysEmitIntoClient
-        public func withUnsafeBytes<Result>(_ pointer: ((UnsafeRawBufferPointer) throws -> (Result))) rethrows -> Result {
-            return try Swift.withUnsafeBytes(of: isEnabled.cInt) { bufferPointer in
-                try pointer(bufferPointer)
-            }
-        }
-        
-        @_alwaysEmitIntoClient
-        public static func withUnsafeBytes(_ body: (UnsafeRawBufferPointer) throws -> ()) rethrows -> Self {
-            var value: CInt = 0
-            try Swift.withUnsafeBytes(of: &value, body)
-            return Self(isEnabled: Bool(value))
+        public init(_ boolValue: Bool) {
+            self.boolValue = boolValue
         }
     }
     
     @frozen
-    public struct KeepAlive: SocketOption, Equatable, Hashable {
+    public struct KeepAlive: BooleanSocketOption, Equatable, Hashable, ExpressibleByBooleanLiteral {
         
         @_alwaysEmitIntoClient
         public static var id: GenericSocketOptionID { .keepAlive }
         
-        public var isEnabled: Bool
+        public var boolValue: Bool
         
         @_alwaysEmitIntoClient
-        public init(isEnabled: Bool) {
-            self.isEnabled = true
-        }
-        
-        @_alwaysEmitIntoClient
-        public func withUnsafeBytes<Result>(_ pointer: ((UnsafeRawBufferPointer) throws -> (Result))) rethrows -> Result {
-            return try Swift.withUnsafeBytes(of: isEnabled.cInt) { bufferPointer in
-                try pointer(bufferPointer)
-            }
-        }
-        
-        @_alwaysEmitIntoClient
-        public static func withUnsafeBytes(_ body: (UnsafeRawBufferPointer) throws -> ()) throws -> Self {
-            var value: CInt = 0
-            try Swift.withUnsafeBytes(of: &value, body)
-            return Self(isEnabled: Bool(value))
+        public init(_ boolValue: Bool) {
+            self.boolValue = boolValue
         }
     }
 }
