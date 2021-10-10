@@ -10,8 +10,6 @@
 internal protocol CSocketAddress {
     
     static var addressFamily: SocketAddressFamily { get }
-    
-    
 }
 
 internal extension CSocketAddress {
@@ -28,15 +26,18 @@ internal extension CSocketAddress {
 
 extension CInterop.UnixSocketAddress: CSocketAddress {
     
+    @_alwaysEmitIntoClient
     static var addressFamily: SocketAddressFamily { .unix }
 }
 
 extension CInterop.IPv4SocketAddress: CSocketAddress {
     
+    @_alwaysEmitIntoClient
     static var addressFamily: SocketAddressFamily { .ipv4 }
 }
 
 extension CInterop.IPv6SocketAddress: CSocketAddress {
     
+    @_alwaysEmitIntoClient
     static var addressFamily: SocketAddressFamily { .ipv6 }
 }

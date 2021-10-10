@@ -22,10 +22,12 @@ public protocol SocketAddress {
 /// IPv4 Socket Address
 public struct UnixSocketAddress: SocketAddress, Equatable, Hashable {
     
+    @_alwaysEmitIntoClient
     public static var family: SocketAddressFamily { .unix }
     
     public var path: FilePath
     
+    @_alwaysEmitIntoClient
     public init(path: FilePath) {
         self.path = path
     }
@@ -51,12 +53,14 @@ public struct UnixSocketAddress: SocketAddress, Equatable, Hashable {
 /// IPv4 Socket Address
 public struct IPv4SocketAddress: SocketAddress, Equatable, Hashable {
     
+    @_alwaysEmitIntoClient
     public static var family: SocketAddressFamily { .ipv4 }
     
     public var address: IPv4Address
     
     public var port: UInt16
     
+    @_alwaysEmitIntoClient
     public init(address: IPv4Address,
                 port: UInt16) {
         
@@ -79,12 +83,14 @@ public struct IPv4SocketAddress: SocketAddress, Equatable, Hashable {
 /// IPv6 Socket Address
 public struct IPv6SocketAddress: SocketAddress, Equatable, Hashable {
     
+    @_alwaysEmitIntoClient
     public static var family: SocketAddressFamily { .ipv6 }
     
     public var address: IPv6Address
     
     public var port: UInt16
     
+    @_alwaysEmitIntoClient
     public init(address: IPv6Address,
                 port: UInt16) {
         
