@@ -20,6 +20,26 @@ import ucrt
 // Interacting with the mocking system, tracing, etc., is a potentially significant
 // amount of code size, so we hand outline that code for every syscall
 
+@usableFromInline
+internal func system_getpid() -> CInterop.ProcessID {
+#if ENABLE_MOCKING
+  if mockingEnabled {
+    return _mock()
+  }
+#endif
+  return getpid()
+}
+
+@usableFromInline
+internal func system_getppid() -> CInterop.ProcessID {
+#if ENABLE_MOCKING
+  if mockingEnabled {
+    return _mock()
+  }
+#endif
+  return getppid()
+}
+
 internal func system_strcpy(_ destination: UnsafeMutablePointer<CChar>, _ source: UnsafePointer<CChar>) -> UnsafeMutablePointer<CChar> {
   #if ENABLE_MOCKING
   // FIXME

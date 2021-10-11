@@ -64,6 +64,8 @@ public enum CInterop {
   public typealias PlatformUnicodeEncoding = UTF8
   #endif
   
+  public typealias ProcessID = pid_t
+  
   #if os(Windows)
   /// The platform socket descriptor.
   public typealias SocketDescriptor = SOCKET
