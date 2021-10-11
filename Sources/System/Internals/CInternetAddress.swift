@@ -12,7 +12,7 @@ internal protocol CInternetAddress {
     
     static var stringLength: UInt32 { get }
     
-    static var addressFamily: SocketAddressFamily { get }
+    static var family: SocketAddressFamily { get }
     
     init()
 }
@@ -29,7 +29,7 @@ internal extension CInternetAddress {
         */
         try nothingOrErrno(retryOnInterrupt: false) {
             string.withCString { cString in
-                system_inet_pton(Self.addressFamily.rawValue, cString, &address)
+                system_inet_pton(Self.family.rawValue, cString, &address)
             }
         }.get()
         
@@ -47,7 +47,7 @@ internal extension String {
         defer { cString.deallocate() }
         
         let success = withUnsafePointer(to: cInternetAddress) { addressPointer in
-            system_inet_ntop(T.addressFamily.rawValue, addressPointer, cString, cStringLength) != nil
+            system_inet_ntop(T.family.rawValue, addressPointer, cString, cStringLength) != nil
         }
         
         guard success else {
@@ -64,7 +64,7 @@ extension CInterop.IPv4Address: CInternetAddress {
     static var stringLength: UInt32 { return UInt32(_INET_ADDRSTRLEN) }
     
     @usableFromInline
-    static var addressFamily: SocketAddressFamily { .ipv4 }
+    static var family: SocketAddressFamily { .ipv4 }
 }
 
 extension CInterop.IPv6Address: CInternetAddress {
@@ -73,5 +73,5 @@ extension CInterop.IPv6Address: CInternetAddress {
     static var stringLength: UInt32 { return UInt32(_INET6_ADDRSTRLEN) }
     
     @usableFromInline
-    static var addressFamily: SocketAddressFamily { .ipv6 }
+    static var family: SocketAddressFamily { .ipv6 }
 }

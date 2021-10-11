@@ -9,7 +9,7 @@
 
 internal protocol CSocketAddress {
     
-    static var addressFamily: SocketAddressFamily { get }
+    static var family: SocketAddressFamily { get }
 }
 
 internal extension CSocketAddress {
@@ -27,17 +27,17 @@ internal extension CSocketAddress {
 extension CInterop.UnixSocketAddress: CSocketAddress {
     
     @_alwaysEmitIntoClient
-    static var addressFamily: SocketAddressFamily { .unix }
+    static var family: SocketAddressFamily { .unix }
 }
 
 extension CInterop.IPv4SocketAddress: CSocketAddress {
     
     @_alwaysEmitIntoClient
-    static var addressFamily: SocketAddressFamily { .ipv4 }
+    static var family: SocketAddressFamily { .ipv4 }
 }
 
 extension CInterop.IPv6SocketAddress: CSocketAddress {
     
     @_alwaysEmitIntoClient
-    static var addressFamily: SocketAddressFamily { .ipv6 }
+    static var family: SocketAddressFamily { .ipv6 }
 }
