@@ -33,24 +33,3 @@ public enum GenericSocketOptionID: Int32, SocketOptionID {
         }
     }
 }
-
-#if os(Linux)
-public enum NetlinkSocketOptionID: Int32, SocketOptionID {
-    
-    case addMembership
-    case removeMembership
-    
-    
-    @_alwaysEmitIntoClient
-    public static var optionLevel: SocketOptionLevel { .netlink }
-    
-    @_alwaysEmitIntoClient
-    public var rawValue: Int32 {
-        switch self {
-        case .addMembership: return _NETLINK_ADD_MEMBERSHIP
-        case .removeMembership: return _NETLINK_DROP_MEMBERSHIP
-        }
-    }
-    
-}
-#endif

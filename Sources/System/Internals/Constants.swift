@@ -754,29 +754,3 @@ internal var _SOL_BLUETOOTH: CInt { SOL_BLUETOOTH }
 @_alwaysEmitIntoClient
 internal var _SOL_L2CAP: CInt { 6 }
 #endif
-
-#if os(Linux)
-@_alwaysEmitIntoClient
-internal var _NETLINK_PKTINFO: CInt { NETLINK_PKTINFO }
-
-@_alwaysEmitIntoClient
-internal var _NETLINK_ADD_MEMBERSHIP: CInt { NETLINK_ADD_MEMBERSHIP }
-
-@_alwaysEmitIntoClient
-internal var _NETLINK_DROP_MEMBERSHIP: CInt { NETLINK_DROP_MEMBERSHIP }
-
-@_alwaysEmitIntoClient
-internal var _NETLINK_LIST_MEMBERSHIPS: CInt { NETLINK_LIST_MEMBERSHIPS }
-
-@_alwaysEmitIntoClient
-internal var _NETLINK_BROADCAST_ERRORS: CInt { NETLINK_BROADCAST_ERROR }
-
-@_alwaysEmitIntoClient
-internal var _NETLINK_NO_ENOBUFS: CInt { NETLINK_NO_ENOBUFS }
-
-@_alwaysEmitIntoClient
-internal var _NETLINK_LISTEN_ALL_NSID: CInt { NETLINK_LISTEN_ALL_NSID }
-
-@_alwaysEmitIntoClient
-internal var _NETLINK_CAP_ACK: CInt { NETLINK_CAP_ACK }
-#endif
