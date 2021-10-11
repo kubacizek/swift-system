@@ -76,7 +76,7 @@ extension FileDescriptor {
     ) throws -> T {
         return try T.withUnsafeBytes { bufferPointer in
             var length = UInt32(bufferPointer.count)
-            guard system_getsockopt(self.rawValue, T.ID.optionLevel.rawValue, T.id.rawValue, .init(mutating: bufferPointer.baseAddress!), &length) != -1 else {
+            guard system_getsockopt(self.rawValue, T.ID.optionLevel.rawValue, T.id.rawValue, bufferPointer.baseAddress!, &length) != -1 else {
                 throw Errno.current
             }
         }

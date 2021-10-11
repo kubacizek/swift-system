@@ -52,14 +52,13 @@ public extension BooleanSocketOption {
 }
 
 /// Platform Socket Option
-@frozen
-public enum GenericSocketOption {
+public extension GenericSocketOption {
     
     @frozen
-    public struct Debug: BooleanSocketOption, Equatable, Hashable, ExpressibleByBooleanLiteral {
+    struct Debug: BooleanSocketOption, Equatable, Hashable, ExpressibleByBooleanLiteral {
         
         @_alwaysEmitIntoClient
-        public static var id: GenericSocketOptionID { .debug }
+        public static var id: GenericSocketOption { .debug }
         
         public var boolValue: Bool
         
@@ -70,10 +69,10 @@ public enum GenericSocketOption {
     }
     
     @frozen
-    public struct KeepAlive: BooleanSocketOption, Equatable, Hashable, ExpressibleByBooleanLiteral {
+    struct KeepAlive: BooleanSocketOption, Equatable, Hashable, ExpressibleByBooleanLiteral {
         
         @_alwaysEmitIntoClient
-        public static var id: GenericSocketOptionID { .keepAlive }
+        public static var id: GenericSocketOption { .keepAlive }
         
         public var boolValue: Bool
         

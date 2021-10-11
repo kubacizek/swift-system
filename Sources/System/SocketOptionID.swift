@@ -17,19 +17,29 @@ public protocol SocketOptionID: RawRepresentable {
     var rawValue: Int32 { get }
 }
 
-public enum GenericSocketOptionID: Int32, SocketOptionID {
-    
-    case debug
-    case keepAlive
+@frozen
+public struct GenericSocketOption: RawRepresentable, Equatable, Hashable, SocketOptionID {
     
     @_alwaysEmitIntoClient
     public static var optionLevel: SocketOptionLevel { .default }
     
+    /// The raw socket address family identifier.
     @_alwaysEmitIntoClient
-    public var rawValue: Int32 {
-        switch self {
-        case .debug: return _SO_DEBUG
-        case .keepAlive: return _SO_KEEPALIVE
-        }
-    }
+    public let rawValue: CInt
+
+    /// Creates a strongly-typed socket address family from a raw address family identifier.
+    @_alwaysEmitIntoClient
+    public init(rawValue: CInt) { self.rawValue = rawValue }
+    
+    @_alwaysEmitIntoClient
+    private init(_ raw: CInt) { self.init(rawValue: raw) }
+}
+
+public extension GenericSocketOption {
+    
+    @_alwaysEmitIntoClient
+    static var debug: GenericSocketOption { GenericSocketOption(_SO_DEBUG) }
+    
+    @_alwaysEmitIntoClient
+    static var keepAlive: GenericSocketOption { GenericSocketOption(_SO_KEEPALIVE) }
 }
