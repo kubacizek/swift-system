@@ -102,6 +102,7 @@ extension FileDescriptor {
         }
     }
     
+    @_alwaysEmitIntoClient
     public func send<Address: SocketAddress>(
         _ data: UnsafeRawBufferPointer,
         to address: Address,
@@ -136,4 +137,21 @@ extension FileDescriptor {
         }
     }
     
+    @_alwaysEmitIntoClient
+    public func listen(
+        backlog: Int,
+        retryOnInterrupt: Bool = true
+    ) throws {
+        try _listen(backlog: Int32(backlog), retryOnInterrupt: retryOnInterrupt).get()
+    }
+    
+    @usableFromInline
+    internal func _listen(
+        backlog: Int32,
+        retryOnInterrupt: Bool
+    ) -> Result<(), Errno> {
+        nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
+            system_listen(self.rawValue, backlog)
+        }
+    }
 }
