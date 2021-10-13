@@ -73,6 +73,9 @@ public enum CInterop {
     /// The platform socket descriptor, which is the same as a file desciptor on Unix systems.
   public typealias SocketDescriptor = CInt
   #endif
+
+    /// The C `msghdr` type
+  public typealias MessageHeader = msghdr
     
   /// The C `sa_family_t` type
   public typealias SocketAddressFamily = sa_family_t
