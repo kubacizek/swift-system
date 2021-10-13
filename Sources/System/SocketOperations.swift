@@ -105,7 +105,7 @@ extension FileDescriptor {
     public func send<Address: SocketAddress>(
         _ data: UnsafeRawBufferPointer,
         to address: Address,
-        flags: Int32 = 0,
+        flags: MessageFlags = [],
         retryOnInterrupt: Bool = true
     ) throws {
         try _send(data, to: address, flags: flags, retryOnInterrupt: retryOnInterrupt).get()
@@ -114,7 +114,7 @@ extension FileDescriptor {
     public func send<Address, Data>(
         _ data: Data,
         to address: Address,
-        flags: Int32 = 0,
+        flags: MessageFlags = [],
         retryOnInterrupt: Bool = true
     ) throws where Address: SocketAddress, Data: Sequence, Data.Element == UInt8 {
         try data._withRawBufferPointer { dataPointer in
@@ -126,12 +126,12 @@ extension FileDescriptor {
     internal func _send<T: SocketAddress>(
         _ data: UnsafeRawBufferPointer,
         to address: T,
-        flags: Int32,
+        flags: MessageFlags,
         retryOnInterrupt: Bool
     ) -> Result<(), Errno> {
         nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
             address.withUnsafePointer { (addressPointer, addressLength) in
-                system_sendto(self.rawValue, data.baseAddress, data.count, flags, addressPointer, addressLength)
+                system_sendto(self.rawValue, data.baseAddress, data.count, flags.rawValue, addressPointer, addressLength)
             }
         }
     }

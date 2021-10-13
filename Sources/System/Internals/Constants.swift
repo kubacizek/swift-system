@@ -754,3 +754,55 @@ internal var _SOL_BLUETOOTH: CInt { SOL_BLUETOOTH }
 @_alwaysEmitIntoClient
 internal var _SOL_L2CAP: CInt { 6 }
 #endif
+
+@_alwaysEmitIntoClient
+internal var _MSG_DONTROUTE: CInt { MSG_DONTROUTE } /* send without using routing tables */
+
+@_alwaysEmitIntoClient
+internal var _MSG_EOR: CInt { MSG_EOR } /* data completes record */
+
+@_alwaysEmitIntoClient
+internal var _MSG_OOB: CInt { MSG_OOB } /* process out-of-band data */
+
+@_alwaysEmitIntoClient
+internal var _MSG_PEEK: CInt { MSG_PEEK } /* peek at incoming message */
+@_alwaysEmitIntoClient
+internal var _MSG_TRUNC: CInt { MSG_TRUNC } /* data discarded before delivery */
+@_alwaysEmitIntoClient
+internal var _MSG_CTRUNC: CInt { MSG_CTRUNC } /* control data lost before delivery */
+@_alwaysEmitIntoClient
+internal var _MSG_WAITALL: CInt { MSG_WAITALL } /* wait for full request or error */
+
+@_alwaysEmitIntoClient
+internal var _MSG_DONTWAIT: CInt { MSG_DONTWAIT } /* this message should be nonblocking */
+
+@_alwaysEmitIntoClient
+internal var _MSG_EOF: CInt { MSG_EOF } /* data completes connection */
+
+@_alwaysEmitIntoClient
+internal var _MSG_WAITSTREAM: CInt { MSG_WAITSTREAM } /* wait up to full request.. may return partial */
+
+@_alwaysEmitIntoClient
+internal var _MSG_FLUSH: CInt { MSG_FLUSH } /* Start of 'hold' seq; dump so_temp, deprecated */
+@_alwaysEmitIntoClient
+internal var _MSG_HOLD: CInt { MSG_HOLD } /* Hold frag in so_temp, deprecated */
+@_alwaysEmitIntoClient
+internal var _MSG_SEND: CInt { MSG_SEND } /* Send the packet in so_temp, deprecated */
+@_alwaysEmitIntoClient
+internal var _MSG_HAVEMORE: CInt { MSG_HAVEMORE } /* Data ready to be read */
+@_alwaysEmitIntoClient
+internal var _MSG_RCVMORE: CInt { MSG_RCVMORE } /* Data remains in current pkt */
+
+@_alwaysEmitIntoClient
+internal var _MSG_NEEDSA: CInt { MSG_NEEDSA } /* Fail receive if socket address cannot be allocated */
+
+@_alwaysEmitIntoClient
+internal var _MSG_NOSIGNAL: CInt { MSG_NOSIGNAL } /* do not generate SIGPIPE on EOF */
+
+#if os(Linux)
+@_alwaysEmitIntoClient
+internal var _MSG_CONFIRM: CInt { MSG_CONFIRM }
+
+@_alwaysEmitIntoClient
+internal var _MSG_MORE: CInt { MSG_MORE }
+#endif
