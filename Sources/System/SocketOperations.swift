@@ -12,9 +12,7 @@ extension FileDescriptor {
     /// Creates an endpoint for communication and returns a descriptor.
     ///
     /// - Parameters:
-    ///   - family: The protocol family which will be used for communication.
-    ///   - type: Specifies the communication semantics.
-    ///   - protocol: Specifies the communication semantics.
+    ///   - protocolID: The protocol which will be used for communication.
     ///   - retryOnInterrupt: Whether to retry the read operation
     ///     if it throws ``Errno/interrupted``.
     ///     The default is `true`.
@@ -26,18 +24,40 @@ extension FileDescriptor {
         _ protocolID: T,
         retryOnInterrupt: Bool = true
     ) throws -> FileDescriptor {
-        try _socket(T.family, type: protocolID.type, protocol: protocolID.rawValue, retryOnInterrupt: retryOnInterrupt).get()
+        try _socket(T.family, type: protocolID.type.rawValue, protocol: protocolID.rawValue, retryOnInterrupt: retryOnInterrupt).get()
     }
+    
+    /// Creates an endpoint for communication and returns a descriptor.
+    ///
+    /// - Parameters:
+    ///   - protocolID: The protocol which will be used for communication.
+    ///   - flags: Flags to set when opening the socket.
+    ///   - retryOnInterrupt: Whether to retry the read operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    /// - Returns: The file descriptor of the opened socket.
+    ///
+    #if os(Linux)
+    @_alwaysEmitIntoClient
+    public static func socket<T: SocketProtocol>(
+        _ protocolID: T,
+        flags: SocketFlags,
+        retryOnInterrupt: Bool = true
+    ) throws -> FileDescriptor {
+        try _socket(T.family, type: protocolID.type.rawValue | flags.rawValue, protocol: protocolID.rawValue, retryOnInterrupt: retryOnInterrupt).get()
+    }
+    #endif
     
     @usableFromInline
     internal static func _socket(
         _ family: SocketAddressFamily,
-        type: SocketType,
+        type: CInt,
         protocol protocolID: Int32,
         retryOnInterrupt: Bool
     ) throws -> Result<FileDescriptor, Errno> {
         valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
-            system_socket(family.rawValue, type.rawValue, protocolID)
+            system_socket(family.rawValue, type, protocolID)
         }.map { FileDescriptor(socket: $0) }
     }
     
@@ -136,6 +156,32 @@ extension FileDescriptor {
             }
         }
     }
+    
+    @usableFromInline
+    internal func _recieve(
+        _ dataBuffer: UnsafeMutableRawBufferPointer,
+        flags: MessageFlags,
+        retryOnInterrupt: Bool
+    ) -> Result<Int, Errno> {
+        valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
+            system_recv(self.rawValue, dataBuffer.baseAddress, dataBuffer.count, flags.rawValue)
+        }
+    }
+    /*
+    @usableFromInline
+    internal func _recieve<Address: SocketAddress>(
+        _ dataBuffer: UnsafeMutableRawBufferPointer,
+        from address: Address,
+        flags: MessageFlags,
+        retryOnInterrupt: Bool
+    ) -> Result<Int, Errno> {
+        valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
+            address.withUnsafePointer { (addressPointer, addressLength) in
+                var addressLength = addressLength
+                system_recvfrom(self.rawValue, dataBuffer.baseAddress, dataBuffer.count, flags.rawValue, addressPointer, &addressLength)
+            }
+        }
+    }*/
     
     @_alwaysEmitIntoClient
     public func listen(

@@ -529,6 +529,14 @@ internal var _SEEK_HOLE: CInt { SEEK_HOLE }
 internal var _SEEK_DATA: CInt { SEEK_DATA }
 #endif
 
+#if os(Linux)
+@_alwaysEmitIntoClient
+internal var _SOCK_CLOEXEC: CInt { SOCK_CLOEXEC }
+
+@_alwaysEmitIntoClient
+internal var _SOCK_NONBLOCK: CInt { SOCK_NONBLOCK }
+#endif
+
 @_alwaysEmitIntoClient
 internal var _POLLIN: CInt { POLLIN }
 
