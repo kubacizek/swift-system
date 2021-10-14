@@ -50,6 +50,16 @@ internal func system_getpagesize() -> Int32 {
   return getpagesize()
 }
 
+@usableFromInline
+internal func system_getdtablesize() -> Int32 {
+#if ENABLE_MOCKING
+  if mockingEnabled {
+    return _mock()
+  }
+#endif
+  return getdtablesize()
+}
+
 internal func system_strcpy(_ destination: UnsafeMutablePointer<CChar>, _ source: UnsafePointer<CChar>) -> UnsafeMutablePointer<CChar> {
   #if ENABLE_MOCKING
   // FIXME

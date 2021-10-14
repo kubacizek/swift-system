@@ -12,9 +12,13 @@ public enum SystemInfo {
     
     /// Returns the number of bytes in a memory page, where "page" is a fixed-length block,
     /// the unit for memory allocation and file mapping.
-    static var pageSize: UInt {
+    public static var pageSize: UInt {
         return numericCast(system_getpagesize())
     }
     
-    
+    /// The maximum number of files a process can have open,
+    /// one more than the largest possible value for a file descriptor.
+    public static var fileDescriptorTableSize: UInt {
+        return numericCast(system_getdtablesize())
+    }
 }
