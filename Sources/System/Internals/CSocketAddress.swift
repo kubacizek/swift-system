@@ -7,6 +7,7 @@
  See https://swift.org/LICENSE.txt for license information
 */
 
+@usableFromInline
 internal protocol CSocketAddress {
     
     static var family: SocketAddressFamily { get }
