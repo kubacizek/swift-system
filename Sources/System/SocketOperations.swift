@@ -195,8 +195,25 @@ extension FileDescriptor {
         }.map { FileDescriptor(socket: $0) }
     }
     
-    func connect() {
-        
+    @_alwaysEmitIntoClient
+    public func connect<Address: SocketAddress>(
+        to address: Address,
+        retryOnInterrupt: Bool = true
+    ) throws {
+        try _connect(to: address, retryOnInterrupt: retryOnInterrupt).get()
+    }
+    
+    /// The `connect()` function shall attempt to make a connection on a socket.
+    @usableFromInline
+    internal func _connect<Address: SocketAddress>(
+        to address: Address,
+        retryOnInterrupt: Bool
+    ) -> Result<(), Errno> {
+        nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
+            address.withUnsafePointer { (addressPointer, addressLength) in
+                system_connect(self.rawValue, addressPointer, addressLength)
+            }
+        }
     }
     
     func poll() {

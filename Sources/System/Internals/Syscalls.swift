@@ -209,7 +209,9 @@ internal func system_bind(
 }
 
 internal func system_connect(
-  _ socket: CInt, _ addr: UnsafePointer<sockaddr>?, _ len: socklen_t
+  _ socket: CInt,
+  _ addr: UnsafePointer<sockaddr>?,
+  _ len: socklen_t
 ) -> CInt {
   #if ENABLE_MOCKING
   if mockingEnabled { return _mock(socket, addr, len) }
