@@ -348,6 +348,18 @@ internal func system_recvfrom(
   #endif
   return recvfrom(socket, buffer, length, flags, address, addres_len)
 }
+
+internal func system_poll(
+    _ fileDescriptors: UnsafeMutablePointer<CInterop.PollFileDescriptor>,
+    _ fileDescriptorsCount: UInt32,
+    _ timeout: CInt
+) -> CInt {
+  #if ENABLE_MOCKING
+  if mockingEnabled { return _mock(fileDescriptors, fileDescriptorsCount, timeout) }
+  #endif
+  return poll(fileDescriptors, fileDescriptorsCount, timeout)
+}
+
 /*
 internal func system_sendmsg(
   _ socket: CInt,

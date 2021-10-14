@@ -77,6 +77,8 @@ public enum CInterop {
     /// The C `msghdr` type
   public typealias MessageHeader = msghdr
     
+  public typealias PollFileDescriptor = pollfd
+    
   /// The C `sa_family_t` type
   public typealias SocketAddressFamily = sa_family_t
     
