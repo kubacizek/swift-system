@@ -360,10 +360,9 @@ internal func system_poll(
   return poll(fileDescriptors, fileDescriptorsCount, timeout)
 }
 
-/*
 internal func system_sendmsg(
   _ socket: CInt,
-  _ message: UnsafePointer<CInterop.MsgHdr>?,
+  _ message: UnsafePointer<CInterop.MessageHeader>?,
   _ flags: CInt
 ) -> Int {
   #if ENABLE_MOCKING
@@ -374,7 +373,7 @@ internal func system_sendmsg(
 
 internal func system_recvmsg(
   _ socket: CInt,
-  _ message: UnsafeMutablePointer<CInterop.MsgHdr>?,
+  _ message: UnsafeMutablePointer<CInterop.MessageHeader>?,
   _ flags: CInt
 ) -> Int {
   #if ENABLE_MOCKING
@@ -382,4 +381,3 @@ internal func system_recvmsg(
   #endif
   return recvmsg(socket, message, flags)
 }
-*/

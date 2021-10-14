@@ -530,6 +530,36 @@ internal var _SEEK_DATA: CInt { SEEK_DATA }
 #endif
 
 @_alwaysEmitIntoClient
+internal var _POLLIN: CInt { POLLIN }
+
+@_alwaysEmitIntoClient
+internal var _POLLPRI: CInt { POLLPRI }
+
+@_alwaysEmitIntoClient
+internal var _POLLOUT: CInt { POLLOUT }
+
+@_alwaysEmitIntoClient
+internal var _POLLRDNORM: CInt { POLLRDNORM }
+
+@_alwaysEmitIntoClient
+internal var _POLLWRNORM: CInt { POLLWRNORM }
+
+@_alwaysEmitIntoClient
+internal var _POLLRDBAND: CInt { POLLRDBAND }
+
+@_alwaysEmitIntoClient
+internal var _POLLWRBAND: CInt { POLLWRBAND }
+
+@_alwaysEmitIntoClient
+internal var _POLLERR: CInt { POLLERR }
+
+@_alwaysEmitIntoClient
+internal var _POLLHUP: CInt { POLLHUP }
+
+@_alwaysEmitIntoClient
+internal var _POLLNVAL: CInt { POLLNVAL }
+
+@_alwaysEmitIntoClient
 internal var _INET_ADDRSTRLEN: CInt { INET_ADDRSTRLEN }
 
 @_alwaysEmitIntoClient
@@ -540,7 +570,6 @@ internal var _INADDR_ANY: CInterop.IPv4Address {  CInterop.IPv4Address(s_addr: I
 
 @_alwaysEmitIntoClient
 internal var _INADDR_LOOPBACK: CInterop.IPv4Address {  CInterop.IPv4Address(s_addr: INADDR_LOOPBACK) }
-
 
 @_alwaysEmitIntoClient
 internal var _INADDR6_ANY: CInterop.IPv6Address { in6addr_any }

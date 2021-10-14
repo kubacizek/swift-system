@@ -79,6 +79,8 @@ public enum CInterop {
     
   public typealias PollFileDescriptor = pollfd
     
+  public typealias FileEvent = Int16
+    
   /// The C `sa_family_t` type
   public typealias SocketAddressFamily = sa_family_t
     
