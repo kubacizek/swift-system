@@ -154,4 +154,35 @@ extension FileDescriptor {
             system_listen(self.rawValue, backlog)
         }
     }
+    
+    @_alwaysEmitIntoClient
+    public func accept<Address: SocketAddress>(
+        _ address: Address.Type,
+        retryOnInterrupt: Bool = true
+    ) throws -> (FileDescriptor, Address) {
+        return try _accept(Address.self, retryOnInterrupt: retryOnInterrupt).get()
+    }
+    
+    @usableFromInline
+    internal func _accept<Address: SocketAddress>(
+        _ address: Address.Type,
+        retryOnInterrupt: Bool
+    ) -> Result<(FileDescriptor, Address), Errno> {
+        var result: Result<CInt, Errno> = .success(0)
+        let address = Address.withUnsafePointer { socketPointer, socketLength in
+            var length = socketLength
+            result = valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
+                system_accept(self.rawValue, socketPointer, &length)
+            }
+        }
+        return result.map { (FileDescriptor(socket: $0), address) }
+    }
+    
+    func connect() {
+        
+    }
+    
+    func poll() {
+        
+    }
 }

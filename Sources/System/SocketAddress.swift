@@ -17,6 +17,10 @@ public protocol SocketAddress {
     func withUnsafePointer<Result>(
       _ body: (UnsafePointer<CInterop.SocketAddress>, UInt32) throws -> Result
     ) rethrows -> Result
+    
+    static func withUnsafePointer(
+        _ body: (UnsafeMutablePointer<CInterop.SocketAddress>, UInt32) throws -> ()
+    ) rethrows -> Self
 }
 
 /// IPv4 Socket Address
@@ -46,6 +50,16 @@ public struct UnixSocketAddress: SocketAddress, Equatable, Hashable {
                     .assign(from: platformString, count: path.length)
             }
             return try socketAddress.withUnsafePointer(body)
+        }
+    }
+    
+    public static func withUnsafePointer(
+        _ body: (UnsafeMutablePointer<CInterop.SocketAddress>, UInt32) throws -> ()
+    ) rethrows -> Self {
+        var socketAddress = CInterop.UnixSocketAddress()
+        try socketAddress.withUnsafeMutablePointer(body)
+        return withUnsafeBytes(of: socketAddress.sun_path) { pathPointer in
+            Self.init(path: FilePath(platformString: pathPointer.baseAddress!.assumingMemoryBound(to: CInterop.PlatformChar.self)))
         }
     }
 }
@@ -78,6 +92,17 @@ public struct IPv4SocketAddress: SocketAddress, Equatable, Hashable {
         socketAddress.sin_addr = address.bytes
         return try socketAddress.withUnsafePointer(body)
     }
+    
+    public static func withUnsafePointer(
+        _ body: (UnsafeMutablePointer<CInterop.SocketAddress>, UInt32) throws -> ()
+    ) rethrows -> Self {
+        var socketAddress = CInterop.IPv4SocketAddress()
+        try socketAddress.withUnsafeMutablePointer(body)
+        return Self.init(
+            address: IPv4Address(socketAddress.sin_addr),
+            port: socketAddress.sin_port.networkOrder
+        )
+    }
 }
 
 /// IPv6 Socket Address
@@ -107,5 +132,16 @@ public struct IPv6SocketAddress: SocketAddress, Equatable, Hashable {
         socketAddress.sin6_port = port.networkOrder
         socketAddress.sin6_addr = address.bytes
         return try socketAddress.withUnsafePointer(body)
+    }
+    
+    public static func withUnsafePointer(
+        _ body: (UnsafeMutablePointer<CInterop.SocketAddress>, UInt32) throws -> ()
+    ) rethrows -> Self {
+        var socketAddress = CInterop.IPv6SocketAddress()
+        try socketAddress.withUnsafeMutablePointer(body)
+        return Self.init(
+            address: IPv6Address(socketAddress.sin6_addr),
+            port: socketAddress.sin6_port.networkOrder
+        )
     }
 }
