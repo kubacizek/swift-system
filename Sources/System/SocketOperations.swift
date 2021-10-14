@@ -178,6 +178,23 @@ extension FileDescriptor {
         return result.map { (FileDescriptor(socket: $0), address) }
     }
     
+    @_alwaysEmitIntoClient
+    public func accept(
+        retryOnInterrupt: Bool = true
+    ) throws -> FileDescriptor {
+        return try _accept(retryOnInterrupt: retryOnInterrupt).get()
+    }
+    
+    @usableFromInline
+    internal func _accept(
+        retryOnInterrupt: Bool
+    ) -> Result<FileDescriptor, Errno> {
+        var length: UInt32 = 0
+        return valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
+            system_accept(self.rawValue, nil, &length)
+        }.map { FileDescriptor(socket: $0) }
+    }
+    
     func connect() {
         
     }
