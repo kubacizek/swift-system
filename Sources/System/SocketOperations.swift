@@ -216,7 +216,68 @@ extension FileDescriptor {
         }
     }
     
-    func poll() {
-        
+    /// wait for some event on file descriptors
+    @usableFromInline
+    internal static func _poll(
+        _ fileDescriptors: [(FileDescriptor, FileEvents)],
+        timeout: CInt,
+        retryOnInterrupt: Bool
+    ) -> Result<[(FileDescriptor, FileEvents)], Errno> {
+        var pollFDs = fileDescriptors.map {
+                CInterop.PollFileDescriptor(
+                    fd: $0.0.rawValue,
+                    events: $0.1.rawValue,
+                    revents: 0
+                )
+            }
+        return nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
+            system_poll(&pollFDs, UInt32(pollFDs.count), timeout)
+        }.map { pollFDs.map { (FileDescriptor(rawValue: $0.fd), FileEvents(rawValue: $0.revents)) } }
+    }
+    
+    /// Wait for some event on a file descriptor.
+    public func poll(
+        _ events: FileEvents = [],
+        timeout: Int = 0,
+        retryOnInterrupt: Bool = true
+    ) throws -> FileEvents {
+        try _poll(
+            events: events,
+            timeout: CInt(timeout),
+            retryOnInterrupt: retryOnInterrupt
+        ).get()
+    }
+    
+    /// wait for some event on a file descriptor
+    @usableFromInline
+    internal func _poll(
+        events: FileEvents,
+        timeout: CInt,
+        retryOnInterrupt: Bool
+    ) -> Result<FileEvents, Errno> {
+        var pollFD = CInterop.PollFileDescriptor(
+            fd: self.rawValue,
+            events: events.rawValue,
+            revents: 0
+        )
+        return nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
+            system_poll(&pollFD, 1, timeout)
+        }.map { FileEvents(rawValue: events.rawValue) }
+    }
+}
+
+extension Sequence where Element == FileDescriptor {
+    
+    /// Poll file descriptor for events.
+    public func poll(
+        _ events: FileEvents = [],
+        timeout: Int = 0,
+        retryOnInterrupt: Bool = true
+    ) throws -> [(FileDescriptor, FileEvents)] {
+        try FileDescriptor._poll(
+            self.map { ($0, events) },
+            timeout: CInt(timeout),
+            retryOnInterrupt: retryOnInterrupt
+        ).get()
     }
 }
