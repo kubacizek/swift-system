@@ -61,6 +61,15 @@ extension FileDescriptor {
         }.map { FileDescriptor(socket: $0) }
     }
     
+    /// Set the option specified for the socket associated with the file descriptor.
+    ///
+    ///  - Parameter option: Socket option value to set.
+    ///  - Parameter retryOnInterrupt: Whether to retry the open operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    ///
+    /// The method corresponds to the C function `setsockopt`.
     @_alwaysEmitIntoClient
     public func setSocketOption<T: SocketOption>(
         _ option: T,
@@ -81,6 +90,15 @@ extension FileDescriptor {
         }
     }
     
+    ///  Retrieve the value associated with the option specified for the socket associated with the file descriptor.
+    ///
+    ///  - Parameter option: Type of `SocketOption` to retrieve.
+    ///  - Parameter retryOnInterrupt: Whether to retry the open operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    ///
+    /// The method corresponds to the C function `getsockopt`.
     @_alwaysEmitIntoClient
     public func getSocketOption<T: SocketOption>(
         _ option: T.Type,
@@ -102,6 +120,15 @@ extension FileDescriptor {
         }
     }
     
+    /// Assigns the address specified to the socket referred to by the file descriptor.
+    ///
+    ///  - Parameter address: Specifies the address to bind the socket.
+    ///  - Parameter retryOnInterrupt: Whether to retry the open operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    ///
+    /// The corresponding C function is `bind`.
     @_alwaysEmitIntoClient
     public func bind<Address: SocketAddress>(
         _ address: Address,
@@ -122,39 +149,155 @@ extension FileDescriptor {
         }
     }
     
+    /// Send a message from a socket.
+    ///
+    /// - Parameters:
+    ///   - buffer: The region of memory that contains the data being sent.
+    ///   - flags: see `send(2)`
+    ///   - retryOnInterrupt: Whether to retry the send operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    /// - Returns: The number of bytes that were sent.
+    ///
+    /// The corresponding C function is `send`.
+    @_alwaysEmitIntoClient
+    public func send(
+      _ buffer: UnsafeRawBufferPointer,
+      flags: MessageFlags = [],
+      retryOnInterrupt: Bool = true
+    ) throws -> Int {
+      try _send(buffer, flags: flags, retryOnInterrupt: retryOnInterrupt).get()
+    }
+    
+    /// Send a message from a socket.
+    ///
+    /// - Parameters:
+    ///   - data: The sequence of bytes being sent.
+    ///   - address: Address of destination client.
+    ///   - flags: see `send(2)`
+    ///   - retryOnInterrupt: Whether to retry the send operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    /// - Returns: The number of bytes that were sent.
+    ///
+    /// The corresponding C function is `send`.
+    public func send<Data>(
+        _ data: Data,
+        flags: MessageFlags = [],
+        retryOnInterrupt: Bool = true
+    ) throws -> Int where Data: Sequence, Data.Element == UInt8 {
+        try data._withRawBufferPointer { dataPointer in
+            _send(dataPointer, flags: flags, retryOnInterrupt: retryOnInterrupt)
+        }.get()
+    }
+
+    @usableFromInline
+    internal func _send(
+      _ buffer: UnsafeRawBufferPointer,
+      flags: MessageFlags,
+      retryOnInterrupt: Bool
+    ) -> Result<Int, Errno> {
+      valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
+        system_send(self.rawValue, buffer.baseAddress!, buffer.count, flags.rawValue)
+      }
+    }
+    
+    /// Send a message from a socket.
+    ///
+    /// - Parameters:
+    ///   - buffer: The region of memory that contains the data being sent.
+    ///   - address: Address of destination client.
+    ///   - flags: see `send(2)`
+    ///   - retryOnInterrupt: Whether to retry the send operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    /// - Returns: The number of bytes that were sent.
+    ///
+    /// The corresponding C function is `send`.
     @_alwaysEmitIntoClient
     public func send<Address: SocketAddress>(
-        _ data: UnsafeRawBufferPointer,
+        _ buffer: UnsafeRawBufferPointer,
         to address: Address,
         flags: MessageFlags = [],
         retryOnInterrupt: Bool = true
-    ) throws {
-        try _send(data, to: address, flags: flags, retryOnInterrupt: retryOnInterrupt).get()
+    ) throws -> Int {
+        try _send(buffer, to: address, flags: flags, retryOnInterrupt: retryOnInterrupt).get()
     }
     
+    /// Send a message from a socket.
+    ///
+    /// - Parameters:
+    ///   - data: The sequence of bytes being sent.
+    ///   - address: Address of destination client.
+    ///   - flags: see `send(2)`
+    ///   - retryOnInterrupt: Whether to retry the send operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    /// - Returns: The number of bytes that were sent.
+    ///
+    /// The corresponding C function is `send`.
     public func send<Address, Data>(
         _ data: Data,
         to address: Address,
         flags: MessageFlags = [],
         retryOnInterrupt: Bool = true
-    ) throws where Address: SocketAddress, Data: Sequence, Data.Element == UInt8 {
+    ) throws -> Int where Address: SocketAddress, Data: Sequence, Data.Element == UInt8 {
         try data._withRawBufferPointer { dataPointer in
             _send(dataPointer, to: address, flags: flags, retryOnInterrupt: retryOnInterrupt)
         }.get()
     }
     
+    /// `send()`
     @usableFromInline
     internal func _send<T: SocketAddress>(
         _ data: UnsafeRawBufferPointer,
         to address: T,
         flags: MessageFlags,
         retryOnInterrupt: Bool
-    ) -> Result<(), Errno> {
-        nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
+    ) -> Result<Int, Errno> {
+        valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
             address.withUnsafePointer { (addressPointer, addressLength) in
                 system_sendto(self.rawValue, data.baseAddress, data.count, flags.rawValue, addressPointer, addressLength)
             }
         }
+    }
+    
+    /// Receive a message from a socket.
+    ///
+    /// - Parameters:
+    ///   - buffer: The region of memory to receive into.
+    ///   - flags: see `recv(2)`
+    ///   - retryOnInterrupt: Whether to retry the receive operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    /// - Returns: The number of bytes that were received.
+    ///
+    /// The corresponding C function is `recv`.
+    @_alwaysEmitIntoClient
+    public func receive(
+      into buffer: UnsafeMutableRawBufferPointer,
+      flags: MessageFlags = [],
+      retryOnInterrupt: Bool = true
+    ) throws -> Int {
+      try _receive(
+        into: buffer, flags: flags, retryOnInterrupt: retryOnInterrupt
+      ).get()
+    }
+
+    @usableFromInline
+    internal func _receive(
+      into buffer: UnsafeMutableRawBufferPointer,
+      flags: MessageFlags,
+      retryOnInterrupt: Bool
+    ) -> Result<Int, Errno> {
+      valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
+        system_recv(self.rawValue, buffer.baseAddress!, buffer.count, flags.rawValue)
+      }
     }
     
     @usableFromInline
@@ -183,6 +326,18 @@ extension FileDescriptor {
         }
     }*/
     
+    /// Listen for connections on a socket.
+    ///
+    /// Only applies to sockets of connection type `.stream`.
+    ///
+    /// - Parameters:
+    ///   - backlog: the maximum length for the queue of pending connections
+    ///   - retryOnInterrupt: Whether to retry the receive operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    ///
+    /// The corresponding C function is `listen`.
     @_alwaysEmitIntoClient
     public func listen(
         backlog: Int,
@@ -201,6 +356,17 @@ extension FileDescriptor {
         }
     }
     
+    /// Accept a connection on a socket.
+    ///
+    /// - Parameters:
+    ///   - address: The type of the `SocketAddress` expected for the new connection.
+    ///   - retryOnInterrupt: Whether to retry the receive operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    /// - Returns: A tuple containing the file descriptor and address of the new connection.
+    ///
+    /// The corresponding C function is `accept`.
     @_alwaysEmitIntoClient
     public func accept<Address: SocketAddress>(
         _ address: Address.Type,
@@ -224,6 +390,16 @@ extension FileDescriptor {
         return result.map { (FileDescriptor(socket: $0), address) }
     }
     
+    /// Accept a connection on a socket.
+    ///
+    /// - Parameters:
+    ///   - retryOnInterrupt: Whether to retry the receive operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    /// - Returns: The file descriptor of the new connection.
+    ///
+    /// The corresponding C function is `accept`.
     @_alwaysEmitIntoClient
     public func accept(
         retryOnInterrupt: Bool = true
@@ -241,6 +417,17 @@ extension FileDescriptor {
         }.map { FileDescriptor(socket: $0) }
     }
     
+    /// Initiate a connection on a socket.
+    ///
+    /// - Parameters:
+    ///   - address: The peer address.
+    ///   - retryOnInterrupt: Whether to retry the receive operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    /// - Returns: The file descriptor of the new connection.
+    ///
+    /// The corresponding C function is `connect`.
     @_alwaysEmitIntoClient
     public func connect<Address: SocketAddress>(
         to address: Address,
@@ -282,8 +469,19 @@ extension FileDescriptor {
     }
     
     /// Wait for some event on a file descriptor.
+    ///
+    /// - Parameters:
+    ///   - events: A bit mask specifying the events the application is interested in for the file descriptor.
+    ///   - timeout: Specifies the minimum number of milliseconds that this method will block. Specifying a negative value in timeout means an infinite timeout. Specifying a timeout of zero causes this method to return immediately.
+    ///   - retryOnInterrupt: Whether to retry the receive operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    /// - Returns: A bitmask filled by the kernel with the events that actually occurred.
+    ///
+    /// The corresponding C function is `poll`.
     public func poll(
-        _ events: FileEvents = [],
+        for events: FileEvents,
         timeout: Int = 0,
         retryOnInterrupt: Bool = true
     ) throws -> FileEvents {
@@ -294,7 +492,9 @@ extension FileDescriptor {
         ).get()
     }
     
-    /// wait for some event on a file descriptor
+    /// `poll()`
+    ///
+    /// Wait for some event on a file descriptor.
     @usableFromInline
     internal func _poll(
         events: FileEvents,
@@ -314,7 +514,20 @@ extension FileDescriptor {
 
 extension Sequence where Element == FileDescriptor {
     
-    /// Poll file descriptor for events.
+    /// Wait for some event on a set of file descriptors.
+    ///
+    /// - Parameters:
+    ///   - events: A bit mask specifying the events the application is interested in for the file descriptors.
+    ///   - timeout: Specifies the minimum number of milliseconds that this method will block. Specifying a negative value in timeout means an infinite timeout. Specifying a timeout of zero causes this method to return immediately.
+    ///   - retryOnInterrupt: Whether to retry the receive operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    /// - Returns:A array of bitmasks filled by the kernel with the events that actually occurred
+    ///     for the corresponding file descriptors.
+    ///
+    /// The corresponding C function is `poll`.
+    @_alwaysEmitIntoClient
     public func poll(
         _ events: FileEvents = [],
         timeout: Int = 0,
