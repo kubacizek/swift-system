@@ -449,6 +449,28 @@ extension FileDescriptor {
         }
     }
     
+    /// Wait for some event on a set of file descriptors.
+    ///
+    /// - Parameters:
+    ///   - fileDescriptors: An array of bit mask specifying the events the application is interested in for the file descriptors.
+    ///   - timeout: Specifies the minimum number of milliseconds that this method will block. Specifying a negative value in timeout means an infinite timeout. Specifying a timeout of zero causes this method to return immediately.
+    ///   - retryOnInterrupt: Whether to retry the receive operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    /// - Returns:A array of bitmasks filled by the kernel with the events that actually occurred
+    ///     for the corresponding file descriptors.
+    ///
+    /// The corresponding C function is `poll`.
+    @_alwaysEmitIntoClient
+    public static func poll(
+        _ fileDescriptors: [(FileDescriptor, FileEvents)],
+        timeout: Int = 0,
+        retryOnInterrupt: Bool = true
+    ) throws -> [(FileDescriptor, FileEvents)] {
+        try _poll(fileDescriptors, timeout: CInt(timeout), retryOnInterrupt: retryOnInterrupt).get()
+    }
+    
     /// wait for some event on file descriptors
     @usableFromInline
     internal static func _poll(
