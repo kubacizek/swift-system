@@ -863,6 +863,17 @@ internal var _fd_set_count: Int {
 #endif
 }
 
+#if os(macOS)
+@_alwaysEmitIntoClient
+internal var _TIOCFLUSH: CUnsignedLong { TIOCFLUSH }
+
+@_alwaysEmitIntoClient
+internal var _TIOCSDTR: CUnsignedLong { TIOCSDTR }
+
+@_alwaysEmitIntoClient
+internal var _TIOCCDTR: CUnsignedLong { TIOCCDTR }
+#endif
+
 #if os(Linux)
 @_alwaysEmitIntoClient
 internal var _TCGETS: CUnsignedLong { TCGETS }
@@ -884,16 +895,7 @@ internal var _TIOCEXCL: CUnsignedLong { TIOCEXCL }
 internal var _TIOCNXCL: CUnsignedLong { TIOCNXCL }
 
 @_alwaysEmitIntoClient
-internal var _TIOCFLUSH: CUnsignedLong { TIOCFLUSH }
-
-@_alwaysEmitIntoClient
 internal var _TIOCGETD: CUnsignedLong { TIOCGETD }
 
 @_alwaysEmitIntoClient
 internal var _TIOCSETD: CUnsignedLong { TIOCSETD }
-
-@_alwaysEmitIntoClient
-internal var _TIOCSDTR: CUnsignedLong { TIOCSDTR }
-
-@_alwaysEmitIntoClient
-internal var _TIOCCDTR: CUnsignedLong { TIOCCDTR }

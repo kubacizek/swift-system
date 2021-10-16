@@ -69,5 +69,13 @@ public extension TerminalIO {
     /// Reset exclusive use of tty.
     @_alwaysEmitIntoClient
     static var resetExclusiveMode: TerminalIO { TerminalIO(_TIOCNXCL) }
+    
+    /// Get the line discipline of the terminal.
+    @_alwaysEmitIntoClient
+    static var getLineDiscipline: TerminalIO { TerminalIO(_TIOCGETD) }
+    
+    /// Set the line discipline of the terminal.
+    @_alwaysEmitIntoClient
+    static var setLineDiscipline: TerminalIO { TerminalIO(_TIOCSETD) }
 }
 #endif
