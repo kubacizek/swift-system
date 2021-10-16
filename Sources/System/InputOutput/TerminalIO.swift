@@ -54,16 +54,50 @@ public extension TerminalIO {
 
 public extension TerminalIO {
     
+    /// Get the line discipline of the terminal.
     @frozen
     struct GetLineDiscipline: Equatable, Hashable, IOControlValue {
         
         @_alwaysEmitIntoClient
         public static var id: TerminalIO { .getLineDiscipline }
         
+        public private(set) var lineDiscipline: Int
         
+        public init() {
+            self.lineDiscipline = 0
+        }
         
         public mutating func withUnsafeMutablePointer<Result>(_ body: (UnsafeMutableRawPointer) throws -> (Result)) rethrows -> Result {
-            
+            // Argument: int *argp
+            var value: CInt = numericCast(self.lineDiscipline)
+            try Swift.withUnsafeMutableBytes(of: &value) { buffer in
+                try body(buffer.baseAddress)
+            }
+            self.lineDiscipline = value
+        }
+    }
+    
+    /// Set the line discipline of the terminal.
+    @frozen
+    struct SetLineDiscipline: Equatable, Hashable, IOControlValue {
+        
+        @_alwaysEmitIntoClient
+        public static var id: TerminalIO { .setLineDiscipline }
+        
+        public let lineDiscipline: Int
+        
+        public init(lineDiscipline: Int) {
+            self.lineDiscipline = lineDiscipline
+        }
+        
+        public mutating func withUnsafeMutablePointer<Result>(_ body: (UnsafeMutableRawPointer) throws -> (Result)) rethrows -> Result {
+            // Argument: const int *argp
+            var value: CInt = numericCast(self.lineDiscipline)
+            try Swift.withUnsafeMutableBytes(of: &value) { buffer in
+                try body(buffer.baseAddress)
+            }
+            assert(value == numericCast(self.lineDiscipline), "Value changed")
+            self.lineDiscipline = value
         }
     }
 }
