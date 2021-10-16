@@ -551,7 +551,7 @@ extension Sequence where Element == FileDescriptor {
     /// The corresponding C function is `poll`.
     @_alwaysEmitIntoClient
     public func poll(
-        _ events: FileEvents = [],
+        for events: FileEvents,
         timeout: Int = 0,
         retryOnInterrupt: Bool = true
     ) throws -> [(FileDescriptor, FileEvents)] {

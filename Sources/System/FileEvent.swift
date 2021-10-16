@@ -7,6 +7,7 @@
  See https://swift.org/LICENSE.txt for license information
 */
 
+/// File Events bitmask
 @frozen
 // @available(macOS 10.16, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
 public struct FileEvents: OptionSet, Hashable, Codable {
