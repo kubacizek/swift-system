@@ -7,33 +7,6 @@
  See https://swift.org/LICENSE.txt for license information
 */
 
-/// Input / Output Request identifier for manipulating underlying device parameters of special files.
-public protocol IOControlID: RawRepresentable {
-    
-    /// Create a strongly-typed file events from a raw C IO request.
-    init?(rawValue: CUnsignedLong)
-    
-    /// The raw C IO request ID.
-    var rawValue: CUnsignedLong { get }
-}
-
-public protocol IOControlInteger {
-    
-    associatedtype ID: IOControlID
-    
-    static var id: ID { get }
-    
-    var intValue: Int32 { get }
-}
-
-public protocol IOControlValue {
-    
-    associatedtype ID: IOControlID
-    
-    static var id: ID { get }
-    
-    mutating func withUnsafeMutablePointer<Result>(_ body: (UnsafeMutableRawPointer) throws -> (Result)) rethrows -> Result
-}
 
 #if os(macOS) || os(Linux) || os(FreeBSD) || os(Android)
 /// Terminal `ioctl` definitions
@@ -77,5 +50,21 @@ public extension TerminalIO {
     /// Set the line discipline of the terminal.
     @_alwaysEmitIntoClient
     static var setLineDiscipline: TerminalIO { TerminalIO(_TIOCSETD) }
+}
+
+public extension TerminalIO {
+    
+    @frozen
+    struct GetLineDiscipline: Equatable, Hashable, IOControlValue {
+        
+        @_alwaysEmitIntoClient
+        public static var id: TerminalIO { .getLineDiscipline }
+        
+        
+        
+        public mutating func withUnsafeMutablePointer<Result>(_ body: (UnsafeMutableRawPointer) throws -> (Result)) rethrows -> Result {
+            
+        }
+    }
 }
 #endif
