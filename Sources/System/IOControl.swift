@@ -8,40 +8,66 @@
 */
 
 /// Input / Output Request identifier for manipulating underlying device parameters of special files.
-@frozen
-// @available(macOS 10.16, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
-public struct IOControlID: RawRepresentable, Hashable, Codable {
+public protocol IOControlID: RawRepresentable {
     
-    /// The raw C IO request.
-    @_alwaysEmitIntoClient
-    public let rawValue: CUnsignedLong
-
     /// Create a strongly-typed file events from a raw C IO request.
-    @_alwaysEmitIntoClient
-    public init(rawValue: CUnsignedLong) { self.rawValue = rawValue }
-
-    @_alwaysEmitIntoClient
-    private init(_ raw: CUnsignedLong) { self.init(rawValue: raw) }
+    init?(rawValue: CUnsignedLong)
+    
+    /// The raw C IO request ID.
+    var rawValue: CUnsignedLong { get }
 }
-
-#if os(macOS)
-
-#endif
-
-#if os(Linux)
-
-#endif
 
 public protocol IOControlInteger {
     
-    static var id: IOControlID { get }
+    associatedtype ID: IOControlID
+    
+    static var id: ID { get }
     
     var intValue: Int32 { get }
 }
 
 public protocol IOControlValue {
     
-    static var id: IOControlID { get }
+    associatedtype ID: IOControlID
+    
+    static var id: ID { get }
     
     mutating func withUnsafeMutablePointer<Result>(_ body: (UnsafeMutableRawPointer) throws -> (Result)) rethrows -> Result
 }
+
+#if os(macOS) || os(Linux) || os(FreeBSD) || os(Android)
+/// Terminal `ioctl` definitions
+@frozen
+public struct TerminalIO: IOControlID, Equatable, Hashable {
+    
+    public let rawValue: CUnsignedLong
+    
+    public init(rawValue: CUnsignedLong) {
+        self.rawValue = rawValue
+    }
+    
+    @_alwaysEmitIntoClient
+    private init(_ rawValue: CUnsignedLong) {
+        self.init(rawValue: rawValue)
+    }
+}
+
+public extension TerminalIO {
+    
+    /// Turn break on, that is, start sending zero bits.
+    @_alwaysEmitIntoClient
+    static var setBreakBit: TerminalIO { TerminalIO(_TIOCSBRK) }
+    
+    /// Turn break off, that is, stop sending zero bits.
+    @_alwaysEmitIntoClient
+    static var clearBreakBit: TerminalIO { TerminalIO(_TIOCCBRK) }
+    
+    /// Put the terminal into exclusive mode.
+    @_alwaysEmitIntoClient
+    static var setExclusiveMode: TerminalIO { TerminalIO(_TIOCEXCL) }
+    
+    /// Reset exclusive use of tty.
+    @_alwaysEmitIntoClient
+    static var resetExclusiveMode: TerminalIO { TerminalIO(_TIOCNXCL) }
+}
+#endif

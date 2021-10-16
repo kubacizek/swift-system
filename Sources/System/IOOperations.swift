@@ -11,8 +11,8 @@ extension FileDescriptor {
     
     /// Manipulates the underlying device parameters of special files.
     @usableFromInline
-    internal func _inputOutput(
-        _ request: IOControlID,
+    internal func _inputOutput<T: IOControlID>(
+        _ request: T,
         retryOnInterrupt: Bool
     ) -> Result<(), Errno> {
         nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
