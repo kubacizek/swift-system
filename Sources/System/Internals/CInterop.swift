@@ -63,7 +63,11 @@ public enum CInterop {
   /// on API.
   public typealias PlatformUnicodeEncoding = UTF8
   #endif
+
+  /// The platform file descriptor set.
+  public typealias FileDescriptorSet = fd_set
   
+  /// The platform process identifier.
   public typealias ProcessID = pid_t
   
   #if os(Windows)
