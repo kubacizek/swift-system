@@ -7,7 +7,6 @@
  See https://swift.org/LICENSE.txt for license information
 */
 
-
 #if os(macOS) || os(Linux) || os(FreeBSD) || os(Android)
 /// Terminal `ioctl` definitions
 @frozen
@@ -70,10 +69,11 @@ public extension TerminalIO {
         public mutating func withUnsafeMutablePointer<Result>(_ body: (UnsafeMutableRawPointer) throws -> (Result)) rethrows -> Result {
             // Argument: int *argp
             var value: CInt = numericCast(self.lineDiscipline)
-            try Swift.withUnsafeMutableBytes(of: &value) { buffer in
-                try body(buffer.baseAddress)
+            let result = try Swift.withUnsafeMutableBytes(of: &value) { buffer in
+                try body(buffer.baseAddress!)
             }
-            self.lineDiscipline = value
+            self.lineDiscipline = numericCast(value)
+            return result
         }
     }
     
@@ -93,12 +93,13 @@ public extension TerminalIO {
         public mutating func withUnsafeMutablePointer<Result>(_ body: (UnsafeMutableRawPointer) throws -> (Result)) rethrows -> Result {
             // Argument: const int *argp
             var value: CInt = numericCast(self.lineDiscipline)
-            try Swift.withUnsafeMutableBytes(of: &value) { buffer in
-                try body(buffer.baseAddress)
+            let result = try Swift.withUnsafeMutableBytes(of: &value) { buffer in
+                try body(buffer.baseAddress!)
             }
-            assert(value == numericCast(self.lineDiscipline), "Value changed")
-            self.lineDiscipline = value
+            assert(numericCast(value) == self.lineDiscipline, "Value changed")
+            return result
         }
     }
 }
+
 #endif
