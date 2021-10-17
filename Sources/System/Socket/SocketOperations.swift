@@ -73,13 +73,11 @@ extension FileDescriptor {
     /// - Returns: The file descriptor of the opened socket.
     ///
     @_alwaysEmitIntoClient
-    public static func socket<Address: SocketAddress, ProtocolID: SocketProtocol>(
-        _ protocolID: ProtocolID,
+    public static func socket<Address: SocketAddress>(
+        _ protocolID: Address.ProtocolID,
         bind address: Address,
         retryOnInterrupt: Bool = true
     ) throws -> FileDescriptor {
-        assert(Address.family == ProtocolID.family,
-               "Socket address belongs to different family. \(Address.family) != \(ProtocolID.family)")
         return try _socket(
             address: address,
             type: protocolID.type.rawValue,
@@ -101,14 +99,12 @@ extension FileDescriptor {
     /// - Returns: The file descriptor of the opened socket.
     ///
     @_alwaysEmitIntoClient
-    public static func socket<Address: SocketAddress, ProtocolID: SocketProtocol>(
-        _ protocolID: ProtocolID,
+    public static func socket<Address: SocketAddress>(
+        _ protocolID: Address.ProtocolID,
         bind address: Address,
         flags: SocketFlags,
         retryOnInterrupt: Bool = true
     ) throws -> FileDescriptor {
-        assert(Address.family == ProtocolID.family,
-               "Socket address belongs to different family. \(Address.family) != \(ProtocolID.family)")
         return try _socket(
             address: address,
             type: protocolID.type.rawValue | flags.rawValue,

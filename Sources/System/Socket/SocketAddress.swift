@@ -10,8 +10,8 @@
 /// Socket Address
 public protocol SocketAddress {
     
-    /// Socket Address Family
-    static var family: SocketAddressFamily { get }
+    /// Socket Protocol
+    associatedtype ProtocolID: SocketProtocol
     
     /// Unsafe pointer closure
     func withUnsafePointer<Result>(
@@ -23,11 +23,18 @@ public protocol SocketAddress {
     ) rethrows -> Self
 }
 
+public extension SocketAddress {
+    
+    @_alwaysEmitIntoClient
+    static var family: SocketAddressFamily {
+        return ProtocolID.family
+    }
+}
+
 /// IPv4 Socket Address
 public struct UnixSocketAddress: SocketAddress, Equatable, Hashable {
     
-    @_alwaysEmitIntoClient
-    public static var family: SocketAddressFamily { .unix }
+    public typealias ProtocolID = UnixProtocol
     
     public var path: FilePath
     
@@ -67,8 +74,7 @@ public struct UnixSocketAddress: SocketAddress, Equatable, Hashable {
 /// IPv4 Socket Address
 public struct IPv4SocketAddress: SocketAddress, Equatable, Hashable {
     
-    @_alwaysEmitIntoClient
-    public static var family: SocketAddressFamily { .ipv4 }
+    public typealias ProtocolID = IPv4Protocol
     
     public var address: IPv4Address
     
@@ -108,8 +114,7 @@ public struct IPv4SocketAddress: SocketAddress, Equatable, Hashable {
 /// IPv6 Socket Address
 public struct IPv6SocketAddress: SocketAddress, Equatable, Hashable {
     
-    @_alwaysEmitIntoClient
-    public static var family: SocketAddressFamily { .ipv6 }
+    public typealias ProtocolID = IPv6Protocol
     
     public var address: IPv6Address
     
