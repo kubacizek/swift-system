@@ -61,6 +61,54 @@ extension FileDescriptor {
         }.map { FileDescriptor(socket: $0) }
     }
     
+    @_alwaysEmitIntoClient
+    public static func socket<Socket: SocketAddress, ProtocolID: SocketProtocol>(
+        _ protocolID: ProtocolID,
+        bind address: Socket,
+        retryOnInterrupt: Bool = true
+    ) throws -> FileDescriptor {
+        assert(Socket.family == ProtocolID.family, "Socket address belongs to different family. \(Socket.family) == \(ProtocolID.family)")
+        let fileDescriptor = try _socket(
+            Socket.family,
+            type: protocolID.type.rawValue,
+            protocol: protocolID.rawValue,
+            retryOnInterrupt: retryOnInterrupt
+        ).get()
+        try fileDescriptor.closeIfThrows {
+            try fileDescriptor._bind(address, retryOnInterrupt: retryOnInterrupt).get()
+        }
+        return fileDescriptor
+    }
+    
+    /// Assigns the address specified to the socket referred to by the file descriptor.
+    ///
+    ///  - Parameter address: Specifies the address to bind the socket.
+    ///  - Parameter retryOnInterrupt: Whether to retry the open operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    ///
+    /// The corresponding C function is `bind`.
+    @_alwaysEmitIntoClient
+    public func bind<Address: SocketAddress>(
+        _ address: Address,
+        retryOnInterrupt: Bool = true
+    ) throws {
+        try _bind(address, retryOnInterrupt: retryOnInterrupt).get()
+    }
+    
+    @usableFromInline
+    internal func _bind<T: SocketAddress>(
+        _ address: T,
+        retryOnInterrupt: Bool
+    ) -> Result<(), Errno> {
+        nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
+            address.withUnsafePointer { (addressPointer, length) in
+                system_bind(T.family.rawValue, addressPointer, length)
+            }
+        }
+    }
+    
     /// Set the option specified for the socket associated with the file descriptor.
     ///
     ///  - Parameter option: Socket option value to set.
@@ -116,35 +164,6 @@ extension FileDescriptor {
             var length = UInt32(bufferPointer.count)
             guard system_getsockopt(self.rawValue, T.ID.optionLevel.rawValue, T.id.rawValue, bufferPointer.baseAddress!, &length) != -1 else {
                 throw Errno.current
-            }
-        }
-    }
-    
-    /// Assigns the address specified to the socket referred to by the file descriptor.
-    ///
-    ///  - Parameter address: Specifies the address to bind the socket.
-    ///  - Parameter retryOnInterrupt: Whether to retry the open operation
-    ///     if it throws ``Errno/interrupted``.
-    ///     The default is `true`.
-    ///     Pass `false` to try only once and throw an error upon interruption.
-    ///
-    /// The corresponding C function is `bind`.
-    @_alwaysEmitIntoClient
-    public func bind<Address: SocketAddress>(
-        _ address: Address,
-        retryOnInterrupt: Bool = true
-    ) throws {
-        try _bind(address, retryOnInterrupt: retryOnInterrupt).get()
-    }
-    
-    @usableFromInline
-    internal func _bind<T: SocketAddress>(
-        _ address: T,
-        retryOnInterrupt: Bool
-    ) -> Result<(), Errno> {
-        nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
-            address.withUnsafePointer { (addressPointer, length) in
-                system_bind(T.family.rawValue, addressPointer, length)
             }
         }
     }
