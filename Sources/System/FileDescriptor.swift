@@ -32,7 +32,7 @@ internal extension FileDescriptor {
         // On Unix a file descriptor can be a file, pipe, socket, etc
         // On windows file descriptors and sockets are different types
         #if os(Windows)
-        #error("Windows sockets not implemented")
+        #warning("Windows sockets not implemented")
         fatalError()
         #else
         self.init(rawValue: socket)

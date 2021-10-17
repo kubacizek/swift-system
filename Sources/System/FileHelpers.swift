@@ -49,8 +49,17 @@ extension FileDescriptor {
       do {
         return try body()
       } catch {
-        _ = try? self.close() // Squash close error and throw closure's
+        _ = self._close() // Squash close error and throw closure's
         throw error
+      }
+  }
+  
+  @usableFromInline
+  internal func _closeIfThrows<R>(_ body: () -> Result<R, Errno>) -> Result<R, Errno> {
+      return body().mapError {
+          // close if error is thrown
+          let _ = _close()
+          return $0
       }
   }
   
@@ -143,4 +152,16 @@ extension FileDescriptor {
       return .success(buffer.count)
     }
   }
+}
+
+internal extension Result where Success == FileDescriptor, Failure == Errno {
+    
+    @usableFromInline
+    func _closeIfThrows<R>(_ body: (FileDescriptor) -> Result<R, Errno>) -> Result<R, Errno> {
+        return flatMap { fileDescriptor in
+            fileDescriptor._closeIfThrows {
+                body(fileDescriptor)
+            }
+        }
+    }
 }

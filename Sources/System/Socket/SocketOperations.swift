@@ -27,6 +27,7 @@ extension FileDescriptor {
         try _socket(T.family, type: protocolID.type.rawValue, protocol: protocolID.rawValue, retryOnInterrupt: retryOnInterrupt).get()
     }
     
+    #if os(Linux)
     /// Creates an endpoint for communication and returns a descriptor.
     ///
     /// - Parameters:
@@ -38,7 +39,6 @@ extension FileDescriptor {
     ///     Pass `false` to try only once and throw an error upon interruption.
     /// - Returns: The file descriptor of the opened socket.
     ///
-    #if os(Linux)
     @_alwaysEmitIntoClient
     public static func socket<T: SocketProtocol>(
         _ protocolID: T,
@@ -55,29 +55,86 @@ extension FileDescriptor {
         type: CInt,
         protocol protocolID: Int32,
         retryOnInterrupt: Bool
-    ) throws -> Result<FileDescriptor, Errno> {
+    ) -> Result<FileDescriptor, Errno> {
         valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
             system_socket(family.rawValue, type, protocolID)
         }.map { FileDescriptor(socket: $0) }
     }
     
+    /// Creates an endpoint for communication and returns a descriptor.
+    ///
+    /// - Parameters:
+    ///   - protocolID: The protocol which will be used for communication.
+    ///   - flags: Flags to set when opening the socket.
+    ///   - retryOnInterrupt: Whether to retry the read operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    /// - Returns: The file descriptor of the opened socket.
+    ///
     @_alwaysEmitIntoClient
-    public static func socket<Socket: SocketAddress, ProtocolID: SocketProtocol>(
+    public static func socket<Address: SocketAddress, ProtocolID: SocketProtocol>(
         _ protocolID: ProtocolID,
-        bind address: Socket,
+        bind address: Address,
         retryOnInterrupt: Bool = true
     ) throws -> FileDescriptor {
-        assert(Socket.family == ProtocolID.family, "Socket address belongs to different family. \(Socket.family) == \(ProtocolID.family)")
-        let fileDescriptor = try _socket(
-            Socket.family,
+        assert(Address.family == ProtocolID.family,
+               "Socket address belongs to different family. \(Address.family) != \(ProtocolID.family)")
+        return try _socket(
+            address: address,
             type: protocolID.type.rawValue,
             protocol: protocolID.rawValue,
             retryOnInterrupt: retryOnInterrupt
         ).get()
-        try fileDescriptor.closeIfThrows {
-            try fileDescriptor._bind(address, retryOnInterrupt: retryOnInterrupt).get()
+    }
+    
+    #if os(Linux)
+    /// Creates an endpoint for communication and returns a descriptor.
+    ///
+    /// - Parameters:
+    ///   - protocolID: The protocol which will be used for communication.
+    ///   - flags: Flags to set when opening the socket.
+    ///   - retryOnInterrupt: Whether to retry the read operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    /// - Returns: The file descriptor of the opened socket.
+    ///
+    @_alwaysEmitIntoClient
+    public static func socket<Address: SocketAddress, ProtocolID: SocketProtocol>(
+        _ protocolID: ProtocolID,
+        bind address: Address,
+        flags: SocketFlags,
+        retryOnInterrupt: Bool = true
+    ) throws -> FileDescriptor {
+        assert(Address.family == ProtocolID.family,
+               "Socket address belongs to different family. \(Address.family) != \(ProtocolID.family)")
+        return try _socket(
+            address: address,
+            type: protocolID.type.rawValue | flags.rawValue,
+            protocol: protocolID.rawValue,
+            retryOnInterrupt: retryOnInterrupt
+        ).get()
+    }
+    #endif
+    
+    @usableFromInline
+    internal static func _socket<Address: SocketAddress>(
+        address: Address,
+        type: CInt,
+        protocol protocolID: Int32,
+        retryOnInterrupt: Bool
+    ) -> Result<FileDescriptor, Errno> {
+        return _socket(
+            Address.family,
+            type: type,
+            protocol: protocolID,
+            retryOnInterrupt: retryOnInterrupt
+        )._closeIfThrows { fileDescriptor in
+            fileDescriptor
+                ._bind(address, retryOnInterrupt: retryOnInterrupt)
+                .map { fileDescriptor }
         }
-        return fileDescriptor
     }
     
     /// Assigns the address specified to the socket referred to by the file descriptor.
