@@ -19,7 +19,7 @@ public extension FileDescriptor {
     ///     The default is `true`.
     ///     Pass `false` to try only once and throw an error upon interruption.
     ///   - sleepOnBlock: The number of nanoseconds to sleep if the operation
-    ///     throws ``Errno/wouldBlock`` or ``Errno/nowInProgress``.
+    ///     throws ``Errno/wouldBlock`` or other async I/O errors..
     /// - Returns: The file descriptor of the new connection.
     ///
     /// The corresponding C function is `accept`.
@@ -42,7 +42,7 @@ public extension FileDescriptor {
     ///     The default is `true`.
     ///     Pass `false` to try only once and throw an error upon interruption.
     ///   - sleepOnBlock: The number of nanoseconds to sleep if the operation
-    ///     throws ``Errno/wouldBlock`` or ``Errno/nowInProgress``.
+    ///     throws ``Errno/wouldBlock`` or other async I/O errors..
     /// - Returns: A tuple containing the file descriptor and address of the new connection.
     ///
     /// The corresponding C function is `accept`.
@@ -65,7 +65,7 @@ public extension FileDescriptor {
     ///     The default is `true`.
     ///     Pass `false` to try only once and throw an error upon interruption.
     ///  - Parameter sleepOnBlock: The number of nanoseconds to sleep if the operation
-    ///     throws ``Errno/wouldBlock`` or ``Errno/nowInProgress``.
+    ///     throws ``Errno/wouldBlock`` or other async I/O errors..
     ///
     /// The corresponding C function is `bind`.
     @_alwaysEmitIntoClient
@@ -88,7 +88,7 @@ public extension FileDescriptor {
     ///     The default is `true`.
     ///     Pass `false` to try only once and throw an error upon interruption.
     ///   - sleepOnBlock: The number of nanoseconds to sleep if the operation
-    ///     throws ``Errno/wouldBlock`` or ``Errno/nowInProgress``.
+    ///     throws ``Errno/wouldBlock`` or other async I/O errors..
     /// - Returns: The file descriptor of the new connection.
     ///
     /// The corresponding C function is `connect`.

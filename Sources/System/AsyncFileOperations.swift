@@ -20,7 +20,7 @@ public extension FileDescriptor {
     ///     The default is `true`.
     ///     Pass `false` to try only once and throw an error upon interruption.
     ///   - sleepOnBlock: The number of nanoseconds to sleep if the operation
-    ///     throws ``Errno/wouldBlock`` or ``Errno/nowInProgress``.
+    ///     throws ``Errno/wouldBlock`` or other async I/O errors..
     /// - Returns: The number of bytes that were read.
     ///
     /// The <doc://com.apple.documentation/documentation/swift/unsafemutablerawbufferpointer/3019191-count> property of `buffer`
@@ -47,7 +47,7 @@ public extension FileDescriptor {
 @available(iOS 15, *)
 internal extension FileDescriptor {
     
-    /// Pauses the current task if the operation throws ``Errno/wouldBlock`` or ``Errno/nowInProgress``.
+    /// Pauses the current task if the operation throws ``Errno/wouldBlock`` or other async I/O errors..
     @usableFromInline
     func retryOnBlock<T>(
         sleep nanoseconds: UInt64,
@@ -58,12 +58,27 @@ internal extension FileDescriptor {
           case let .success(result):
               return .success(result)
           case let .failure(error):
-              guard error == .wouldBlock || error == .nowInProgress else {
+              guard error.isBlocking else {
                   return .failure(error)
               }
               try await Task.sleep(nanoseconds: nanoseconds)
           }
         } while true
+    }
+}
+
+internal extension Errno {
+    
+    var isBlocking: Bool {
+        switch self {
+        case .wouldBlock,
+            .nowInProgress,
+            .alreadyInProcess,
+            .resourceTemporarilyUnavailable:
+            return true
+        default:
+            return false
+        }
     }
 }
 
