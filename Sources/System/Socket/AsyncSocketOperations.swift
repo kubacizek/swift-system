@@ -56,6 +56,29 @@ public extension FileDescriptor {
             _accept(Address.self, retryOnInterrupt: retryOnInterrupt)
         }.get()
     }
+    
+    /// Assigns the address specified to the socket referred to by the file descriptor.
+    ///
+    ///  - Parameter address: Specifies the address to bind the socket.
+    ///  - Parameter retryOnInterrupt: Whether to retry the open operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    ///  - Parameter sleepOnBlock: The number of nanoseconds to sleep if the operation
+    ///     throws ``Errno/wouldBlock`` or ``Errno/nowInProgress``.
+    ///
+    /// The corresponding C function is `bind`.
+    @_alwaysEmitIntoClient
+    func bind<Address: SocketAddress>(
+        _ address: Address,
+        retryOnInterrupt: Bool = true,
+        sleepOnBlock sleep: UInt64 = 1000
+    ) async throws {
+        try await retryOnBlock(sleep: sleep) {
+            _bind(address, retryOnInterrupt: retryOnInterrupt)
+        }.get()
+    }
+    
 }
 
 #endif
