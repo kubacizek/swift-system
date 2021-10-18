@@ -79,6 +79,29 @@ public extension FileDescriptor {
         }.get()
     }
     
+    /// Initiate a connection on a socket.
+    ///
+    /// - Parameters:
+    ///   - address: The peer address.
+    ///   - retryOnInterrupt: Whether to retry the receive operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    ///   - sleepOnBlock: The number of nanoseconds to sleep if the operation
+    ///     throws ``Errno/wouldBlock`` or ``Errno/nowInProgress``.
+    /// - Returns: The file descriptor of the new connection.
+    ///
+    /// The corresponding C function is `connect`.
+    @_alwaysEmitIntoClient
+    func connect<Address: SocketAddress>(
+        to address: Address,
+        retryOnInterrupt: Bool = true,
+        sleepOnBlock sleep: UInt64 = 1000
+    ) async throws {
+        try await retryOnBlock(sleep: sleep) {
+            _connect(to: address, retryOnInterrupt: retryOnInterrupt)
+        }.get()
+    }
 }
 
 #endif
