@@ -47,9 +47,9 @@ extension IOType: ExpressibleByIntegerLiteral {
 // https://01.org/linuxgraphics/gfx-docs/drm/ioctl/ioctl-number.html
 public extension IOType {
     
-    /// File Descriptors
+    /// Floppy Disk
     @_alwaysEmitIntoClient
-    static var fd: IOType { 0x02 } // linux/fd.h
+    static var floppyDisk: IOType { 0x02 } // linux/fd.h
     
     /// InfiniBand Subsystem
     @_alwaysEmitIntoClient
