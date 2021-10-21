@@ -529,6 +529,24 @@ internal var _SEEK_HOLE: CInt { SEEK_HOLE }
 internal var _SEEK_DATA: CInt { SEEK_DATA }
 #endif
 
+@_alwaysEmitIntoClient
+internal var _F_DUPFD: CInt { F_DUPFD }
+
+@_alwaysEmitIntoClient
+internal var _F_DUPFD_CLOEXEC: CInt { F_DUPFD_CLOEXEC }
+
+@_alwaysEmitIntoClient
+internal var _F_GETFD: CInt { F_GETFD }
+
+@_alwaysEmitIntoClient
+internal var _F_SETFD: CInt { F_SETFD }
+
+@_alwaysEmitIntoClient
+internal var _F_GETFL: CInt { F_GETFL }
+
+@_alwaysEmitIntoClient
+internal var _F_SETFL: CInt { F_SETFL }
+
 #if os(Linux)
 @_alwaysEmitIntoClient
 internal var _SOCK_CLOEXEC: CInt { SOCK_CLOEXEC }
