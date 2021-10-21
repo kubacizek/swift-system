@@ -34,3 +34,12 @@ public protocol IOControlValue {
     
     mutating func withUnsafeMutablePointer<Result>(_ body: (UnsafeMutableRawPointer) throws -> (Result)) rethrows -> Result
 }
+
+#if os(Linux)
+public extension IOControlID {
+    
+    init(type: IOType, direction: IODirection, code: CInt, size: CInt) {
+        self.init(rawValue: _IOC(direction, type, nr, size))
+    }
+}
+#endif
