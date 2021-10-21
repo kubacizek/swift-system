@@ -7,6 +7,8 @@
  See https://swift.org/LICENSE.txt for license information
 */
 
+#if os(Linux)
+
 /// #define _IOC(dir,type,nr,size) \
 /// (((dir)  << _IOC_DIRSHIFT) | \
 /// ((type) << _IOC_TYPESHIFT) | \
@@ -29,53 +31,39 @@ internal func _IOC(
     return CUnsignedLong(bitPattern: value)
 }
 
-@usableFromInline
-internal func _IOW<T>(_ type: IOType, _ nr: CInt, _ size: T.Type) -> CUnsignedLong {
-    return _IOC(.write, type, nr, _TYPECHECK(size))
-}
+@_alwaysEmitIntoClient
+internal var _NRBITS: CInt       { CInt(8) }
 
-@usableFromInline
-internal func _IOR<T>(_ type: IOType, _ nr: CInt, _ size: T.Type) -> CUnsignedLong {
-    return _IOC(.read, type, nr, _TYPECHECK(size))
-}
+@_alwaysEmitIntoClient
+internal var _TYPEBITS: CInt     { CInt(8) }
 
-@usableFromInline
-internal func _TYPECHECK<T>(_ type: T.Type) -> CInt {
-    return CInt(MemoryLayout<T>.size)
-}
+@_alwaysEmitIntoClient
+internal var _SIZEBITS: CInt     { CInt(14) }
 
-@usableFromInline
-var _NRBITS: CInt       { CInt(8) }
+@_alwaysEmitIntoClient
+internal var _DIRBITS: CInt      { CInt(2) }
 
-@usableFromInline
-var _TYPEBITS: CInt     { CInt(8) }
+@_alwaysEmitIntoClient
+internal var _NRMASK: CInt       { CInt((1 << _NRBITS)-1) }
 
-@usableFromInline
-var _SIZEBITS: CInt     { CInt(14) }
+@_alwaysEmitIntoClient
+internal var _TYPEMASK: CInt     { CInt((1 << _TYPEBITS)-1) }
 
-@usableFromInline
-var _DIRBITS: CInt      { CInt(2) }
+@_alwaysEmitIntoClient
+internal var _SIZEMASK: CInt     { CInt((1 << _SIZEBITS)-1) }
 
-@usableFromInline
-var _NRMASK: CInt       { CInt((1 << _NRBITS)-1) }
+@_alwaysEmitIntoClient
+internal var _DIRMASK: CInt      { CInt((1 << _DIRBITS)-1) }
 
-@usableFromInline
-var _TYPEMASK: CInt     { CInt((1 << _TYPEBITS)-1) }
+@_alwaysEmitIntoClient
+internal var _NRSHIFT: CInt      { CInt(0) }
 
-@usableFromInline
-var _SIZEMASK: CInt     { CInt((1 << _SIZEBITS)-1) }
+@_alwaysEmitIntoClient
+internal var _TYPESHIFT: CInt    { CInt(_NRSHIFT+_NRBITS) }
 
-@usableFromInline
-var _DIRMASK: CInt      { CInt((1 << _DIRBITS)-1) }
+@_alwaysEmitIntoClient
+internal var _SIZESHIFT: CInt    { CInt(_TYPESHIFT+_TYPEBITS) }
 
-@usableFromInline
-var _NRSHIFT: CInt      { CInt(0) }
-
-@usableFromInline
-var _TYPESHIFT: CInt    { CInt(_NRSHIFT+_NRBITS) }
-
-@usableFromInline
-var _SIZESHIFT: CInt    { CInt(_TYPESHIFT+_TYPEBITS) }
-
-@usableFromInline
-var _DIRSHIFT: CInt     { CInt(_SIZESHIFT+_SIZEBITS) }
+@_alwaysEmitIntoClient
+internal var _DIRSHIFT: CInt     { CInt(_SIZESHIFT+_SIZEBITS) }
+#endif
