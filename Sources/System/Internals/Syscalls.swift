@@ -426,3 +426,12 @@ internal func system_ioctl(
 #endif
   return ioctl(fd, request, pointer)
 }
+
+#if !os(Windows)
+internal func system_pipe(_ fds: UnsafeMutablePointer<Int32>) -> CInt {
+#if ENABLE_MOCKING
+  if mockingEnabled { return _mock(fds) }
+#endif
+  return pipe(fds)
+}
+#endif
