@@ -757,23 +757,20 @@ internal var _SOCK_SEQPACKET: CInt { SOCK_SEQPACKET }
 
 #if os(Linux)
 @_alwaysEmitIntoClient
-internal var _SOCK_DCCP: CInt { SOCK_DCCP }
+internal var _SOCK_DCCP: Cinte { SOCK_DCCP }
 #endif
 
 @_alwaysEmitIntoClient
-internal var _IPPROTO_RAW: CInt { IPPROTO_RAW }
+internal var _IPPROTO_RAW: CInt { numericCast(IPPROTO_RAW) }
 
 @_alwaysEmitIntoClient
-internal var _IPPROTO_TCP: CInt { IPPROTO_TCP }
+internal var _IPPROTO_TCP: CInt { numericCast(IPPROTO_TCP) }
 
 @_alwaysEmitIntoClient
-internal var _IPPROTO_UDP: CInt { IPPROTO_UDP }
+internal var _IPPROTO_UDP: CInt { numericCast(IPPROTO_UDP) }
 
 @_alwaysEmitIntoClient
 internal var _SOL_SOCKET: CInt { SOL_SOCKET }
-
-@_alwaysEmitIntoClient
-internal var _SOL_LOCAL: CInt { SOL_LOCAL }
 
 @_alwaysEmitIntoClient
 internal var _SO_DEBUG: CInt { SO_DEBUG }
@@ -793,8 +790,10 @@ internal var _SO_DONTROUTE: CInt { SO_DONTROUTE }
 @_alwaysEmitIntoClient
 internal var _SO_BROADCAST: CInt { SO_BROADCAST }
 
+#if canImport(Darwin)
 @_alwaysEmitIntoClient
 internal var _SO_USELOOPBACK: CInt { SO_USELOOPBACK }
+#endif
 
 @_alwaysEmitIntoClient
 internal var _SO_LINGER: CInt { SO_LINGER }
@@ -811,55 +810,57 @@ internal var _SOL_L2CAP: CInt { 6 }
 #endif
 
 @_alwaysEmitIntoClient
-internal var _MSG_DONTROUTE: CInt { MSG_DONTROUTE } /* send without using routing tables */
+internal var _MSG_DONTROUTE: CInt { numericCast(MSG_DONTROUTE) } /* send without using routing tables */
 
 @_alwaysEmitIntoClient
-internal var _MSG_EOR: CInt { MSG_EOR } /* data completes record */
+internal var _MSG_EOR: CInt { numericCast(MSG_EOR) } /* data completes record */
 
 @_alwaysEmitIntoClient
-internal var _MSG_OOB: CInt { MSG_OOB } /* process out-of-band data */
+internal var _MSG_OOB: CInt { numericCast(MSG_OOB) } /* process out-of-band data */
 
 @_alwaysEmitIntoClient
-internal var _MSG_PEEK: CInt { MSG_PEEK } /* peek at incoming message */
+internal var _MSG_PEEK: CInt { numericCast(MSG_PEEK) } /* peek at incoming message */
 @_alwaysEmitIntoClient
-internal var _MSG_TRUNC: CInt { MSG_TRUNC } /* data discarded before delivery */
+internal var _MSG_TRUNC: CInt { numericCast(MSG_TRUNC) } /* data discarded before delivery */
 @_alwaysEmitIntoClient
-internal var _MSG_CTRUNC: CInt { MSG_CTRUNC } /* control data lost before delivery */
+internal var _MSG_CTRUNC: CInt { numericCast(MSG_CTRUNC) } /* control data lost before delivery */
 @_alwaysEmitIntoClient
-internal var _MSG_WAITALL: CInt { MSG_WAITALL } /* wait for full request or error */
+internal var _MSG_WAITALL: CInt { numericCast(MSG_WAITALL) } /* wait for full request or error */
 
 @_alwaysEmitIntoClient
-internal var _MSG_DONTWAIT: CInt { MSG_DONTWAIT } /* this message should be nonblocking */
+internal var _MSG_DONTWAIT: CInt { numericCast(MSG_DONTWAIT) } /* this message should be nonblocking */
+
+#if canImport(Darwin)
+@_alwaysEmitIntoClient
+internal var _MSG_EOF: CInt { numericCast(MSG_EOF) } /* data completes connection */
 
 @_alwaysEmitIntoClient
-internal var _MSG_EOF: CInt { MSG_EOF } /* data completes connection */
+internal var _MSG_WAITSTREAM: CInt { numericCast(MSG_WAITSTREAM) } /* wait up to full request.. may return partial */
 
 @_alwaysEmitIntoClient
-internal var _MSG_WAITSTREAM: CInt { MSG_WAITSTREAM } /* wait up to full request.. may return partial */
+internal var _MSG_FLUSH: CInt { numericCast(MSG_FLUSH) } /* Start of 'hold' seq; dump so_temp, deprecated */
+@_alwaysEmitIntoClient
+internal var _MSG_HOLD: CInt { numericCast(MSG_HOLD) } /* Hold frag in so_temp, deprecated */
+@_alwaysEmitIntoClient
+internal var _MSG_SEND: CInt { numericCast(MSG_SEND) } /* Send the packet in so_temp, deprecated */
+@_alwaysEmitIntoClient
+internal var _MSG_HAVEMORE: CInt { numericCast(MSG_HAVEMORE) } /* Data ready to be read */
+@_alwaysEmitIntoClient
+internal var _MSG_RCVMORE: CInt { numericCast(MSG_RCVMORE) } /* Data remains in current pkt */
 
 @_alwaysEmitIntoClient
-internal var _MSG_FLUSH: CInt { MSG_FLUSH } /* Start of 'hold' seq; dump so_temp, deprecated */
-@_alwaysEmitIntoClient
-internal var _MSG_HOLD: CInt { MSG_HOLD } /* Hold frag in so_temp, deprecated */
-@_alwaysEmitIntoClient
-internal var _MSG_SEND: CInt { MSG_SEND } /* Send the packet in so_temp, deprecated */
-@_alwaysEmitIntoClient
-internal var _MSG_HAVEMORE: CInt { MSG_HAVEMORE } /* Data ready to be read */
-@_alwaysEmitIntoClient
-internal var _MSG_RCVMORE: CInt { MSG_RCVMORE } /* Data remains in current pkt */
+internal var _MSG_NEEDSA: CInt { numericCast(MSG_NEEDSA) } /* Fail receive if socket address cannot be allocated */
 
 @_alwaysEmitIntoClient
-internal var _MSG_NEEDSA: CInt { MSG_NEEDSA } /* Fail receive if socket address cannot be allocated */
-
-@_alwaysEmitIntoClient
-internal var _MSG_NOSIGNAL: CInt { MSG_NOSIGNAL } /* do not generate SIGPIPE on EOF */
+internal var _MSG_NOSIGNAL: CInt { numericCast(MSG_NOSIGNAL) } /* do not generate SIGPIPE on EOF */
+#endif
 
 #if os(Linux)
 @_alwaysEmitIntoClient
-internal var _MSG_CONFIRM: CInt { MSG_CONFIRM }
+internal var _MSG_CONFIRM: CInt { numericCast(MSG_CONFIRM) }
 
 @_alwaysEmitIntoClient
-internal var _MSG_MORE: CInt { MSG_MORE }
+internal var _MSG_MORE: CInt { numericCast(MSG_MORE) }
 #endif
 
 @_alwaysEmitIntoClient
@@ -894,26 +895,23 @@ internal var _TIOCCDTR: CUnsignedLong { TIOCCDTR }
 
 #if os(Linux)
 @_alwaysEmitIntoClient
-internal var _TCGETS: CUnsignedLong { TCGETS }
-
-@_alwaysEmitIntoClient
-internal var _TIOCGEXCL: CUnsignedLong { TIOCGEXCL }
+internal var _TCGETS: CUnsignedLong { numericCast(TCGETS) }
 #endif
 
 @_alwaysEmitIntoClient
-internal var _TIOCSBRK: CUnsignedLong { TIOCSBRK }
+internal var _TIOCSBRK: CUnsignedLong { numericCast(TIOCSBRK) }
 
 @_alwaysEmitIntoClient
-internal var _TIOCCBRK: CUnsignedLong { TIOCCBRK }
+internal var _TIOCCBRK: CUnsignedLong { numericCast(TIOCCBRK) }
 
 @_alwaysEmitIntoClient
-internal var _TIOCEXCL: CUnsignedLong { TIOCEXCL }
+internal var _TIOCEXCL: CUnsignedLong { numericCast(TIOCEXCL) }
 
 @_alwaysEmitIntoClient
-internal var _TIOCNXCL: CUnsignedLong { TIOCNXCL }
+internal var _TIOCNXCL: CUnsignedLong { numericCast(TIOCNXCL) }
 
 @_alwaysEmitIntoClient
-internal var _TIOCGETD: CUnsignedLong { TIOCGETD }
+internal var _TIOCGETD: CUnsignedLong { numericCast(TIOCGETD) }
 
 @_alwaysEmitIntoClient
-internal var _TIOCSETD: CUnsignedLong { TIOCSETD }
+internal var _TIOCSETD: CUnsignedLong { numericCast(TIOCSETD) }

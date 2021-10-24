@@ -49,7 +49,6 @@ public struct UnixSocketAddress: SocketAddress, Equatable, Hashable {
         return try path.withPlatformString { platformString in
             var socketAddress = CInterop.UnixSocketAddress()
             socketAddress.sun_family = numericCast(Self.family.rawValue)
-            socketAddress.sun_len = 0
             withUnsafeMutableBytes(of: &socketAddress.sun_path) { pathBytes in
                 pathBytes
                     .bindMemory(to: CInterop.PlatformChar.self)

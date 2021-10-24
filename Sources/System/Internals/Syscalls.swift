@@ -361,7 +361,7 @@ internal func system_recvfrom(
 
 internal func system_poll(
     _ fileDescriptors: UnsafeMutablePointer<CInterop.PollFileDescriptor>,
-    _ fileDescriptorsCount: UInt32,
+    _ fileDescriptorsCount: CInterop.FileDescriptorCount,
     _ timeout: CInt
 ) -> CInt {
   #if ENABLE_MOCKING
