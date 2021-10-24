@@ -91,7 +91,11 @@ public enum CInterop {
   public typealias SocketAddressFamily = sa_family_t
 
   /// Socket Type
+  #if os(Linux)
   public typealias SocketType = __socket_type
+  #else
+  public typealias SocketType = CInt
+  #endif
     
   /// The C `addrinfo` type
   public typealias AddressInfo = addrinfo

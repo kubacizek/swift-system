@@ -741,23 +741,23 @@ internal var _AF_BTH: CInt { AF_BTH }
 #endif
 
 @_alwaysEmitIntoClient
-internal var _SOCK_STREAM: CInt { SOCK_STREAM }
+internal var _SOCK_STREAM: CInterop.SocketType { SOCK_STREAM }
 
 @_alwaysEmitIntoClient
-internal var _SOCK_DGRAM: CInt { SOCK_DGRAM }
+internal var _SOCK_DGRAM: CInterop.SocketType { SOCK_DGRAM }
 
 @_alwaysEmitIntoClient
-internal var _SOCK_RAW: CInt { SOCK_RAW }
+internal var _SOCK_RAW: CInterop.SocketType { SOCK_RAW }
 
 @_alwaysEmitIntoClient
-internal var _SOCK_RDM: CInt { SOCK_RDM }
+internal var _SOCK_RDM: CInterop.SocketType { SOCK_RDM }
 
 @_alwaysEmitIntoClient
-internal var _SOCK_SEQPACKET: CInt { SOCK_SEQPACKET }
+internal var _SOCK_SEQPACKET: CInterop.SocketType { SOCK_SEQPACKET }
 
 #if os(Linux)
 @_alwaysEmitIntoClient
-internal var _SOCK_DCCP: Cinte { SOCK_DCCP }
+internal var _SOCK_DCCP: CInterop.SocketType { SOCK_DCCP }
 #endif
 
 @_alwaysEmitIntoClient
@@ -789,7 +789,7 @@ internal var _SO_DONTROUTE: CInt { SO_DONTROUTE }
 
 @_alwaysEmitIntoClient
 internal var _SO_BROADCAST: CInt { SO_BROADCAST }
-
+  
 #if canImport(Darwin)
 @_alwaysEmitIntoClient
 internal var _SO_USELOOPBACK: CInt { SO_USELOOPBACK }

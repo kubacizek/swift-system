@@ -18,9 +18,15 @@ public struct SocketType: RawRepresentable, Hashable, Codable {
   /// Creates a strongly-typed socket type from a raw socket type identifier.
   @_alwaysEmitIntoClient
   public init(rawValue: CInt) { self.rawValue = rawValue }
-  
+    
   @_alwaysEmitIntoClient
-  private init(_ raw: CInt) { self.init(rawValue: raw) }
+  private init(_ cValue: CInterop.SocketType) {
+      #if os(Linux)
+      self.init(rawValue: cValue.rawValue)
+      #else
+      self.init(rawValue: cValue)
+      #endif
+  }
 }
 
 public extension SocketType {
