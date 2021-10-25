@@ -8,7 +8,7 @@
 */
 
 #if swift(>=5.5)
-@available(iOS 15, *)
+@available(macOS 12, iOS 15, *)
 public extension FileDescriptor {
     
     /// Accept a connection on a socket.

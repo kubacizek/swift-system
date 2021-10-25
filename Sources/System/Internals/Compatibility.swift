@@ -14,7 +14,7 @@ internal extension String {
     _unsafeUninitializedCapacity capacity: Int,
     initializingUTF8With body: (UnsafeMutableBufferPointer<UInt8>) throws -> Int
     ) rethrows {
-#if canImport(Darwin)
+#if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
     if #available(macOS 11, iOS 14.0, watchOS 7.0, tvOS 14.0, *) {
       self = try String(
         unsafeUninitializedCapacity: capacity,

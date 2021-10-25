@@ -10,7 +10,7 @@
 /// Input / Output Request identifier for manipulating underlying device parameters of special files.
 public protocol IOControlID: RawRepresentable {
     
-    /// Create a strongly-typed file events from a raw C IO request.
+    /// Create a strongly-typed I/O request from a raw C IO request.
     init?(rawValue: CUnsignedLong)
     
     /// The raw C IO request ID.

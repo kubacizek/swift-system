@@ -788,7 +788,7 @@ internal var _SO_DONTROUTE: CInt { SO_DONTROUTE }
 @_alwaysEmitIntoClient
 internal var _SO_BROADCAST: CInt { SO_BROADCAST }
   
-#if canImport(Darwin)
+#if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
 @_alwaysEmitIntoClient
 internal var _SO_USELOOPBACK: CInt { SO_USELOOPBACK }
 #endif
@@ -828,7 +828,7 @@ internal var _MSG_WAITALL: CInt { numericCast(MSG_WAITALL) } /* wait for full re
 @_alwaysEmitIntoClient
 internal var _MSG_DONTWAIT: CInt { numericCast(MSG_DONTWAIT) } /* this message should be nonblocking */
 
-#if canImport(Darwin)
+#if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
 @_alwaysEmitIntoClient
 internal var _MSG_EOF: CInt { numericCast(MSG_EOF) } /* data completes connection */
 
