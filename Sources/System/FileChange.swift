@@ -7,15 +7,100 @@
  See https://swift.org/LICENSE.txt for license information
 */
 
-///
-@frozen
-// @available(macOS 10.16, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
-public struct FileChangeID: RawRepresentable, Hashable, Codable {
-  
+public extension FileDescriptor {
+    
+    /// Duplicate
+    func duplicate(
+        closeOnExec: Bool = false,
+        retryOnInterrupt: Bool = true
+    ) throws -> FileDescriptor {
+        let fileDescriptor = try _change(
+            closeOnExec ? .duplicateCloseOnExec : .duplicate,
+            self.rawValue, retryOnInterrupt: retryOnInterrupt
+        ).get()
+        return FileDescriptor(rawValue: fileDescriptor)
+    }
+    
+    /// Get Flags
+    func getFlags(retryOnInterrupt: Bool = true) throws -> CInt {
+        return try _change(
+            .getFileDescriptorFlags,
+            retryOnInterrupt: retryOnInterrupt
+        ).get()
+    }
+    
+    /// Set Flags
+    func setFlags(
+        _ newValue: CInt,
+        retryOnInterrupt: Bool = true
+    ) throws {
+        let _ = try _change(
+            .setFileDescriptorFlags,
+            newValue,
+            retryOnInterrupt: retryOnInterrupt
+        ).get()
+    }
+    
+    /// Get Status
+    func getStatus(retryOnInterrupt: Bool = true) throws -> CInt {
+        return try _change(
+            .getStatusFlags,
+            retryOnInterrupt: retryOnInterrupt
+        ).get()
+    }
+    
+    /// Set Status
+    func setStatus(
+        _ newValue: CInt,
+        retryOnInterrupt: Bool = true
+    ) throws {
+        let _ = try _change(
+            .setStatusFlags,
+            newValue,
+            retryOnInterrupt: retryOnInterrupt
+        ).get()
+    }
+    
+    @usableFromInline
+    internal func _change(
+        _ operation: FileChangeID,
+        retryOnInterrupt: Bool
+    ) -> Result<CInt, Errno> {
+        valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
+            system_fcntl(self.rawValue, operation.rawValue)
+        }
+    }
+    
+    @usableFromInline
+    internal func _change(
+        _ operation: FileChangeID,
+        _ value: CInt,
+        retryOnInterrupt: Bool
+    ) -> Result<CInt, Errno> {
+        valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
+            system_fcntl(self.rawValue, operation.rawValue, value)
+        }
+    }
+    
+    @usableFromInline
+    internal func _change(
+        _ operation: FileChangeID,
+        _ pointer: UnsafeMutableRawPointer,
+        retryOnInterrupt: Bool
+    ) -> Result<CInt, Errno> {
+        valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
+            system_fcntl(self.rawValue, operation.rawValue, pointer)
+        }
+    }
+}
+
+@usableFromInline
+internal struct FileChangeID: RawRepresentable, Hashable, Codable {
+    
     /// The raw C file handle.
     @_alwaysEmitIntoClient
     public let rawValue: CInt
-
+    
     /// Creates a strongly-typed file handle from a raw C file handle.
     @_alwaysEmitIntoClient
     public init(rawValue: CInt) { self.rawValue = rawValue }
@@ -24,7 +109,7 @@ public struct FileChangeID: RawRepresentable, Hashable, Codable {
     private init(_ raw: CInt) { self.init(rawValue: raw) }
 }
 
-public extension FileChangeID {
+internal extension FileChangeID {
     
     /// Duplicate a file descriptor.
     @_alwaysEmitIntoClient
