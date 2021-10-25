@@ -435,3 +435,35 @@ internal func system_pipe(_ fds: UnsafeMutablePointer<Int32>) -> CInt {
   return pipe(fds)
 }
 #endif
+
+internal func system_fcntl(
+  _ fd: Int32,
+  _ cmd: Int32
+) -> CInt {
+#if ENABLE_MOCKING
+  if mockingEnabled { return _mock(fd, cmd) }
+#endif
+  return fcntl(fd, cmd)
+}
+
+internal func system_fcntl(
+  _ fd: Int32,
+  _ cmd: Int32,
+  _ value: Int32
+) -> CInt {
+#if ENABLE_MOCKING
+  if mockingEnabled { return _mock(fd, cmd, value) }
+#endif
+  return fcntl(fd, cmd, value)
+}
+
+internal func system_fcntl(
+  _ fd: Int32,
+  _ cmd: Int32,
+  _ pointer: UnsafeMutableRawPointer
+) -> CInt {
+#if ENABLE_MOCKING
+  if mockingEnabled { return _mock(fd, cmd, pointer) }
+#endif
+  return fcntl(fd, cmd, pointer)
+}
