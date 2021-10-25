@@ -38,8 +38,8 @@ public protocol IOControlValue {
 #if os(Linux)
 public extension IOControlID {
     
-    init(type: IOType, direction: IODirection, code: CInt, size: CInt) {
-        self.init(rawValue: _IOC(direction, type, nr, size))
+    init?(type: IOType, direction: IODirection, code: CInt, size: CInt) {
+        self.init(rawValue: _IOC(direction, type, code, size))
     }
 }
 #endif

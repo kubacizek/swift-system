@@ -22,7 +22,7 @@ public struct SocketType: RawRepresentable, Hashable, Codable {
   @_alwaysEmitIntoClient
   private init(_ cValue: CInterop.SocketType) {
       #if os(Linux)
-      self.init(rawValue: cValue.rawValue)
+      self.init(rawValue: numericCast(cValue.rawValue))
       #else
       self.init(rawValue: cValue)
       #endif

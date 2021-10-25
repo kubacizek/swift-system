@@ -558,7 +558,7 @@ extension FileDescriptor {
                 )
             }
         return nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
-            system_poll(&pollFDs, UInt32(pollFDs.count), timeout)
+            system_poll(&pollFDs, CInterop.FileDescriptorCount(pollFDs.count), timeout)
         }.map { pollFDs.map { (FileDescriptor(rawValue: $0.fd), FileEvents(rawValue: $0.revents)) } }
     }
     

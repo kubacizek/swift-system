@@ -547,14 +547,6 @@ internal var _F_GETFL: CInt { F_GETFL }
 @_alwaysEmitIntoClient
 internal var _F_SETFL: CInt { F_SETFL }
 
-#if os(Linux)
-@_alwaysEmitIntoClient
-internal var _SOCK_CLOEXEC: CInt { SOCK_CLOEXEC }
-
-@_alwaysEmitIntoClient
-internal var _SOCK_NONBLOCK: CInt { SOCK_NONBLOCK }
-#endif
-
 @_alwaysEmitIntoClient
 internal var _POLLIN: CInt { POLLIN }
 
@@ -758,6 +750,12 @@ internal var _SOCK_SEQPACKET: CInterop.SocketType { SOCK_SEQPACKET }
 #if os(Linux)
 @_alwaysEmitIntoClient
 internal var _SOCK_DCCP: CInterop.SocketType { SOCK_DCCP }
+
+@_alwaysEmitIntoClient
+internal var _SOCK_CLOEXEC: CInterop.SocketType { SOCK_CLOEXEC }
+
+@_alwaysEmitIntoClient
+internal var _SOCK_NONBLOCK: CInterop.SocketType { SOCK_NONBLOCK }
 #endif
 
 @_alwaysEmitIntoClient

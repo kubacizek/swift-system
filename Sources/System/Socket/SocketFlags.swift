@@ -22,7 +22,7 @@ public struct SocketFlags: OptionSet, Hashable, Codable {
     public init(rawValue: CInt) { self.rawValue = rawValue }
 
     @_alwaysEmitIntoClient
-    private init(_ raw: CInt) { self.init(rawValue: numericCast(raw)) }
+    private init(_ cValue: CInterop.SocketType) { self.init(rawValue: numericCast(cValue.rawValue)) }
 }
 
 public extension SocketFlags {
