@@ -58,7 +58,7 @@ extension FileDescriptor {
     ) -> Result<FileDescriptor, Errno> {
         valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
             system_socket(family.rawValue, type, protocolID)
-        }.map { FileDescriptor(socket: $0) }
+        }.map(FileDescriptor.init(socket:))
     }
     
     /// Creates an endpoint for communication and returns a descriptor.
@@ -486,7 +486,7 @@ extension FileDescriptor {
         var length: UInt32 = 0
         return valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
             system_accept(self.rawValue, nil, &length)
-        }.map { FileDescriptor(socket: $0) }
+        }.map(FileDescriptor.init(socket:))
     }
     
     /// Initiate a connection on a socket.
