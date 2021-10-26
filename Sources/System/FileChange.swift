@@ -10,53 +10,61 @@
 public extension FileDescriptor {
     
     /// Duplicate
+    @_alwaysEmitIntoClient
     func duplicate(
-        closeOnExec: Bool = false,
+        closeOnExec: Bool,
         retryOnInterrupt: Bool = true
     ) throws -> FileDescriptor {
         let fileDescriptor = try _change(
             closeOnExec ? .duplicateCloseOnExec : .duplicate,
-            self.rawValue, retryOnInterrupt: retryOnInterrupt
+            self.rawValue,
+            retryOnInterrupt: retryOnInterrupt
         ).get()
         return FileDescriptor(rawValue: fileDescriptor)
     }
     
     /// Get Flags
-    func getFlags(retryOnInterrupt: Bool = true) throws -> CInt {
-        return try _change(
+    @_alwaysEmitIntoClient
+    func getFlags(retryOnInterrupt: Bool = true) throws -> Flags {
+        let rawValue = try _change(
             .getFileDescriptorFlags,
             retryOnInterrupt: retryOnInterrupt
         ).get()
+        return Flags(rawValue: rawValue)
     }
     
     /// Set Flags
+    @_alwaysEmitIntoClient
     func setFlags(
-        _ newValue: CInt,
+        _ newValue: Flags,
         retryOnInterrupt: Bool = true
     ) throws {
         let _ = try _change(
             .setFileDescriptorFlags,
-            newValue,
+            newValue.rawValue,
             retryOnInterrupt: retryOnInterrupt
         ).get()
     }
     
     /// Get Status
-    func getStatus(retryOnInterrupt: Bool = true) throws -> CInt {
-        return try _change(
+    @_alwaysEmitIntoClient
+    func getStatus(retryOnInterrupt: Bool = true) throws -> OpenOptions {
+        let rawValue = try _change(
             .getStatusFlags,
             retryOnInterrupt: retryOnInterrupt
         ).get()
+        return OpenOptions(rawValue: rawValue)
     }
     
     /// Set Status
+    @_alwaysEmitIntoClient
     func setStatus(
-        _ newValue: CInt,
+        _ newValue: FileDescriptor.OpenOptions,
         retryOnInterrupt: Bool = true
     ) throws {
         let _ = try _change(
             .setStatusFlags,
-            newValue,
+            newValue.rawValue,
             retryOnInterrupt: retryOnInterrupt
         ).get()
     }
