@@ -532,14 +532,6 @@ internal var _SEEK_DATA: CInt { SEEK_DATA }
 @_alwaysEmitIntoClient
 internal var _FD_CLOEXEC: CInt { FD_CLOEXEC }
 
-#if os(Linux)
-@_alwaysEmitIntoClient
-internal var _O_DIRECT: CInt { O_DIRECT }
-
-@_alwaysEmitIntoClient
-internal var _O_NOATIME: CInt { O_NOATIME }
-#endif
-
 @_alwaysEmitIntoClient
 internal var _F_DUPFD: CInt { F_DUPFD }
 
