@@ -49,7 +49,7 @@ public enum CInterop {
   /// Windows, this is `UInt16` (a "wide" character).
   public typealias PlatformChar = CInterop.Char
   #endif
-
+  
   #if os(Windows)
   /// The platform's preferred Unicode encoding. On Unix this is UTF-8 and on
   /// Windows it is UTF-16. Native strings may contain invalid Unicode,
@@ -63,6 +63,8 @@ public enum CInterop {
   /// on API.
   public typealias PlatformUnicodeEncoding = UTF8
   #endif
+    
+  public typealias UserID = uid_t
 
   /// The platform file descriptor set.
   public typealias FileDescriptorSet = fd_set
@@ -80,6 +82,12 @@ public enum CInterop {
   public typealias SignalHandler = sig_t
     
   public typealias SignalAction = sigaction
+    
+  public typealias SignalInformation = siginfo_t
+    
+  public typealias SignalValue = sigval
+    
+  public typealias SignalActionHandler = (@convention(c) (Int32, UnsafeMutablePointer<CInterop.SignalInformation>?, UnsafeMutableRawPointer?) -> Void)
   
   /// The platform process identifier.
   public typealias ProcessID = pid_t

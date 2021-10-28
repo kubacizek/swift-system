@@ -24,12 +24,28 @@ public extension Signal {
         
         @_alwaysEmitIntoClient
         public init(
-            handler: Signal.Handler,
             mask: Signal.Set = Signal.Set(),
-            flags: Flags = []
+            flags: Flags = [],
+            handler: Signal.Handler
         ) {
+            assert(flags.contains(.sigInfo) == false)
             self.init(CInterop.SignalAction(
                 __sigaction_u: .init(__sa_handler: handler.rawValue),
+                sa_mask: mask.bytes,
+                sa_flags: flags.rawValue)
+            )
+        }
+        
+        @_alwaysEmitIntoClient
+        public init(
+            mask: Signal.Set = Signal.Set(),
+            flags: Flags = [],
+            _ body: @escaping CInterop.SignalActionHandler
+        ) {
+            var flags = flags
+            flags.insert(.sigInfo)
+            self.init(CInterop.SignalAction(
+                __sigaction_u: .init(__sa_sigaction: body),
                 sa_mask: mask.bytes,
                 sa_flags: flags.rawValue)
             )
