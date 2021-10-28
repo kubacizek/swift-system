@@ -46,10 +46,6 @@ public extension Signal {
   @_alwaysEmitIntoClient
   static var abort: Signal { Signal(_SIGABRT) }
 
-  /// SIGEMT (7): emulate instruction executed (default behavior: create core image)
-  @_alwaysEmitIntoClient
-  static var emulatorTrap: Signal { Signal(_SIGEMT) }
-
   /// SIGFPE (8): floating-point exception (default behavior: create core image)
   @_alwaysEmitIntoClient
   static var floatingPointException: Signal { Signal(_SIGFPE) }
@@ -134,10 +130,6 @@ public extension Signal {
   @_alwaysEmitIntoClient
   static var windowSizeChange: Signal { Signal(_SIGWINCH) }
 
-  /// SIGINFO (29): status request from keyboard (default behavior: discard signal)
-  @_alwaysEmitIntoClient
-  static var info: Signal { Signal(_SIGINFO) }
-
   /// SIGUSR1 (30): User defined signal 1 (default behavior: terminate process)
   @_alwaysEmitIntoClient
   static var user1: Signal { Signal(_SIGUSR1) }
@@ -146,4 +138,13 @@ public extension Signal {
   @_alwaysEmitIntoClient
   static var user2: Signal { Signal(_SIGUSR2) }
 
+  #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
+  /// SIGINFO (29): status request from keyboard (default behavior: discard signal)
+  @_alwaysEmitIntoClient
+  static var info: Signal { Signal(_SIGINFO) }
+
+  /// SIGEMT (7): emulate instruction executed (default behavior: create core image)
+  @_alwaysEmitIntoClient
+  static var emulatorTrap: Signal { Signal(_SIGEMT) }
+  #endif
 }

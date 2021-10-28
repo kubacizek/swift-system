@@ -137,7 +137,8 @@ public func __allTests() -> [XCTestCaseEntry] {
         testCase(MockingTest.__allTests__MockingTest),
         testCase(SystemCharTest.__allTests__SystemCharTest),
         testCase(SystemStringTest.__allTests__SystemStringTest),
-        testCase(InternetProtocolTests.__allTests__SystemStringTest)
+        testCase(InternetProtocolTests.allTests)
     ]
 }
+
 #endif

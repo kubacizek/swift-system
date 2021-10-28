@@ -11,7 +11,7 @@ public extension Signal {
     
     /// POSIX Signal Set
     @frozen
-    struct Set: Equatable, Hashable {
+    struct Set {
         
         @usableFromInline
         internal var bytes: CInterop.SignalSet

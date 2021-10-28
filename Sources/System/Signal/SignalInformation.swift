@@ -21,6 +21,7 @@ public extension Signal {
         
         public let code: Int32
 
+        #if os(macOS)
         public let process: ProcessID
 
         public let user: UserID
@@ -32,17 +33,22 @@ public extension Signal {
         public let value: CInterop.SignalValue
 
         public let band: Int
+        #endif
         
         public init(_ bytes: CInterop.SignalInformation) {
             self.id = Signal(rawValue: bytes.si_signo)
             self.error = bytes.si_errno == 0 ? nil : Errno(rawValue: bytes.si_errno)
             self.code = bytes.si_code
+            #if os(macOS)
             self.process = .init(rawValue: bytes.si_pid)
             self.user = .init(rawValue: bytes.si_uid)
             self.status = bytes.si_status
             self.address = bytes.si_addr
             self.value = bytes.si_value
             self.band = bytes.si_band
+            #elseif os(Linux)
+            
+            #endif
         }
     }
 }
