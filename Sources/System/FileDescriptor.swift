@@ -16,6 +16,7 @@
 @frozen
 // @available(macOS 10.16, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
 public struct FileDescriptor: RawRepresentable, Hashable, Codable {
+  
   /// The raw C file handle.
   @_alwaysEmitIntoClient
   public let rawValue: CInt
@@ -23,6 +24,20 @@ public struct FileDescriptor: RawRepresentable, Hashable, Codable {
   /// Creates a strongly-typed file handle from a raw C file handle.
   @_alwaysEmitIntoClient
   public init(rawValue: CInt) { self.rawValue = rawValue }
+}
+
+internal extension FileDescriptor {
+    
+    init(socket: CInterop.SocketDescriptor) {
+        // On Unix a file descriptor can be a file, pipe, socket, etc
+        // On windows file descriptors and sockets are different types
+        #if os(Windows)
+        #warning("Windows sockets not implemented")
+        fatalError()
+        #else
+        self.init(rawValue: socket)
+        #endif
+    }
 }
 
 // Standard file descriptors
@@ -383,6 +398,38 @@ extension FileDescriptor {
 #endif
 
   }
+    
+  /// Options that specify behavior for file descriptors.
+  @frozen
+  public struct Flags: OptionSet, Hashable, Codable {
+      
+      /// The raw C options.
+      @_alwaysEmitIntoClient
+      public var rawValue: CInt
+
+      /// Create a strongly-typed options value from raw C options.
+      @_alwaysEmitIntoClient
+      public init(rawValue: CInt) { self.rawValue = rawValue }
+
+      @_alwaysEmitIntoClient
+      private init(_ raw: CInt) { self.init(rawValue: raw) }
+      
+      /// Indicates that executing a program closes the file.
+      ///
+      /// Normally, file descriptors remain open
+      /// across calls to the `exec(2)` family of functions.
+      /// If you specify this option,
+      /// the file descriptor is closed when replacing this process
+      /// with another process.
+      ///
+      /// The state of the file
+      /// descriptor flags can be inspected using `F_GETFD`,
+      /// as described in the `fcntl(2)` man page.
+      ///
+      /// The corresponding C constant is `FD_CLOEXEC`.
+      @_alwaysEmitIntoClient
+      public static var closeOnExec: Flags { Flags(_FD_CLOEXEC) }
+    }
 }
 
 // @available(macOS 10.16, iOS 14.0, watchOS 7.0, tvOS 14.0, *)

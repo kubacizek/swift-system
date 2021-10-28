@@ -108,6 +108,22 @@ extension OptionSet {
   }
 }
 
+internal extension Sequence {
+    
+    func _buildDescription() -> String {
+        var string = "["
+        for element in self {
+            if _slowPath(string.count == 1) {
+                string += "\(element)"
+            } else {
+                string += ", \(element)"
+            }
+        }
+        string += "]"
+        return string
+    }
+}
+
 internal func _dropCommonPrefix<C: Collection>(
   _ lhs: C, _ rhs: C
 ) -> (C.SubSequence, C.SubSequence)
@@ -126,4 +142,17 @@ extension MutableCollection where Element: Equatable {
       if self[idx] == e { self[idx] = new }
     }
   }
+}
+
+internal extension Bool {
+    
+    @usableFromInline
+    init(_ cInt: CInt) {
+        self = cInt != 0
+    }
+    
+    @usableFromInline
+    var cInt: CInt {
+        self ? 1 : 0
+    }
 }
