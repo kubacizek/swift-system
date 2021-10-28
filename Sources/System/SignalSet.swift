@@ -42,6 +42,7 @@ extension Signal { // CaseIterable required Signal.Set be a collection
 public extension Signal.Set {
     
     /// Adds the signal signum to the signal set.
+    @_alwaysEmitIntoClient
     mutating func insert(
         _ element: Signal,
         retryOnInterrupt: Bool = true
@@ -60,6 +61,7 @@ public extension Signal.Set {
     }
     
     /// Removes the signal from the signal set.
+    @_alwaysEmitIntoClient
     mutating func remove(
         _ element: Signal,
         retryOnInterrupt: Bool = true
@@ -78,6 +80,7 @@ public extension Signal.Set {
     }
     
     /// Removes the signal from the signal set.
+    @_alwaysEmitIntoClient
     mutating func contains(
         _ element: Signal,
         retryOnInterrupt: Bool = true
@@ -98,12 +101,14 @@ public extension Signal.Set {
 
 public extension Signal.Set {
     
+    @_alwaysEmitIntoClient
     func withUnsafePointer<T>(
         _ body: (UnsafePointer<CInterop.SignalSet>) throws -> T
     ) rethrows -> T {
         try Swift.withUnsafePointer(to: self.bytes, body)
     }
     
+    @_alwaysEmitIntoClient
     mutating func withUnsafeMutablePointer<T>(
         _ body: (UnsafeMutablePointer<CInterop.SignalSet>) throws -> T
     ) rethrows -> T {
@@ -112,7 +117,7 @@ public extension Signal.Set {
 }
 
 extension Signal.Set: ExpressibleByArrayLiteral {
-
+    
     public init(arrayLiteral elements: Signal...) {
         self.init()
         for element in elements {
