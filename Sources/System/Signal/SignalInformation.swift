@@ -13,53 +13,36 @@ public extension Signal {
     @frozen
     struct Information {
         
-        @usableFromInline
-        internal let bytes: CInterop.SignalInformation
+        /// Signal
+        public let id: Signal
         
-        @usableFromInline
+        /// Error
+        public let error: Errno?
+        
+        public let code: Int32
+
+        public let process: ProcessID
+
+        public let user: UserID
+
+        public let status: Int32
+        
+        public let address: UnsafeMutableRawPointer?
+
+        public let value: CInterop.SignalValue
+
+        public let band: Int
+        
         internal init(_ bytes: CInterop.SignalInformation) {
-            self.bytes = bytes
+            self.id = Signal(rawValue: bytes.si_signo)
+            self.error = bytes.si_errno == 0 ? nil : Errno(rawValue: bytes.si_errno)
+            self.code = bytes.si_code
+            self.process = .init(rawValue: bytes.si_pid)
+            self.user = .init(rawValue: bytes.si_uid)
+            self.status = bytes.si_status
+            self.address = bytes.si_addr
+            self.value = bytes.si_value
+            self.band = bytes.si_band
         }
-    }
-}
-
-public extension Signal.Information {
-    
-    /// Signal
-    var id: Signal { /* signal number */
-        return .init(rawValue: bytes.si_signo)
-    }
-    
-    /// Error
-    var error: Errno? { /* errno association */
-        return bytes.si_errno == 0 ? nil : Errno(rawValue: bytes.si_errno)
-    }
-    
-    var code: Int32 { /* signal code */
-        return bytes.si_code
-    }
-
-    var process: ProcessID { /* sending process */
-        return .init(rawValue: bytes.si_pid)
-    }
-
-    var user: CInterop.UserID { /* sender's ruid */
-        return bytes.si_uid
-    }
-
-    var status: Int32 { /* exit value */
-        return bytes.si_status
-    }
-
-    var address: UnsafeMutableRawPointer? { /* faulting instruction */
-        return bytes.si_addr
-    }
-
-    var value: CInterop.SignalValue { /* signal value */
-        return bytes.si_value
-    }
-
-    var band: Int { /* band event for SIGPOLL */
-        return bytes.si_band
     }
 }
