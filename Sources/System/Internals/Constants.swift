@@ -635,6 +635,27 @@ internal var _SIG_HOLD: CInterop.SignalHandler { SIG_HOLD }
 internal var _SIG_DFL: CInterop.SignalHandler? { SIG_DFL }
 
 @_alwaysEmitIntoClient
+internal var _SA_NOCLDSTOP: CInt { SA_NOCLDSTOP }
+
+@_alwaysEmitIntoClient
+internal var _SA_NOCLDWAIT: CInt { SA_NOCLDWAIT }
+
+@_alwaysEmitIntoClient
+internal var _SA_NODEFER: CInt { SA_NODEFER }
+
+@_alwaysEmitIntoClient
+internal var _SA_ONSTACK: CInt { SA_ONSTACK }
+
+@_alwaysEmitIntoClient
+internal var _SA_RESETHAND: CInt { SA_RESETHAND }
+
+@_alwaysEmitIntoClient
+internal var _SA_RESTART: CInt { SA_RESTART }
+
+@_alwaysEmitIntoClient
+internal var _SA_SIGINFO: CInt { SA_SIGINFO }
+
+@_alwaysEmitIntoClient
 internal var _FD_CLOEXEC: CInt { FD_CLOEXEC }
 
 @_alwaysEmitIntoClient

@@ -11,6 +11,7 @@ public extension Signal {
     
     /// POSIX Signal Handler
     @frozen
+    // @available(macOS 10.16, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
     struct Action {
         
         @usableFromInline
@@ -25,12 +26,12 @@ public extension Signal {
         public init(
             handler: Signal.Handler,
             mask: Signal.Set = Signal.Set(),
-            flags: CInt = 0x00
+            flags: Flags = []
         ) {
             self.init(CInterop.SignalAction(
                 __sigaction_u: .init(__sa_handler: handler.rawValue),
                 sa_mask: mask.bytes,
-                sa_flags: flags)
+                sa_flags: flags.rawValue)
             )
         }
         
@@ -44,8 +45,8 @@ public extension Signal {
 public extension Signal.Action {
     
     @_alwaysEmitIntoClient
-    var flags: CInt {
-        return bytes.sa_flags
+    var flags: Flags {
+        return .init(rawValue: bytes.sa_flags)
     }
     
     @_alwaysEmitIntoClient
@@ -56,6 +57,7 @@ public extension Signal.Action {
 
 public extension Signal {
     
+    /// Sets a signal handler for the specified signal and returns the old signal handler.
     @discardableResult
     @_alwaysEmitIntoClient
     func handle(_ handler: Handler, retryOnInterrupt: Bool = true) throws -> Signal.Action {
@@ -64,10 +66,87 @@ public extension Signal {
     
     @usableFromInline
     internal func _handle(_ handler: Handler, retryOnInterrupt: Bool) -> Result<Signal.Action, Errno> {
-        var action = Signal.Action(handler: handler)
+        _action(Action(handler: handler), retryOnInterrupt: retryOnInterrupt)
+    }
+    
+    @usableFromInline
+    internal func _action(_ action: Signal.Action, retryOnInterrupt: Bool) -> Result<Signal.Action, Errno> {
         var oldAction = Signal.Action()
         return nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
-            system_sigaction(self.rawValue, &action.bytes, &oldAction.bytes)
+            withUnsafePointer(to: action.bytes) { actionPointer in
+                system_sigaction(self.rawValue, actionPointer, &oldAction.bytes)
+            }
         }.map { oldAction }
     }
+}
+
+public extension Signal.Action {
+    
+    @frozen
+    // @available(macOS 10.16, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
+    struct Flags: OptionSet, Hashable, Codable {
+        
+        /// The raw C file events.
+        @_alwaysEmitIntoClient
+        public let rawValue: CInt
+        
+        /// Create a strongly-typed file events from a raw C value.
+        @_alwaysEmitIntoClient
+        public init(rawValue: CInt) { self.rawValue = rawValue }
+
+        @_alwaysEmitIntoClient
+        private init(_ raw: CInt) { self.init(rawValue: raw) }
+    }
+}
+
+public extension Signal.Action.Flags {
+    
+    /// Do not receive notification when child processes stop.
+    @_alwaysEmitIntoClient
+    static var noChildStop: Signal.Action.Flags { .init(_SA_NOCLDSTOP) }
+    
+    /// A `SIGCHLD` signal is generated when a child process terminates.
+    @_alwaysEmitIntoClient
+    static var noChildWait: Signal.Action.Flags { .init(_SA_NOCLDWAIT) }
+    
+    /// Do not prevent the signal from being received from within its own signal handler.
+    @_alwaysEmitIntoClient
+    static var noDefer: Signal.Action.Flags { .init(_SA_NODEFER) }
+    
+    /// Call the signal handler on an alternate signal stack.. If an alternate stack is not available, the default stack will be used.
+    @_alwaysEmitIntoClient
+    static var onStack: Signal.Action.Flags { .init(_SA_ONSTACK) }
+    
+    /// Restore the signal action to the default upon entry to the signal handler. This flag is only meaningful when establishing a signal handler.
+    @_alwaysEmitIntoClient
+    static var resetHandler: Signal.Action.Flags { .init(_SA_RESETHAND) }
+    
+    /// Provide behavior compatible with BSD signal semantics by making certain system calls restartable across signals. This flag is only meaningful when establishing a signal handler.
+    @_alwaysEmitIntoClient
+    static var restart: Signal.Action.Flags { .init(_SA_RESTART) }
+    
+    /// The signal handler takes three arguments, not one.
+    @_alwaysEmitIntoClient
+    internal static var sigInfo: Signal.Action.Flags { .init(_SA_SIGINFO) }
+}
+
+extension Signal.Action.Flags: CustomStringConvertible, CustomDebugStringConvertible
+{
+  /// A textual representation of the file permissions.
+  @inline(never)
+  public var description: String {
+    let descriptions: [(Element, StaticString)] = [
+      (.noChildStop, ".noChildStop"),
+      (.noChildWait, ".noChildWait"),
+      (.noDefer, ".noDefer"),
+      (.onStack, ".onStack"),
+      (.resetHandler, ".resetHandler"),
+      (.restart, ".restart")
+    ]
+
+    return _buildDescription(descriptions)
+  }
+
+  /// A textual representation of the file permissions, suitable for debugging.
+  public var debugDescription: String { self.description }
 }
