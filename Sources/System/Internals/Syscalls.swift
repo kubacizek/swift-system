@@ -467,3 +467,53 @@ internal func system_fcntl(
 #endif
   return fcntl(fd, cmd, pointer)
 }
+
+internal func system_sigaddset(
+    _ set: UnsafeMutablePointer<CInterop.SignalSet>,
+    _ signal: Int32
+) -> CInt {
+#if ENABLE_MOCKING
+  if mockingEnabled { return _mock(set, signal) }
+#endif
+  return sigaddset(set, signal)
+}
+
+internal func system_sigdelset(
+    _ set: UnsafeMutablePointer<CInterop.SignalSet>,
+    _ signal: Int32
+) -> CInt {
+#if ENABLE_MOCKING
+  if mockingEnabled { return _mock(set, signal) }
+#endif
+  return sigdelset(set, signal)
+}
+
+internal func system_sigismember(
+    _ set: UnsafeMutablePointer<CInterop.SignalSet>,
+    _ signal: Int32
+) -> CInt {
+#if ENABLE_MOCKING
+  if mockingEnabled { return _mock(set, signal) }
+#endif
+  return sigismember(set, signal)
+}
+
+@discardableResult
+internal func system_sigemptyset(
+    _ set: UnsafeMutablePointer<CInterop.SignalSet>
+) -> CInt {
+#if ENABLE_MOCKING
+  if mockingEnabled { return _mock(set) }
+#endif
+  return sigemptyset(set) // always returns 0.
+}
+
+@discardableResult
+internal func system_sigfillset(
+    _ set: UnsafeMutablePointer<CInterop.SignalSet>
+) -> CInt {
+#if ENABLE_MOCKING
+  if mockingEnabled { return _mock(set) }
+#endif
+  return sigfillset(set) // always returns 0.
+}

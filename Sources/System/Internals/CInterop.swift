@@ -67,9 +67,23 @@ public enum CInterop {
   /// The platform file descriptor set.
   public typealias FileDescriptorSet = fd_set
   
+  public typealias PollFileDescriptor = pollfd
+  
+  public typealias FileDescriptorCount = nfds_t
+  
+  public typealias FileEvent = Int16
+    
+  public typealias Signal = CInt
+    
+  public typealias SignalSet = sigset_t
+  
   /// The platform process identifier.
   public typealias ProcessID = pid_t
   
+  public typealias ProcessTaskInfo = proc_taskinfo
+  
+  public typealias ResourceUsageInfo = rusage_info_current
+    
   #if os(Windows)
   /// The platform socket descriptor.
   public typealias SocketDescriptor = SOCKET
@@ -80,12 +94,6 @@ public enum CInterop {
 
     /// The C `msghdr` type
   public typealias MessageHeader = msghdr
-    
-  public typealias PollFileDescriptor = pollfd
-
-  public typealias FileDescriptorCount = nfds_t
-  
-  public typealias FileEvent = Int16
   
   /// The C `sa_family_t` type
   public typealias SocketAddressFamily = sa_family_t
