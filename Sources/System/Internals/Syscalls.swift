@@ -517,3 +517,11 @@ internal func system_sigfillset(
 #endif
   return sigfillset(set) // always returns 0.
 }
+
+@discardableResult
+internal func system_signal(_ sig: CInt, _ handler: CInterop.SignalFunction?) -> CInterop.SignalFunction? {
+#if ENABLE_MOCKING
+    // FIXME: Mock signal()
+#endif
+  return signal(sig, handler)
+}
