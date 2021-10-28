@@ -78,8 +78,13 @@ public enum CInterop {
   public typealias Signal = CInt
     
   public typealias SignalSet = sigset_t
-    
+  
+  #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
   public typealias SignalHandler = sig_t
+  #elseif os(Linux)
+  public typealias SignalHandler = __sighandler_t
+  #elseif os(Windows)
+  #endif
     
   public typealias SignalAction = sigaction
     
@@ -92,10 +97,17 @@ public enum CInterop {
   /// The platform process identifier.
   public typealias ProcessID = pid_t
   
+  #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
   public typealias ProcessTaskInfo = proc_taskinfo
+  #endif
   
+  #if os(Linux)
+  public typealias ResourceUsageInfo = rusage
+  #elseif os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
   public typealias ResourceUsageInfo = rusage_info_current
-    
+  #elseif os(Windows)
+  #endif
+
   #if os(Windows)
   /// The platform socket descriptor.
   public typealias SocketDescriptor = SOCKET

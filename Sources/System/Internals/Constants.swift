@@ -547,8 +547,13 @@ internal var _SIGTRAP: CInt { SIGTRAP }
 @_alwaysEmitIntoClient
 internal var _SIGABRT: CInt { SIGABRT }
 
+#if os(macOS) || os(iOS) || os(watchOS) || os(tvOS) 
 @_alwaysEmitIntoClient
 internal var _SIGEMT: CInt { SIGEMT }
+
+@_alwaysEmitIntoClient
+internal var _SIGINFO: CInt { SIGINFO }
+#endif
 
 @_alwaysEmitIntoClient
 internal var _SIGFPE: CInt { SIGFPE }
@@ -614,9 +619,6 @@ internal var _SIGPROF: CInt { SIGPROF }
 internal var _SIGWINCH: CInt { SIGWINCH }
 
 @_alwaysEmitIntoClient
-internal var _SIGINFO: CInt { SIGINFO }
-
-@_alwaysEmitIntoClient
 internal var _SIGUSR1: CInt { SIGUSR1 }
 
 @_alwaysEmitIntoClient
@@ -647,7 +649,7 @@ internal var _SA_NODEFER: CInt { SA_NODEFER }
 internal var _SA_ONSTACK: CInt { SA_ONSTACK }
 
 @_alwaysEmitIntoClient
-internal var _SA_RESETHAND: CInt { SA_RESETHAND }
+internal var _SA_RESETHAND: CInt { numericCast(SA_RESETHAND) }
 
 @_alwaysEmitIntoClient
 internal var _SA_RESTART: CInt { SA_RESTART }

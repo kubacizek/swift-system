@@ -28,11 +28,20 @@ public extension Signal {
             handler: Signal.Handler
         ) {
             assert(flags.contains(.sigInfo) == false)
+            #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
             self.init(CInterop.SignalAction(
                 __sigaction_u: .init(__sa_handler: handler.rawValue),
                 sa_mask: mask.bytes,
                 sa_flags: flags.rawValue)
             )
+            #elseif os(Linux)
+            self.init(CInterop.SignalAction(
+                __sigaction_handler: .init(sa_handler: handler.rawValue),
+                sa_mask: mask.bytes,
+                sa_flags: flags.rawValue,
+                sa_restorer: { })
+            )
+            #endif
         }
         
         @_alwaysEmitIntoClient
@@ -43,11 +52,20 @@ public extension Signal {
         ) {
             var flags = flags
             flags.insert(.sigInfo)
+            #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
             self.init(CInterop.SignalAction(
                 __sigaction_u: .init(__sa_sigaction: body),
                 sa_mask: mask.bytes,
                 sa_flags: flags.rawValue)
             )
+            #elseif os(Linux)
+            self.init(CInterop.SignalAction(
+                __sigaction_handler: .init(sa_sigaction: body),
+                sa_mask: mask.bytes,
+                sa_flags: flags.rawValue,
+                sa_restorer: { })
+            )
+            #endif
         }
         
         @_alwaysEmitIntoClient
