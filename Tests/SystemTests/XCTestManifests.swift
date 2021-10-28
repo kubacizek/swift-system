@@ -113,6 +113,17 @@ extension SystemStringTest {
     ]
 }
 
+extension InternetProtocolTests {
+    
+    static let allTests = [
+        ("testAddress", testAddress),
+        ("testIPv4Address", testIPv4Address),
+        ("testInvalidIPv4Address", testInvalidIPv4Address),
+        ("testIPv6Address", testIPv6Address),
+        ("testInvalidIPv6Address", testInvalidIPv6Address)
+    ]
+}
+
 public func __allTests() -> [XCTestCaseEntry] {
     return [
         testCase(ErrnoTest.__allTests__ErrnoTest),
@@ -126,6 +137,7 @@ public func __allTests() -> [XCTestCaseEntry] {
         testCase(MockingTest.__allTests__MockingTest),
         testCase(SystemCharTest.__allTests__SystemCharTest),
         testCase(SystemStringTest.__allTests__SystemStringTest),
+        testCase(InternetProtocolTests.__allTests__SystemStringTest)
     ]
 }
 #endif
