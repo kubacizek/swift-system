@@ -623,16 +623,16 @@ internal var _SIGUSR1: CInt { SIGUSR1 }
 internal var _SIGUSR2: CInt { SIGUSR2 }
 
 @_alwaysEmitIntoClient
-internal var _SIG_IGN: CInterop.SignalFunction { SIG_IGN }
+internal var _SIG_IGN: CInterop.SignalHandler { SIG_IGN }
 
 @_alwaysEmitIntoClient
-internal var _SIG_ERR: CInterop.SignalFunction { SIG_ERR }
+internal var _SIG_ERR: CInterop.SignalHandler { SIG_ERR }
 
 @_alwaysEmitIntoClient
-internal var _SIG_HOLD: CInterop.SignalFunction { SIG_HOLD }
+internal var _SIG_HOLD: CInterop.SignalHandler { SIG_HOLD }
 
 @_alwaysEmitIntoClient
-internal var _SIG_DFL: CInterop.SignalFunction? { SIG_DFL }
+internal var _SIG_DFL: CInterop.SignalHandler? { SIG_DFL }
 
 @_alwaysEmitIntoClient
 internal var _FD_CLOEXEC: CInt { FD_CLOEXEC }

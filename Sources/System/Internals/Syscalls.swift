@@ -519,9 +519,16 @@ internal func system_sigfillset(
 }
 
 @discardableResult
-internal func system_signal(_ sig: CInt, _ handler: CInterop.SignalFunction?) -> CInterop.SignalFunction? {
+internal func system_signal(_ sig: CInt, _ handler: CInterop.SignalHandler?) -> CInterop.SignalHandler? {
 #if ENABLE_MOCKING
     // FIXME: Mock signal()
 #endif
   return signal(sig, handler)
+}
+
+internal func system_sigaction(_ sig: CInt, _ action: UnsafePointer<CInterop.SignalAction>?, _ oldAction: UnsafeMutablePointer<CInterop.SignalAction>?) -> CInt {
+#if ENABLE_MOCKING
+    if mockingEnabled { return _mock(sig, action, oldAction) }
+#endif
+  return sigaction(sig, action, oldAction)
 }

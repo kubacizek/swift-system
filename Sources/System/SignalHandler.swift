@@ -13,25 +13,12 @@ public extension Signal {
     @frozen
     struct Handler: RawRepresentable {
         
-        public let rawValue: CInterop.SignalFunction?
+        public let rawValue: CInterop.SignalHandler?
         
-        public init(rawValue: CInterop.SignalFunction?) {
+        @_alwaysEmitIntoClient
+        public init(rawValue: CInterop.SignalHandler?) {
             self.rawValue = rawValue
         }
-    }
-}
-
-public extension Signal {
-    
-    @_alwaysEmitIntoClient
-    @discardableResult
-    func handle(_ handler: Handler) -> Handler {
-        return _handle(handler)
-    }
-    
-    @usableFromInline
-    internal func _handle(_ handler: Handler) -> Handler {
-        return Handler(rawValue: system_signal(self.rawValue, handler.rawValue))
     }
 }
 
@@ -45,11 +32,11 @@ public extension Signal.Handler {
     @_alwaysEmitIntoClient
     static var ignore: Signal.Handler { Signal.Handler(rawValue: _SIG_IGN) }
     
-    /// Signal handler for ignoring signals
+    /// Signal handler indicating an error
     @_alwaysEmitIntoClient
     internal static var error: Signal.Handler { Signal.Handler(rawValue: _SIG_ERR) }
     
-    /// Default signal handler
+    /// Signal handler for ignoring holding signals.
     @_alwaysEmitIntoClient
     static var hold: Signal.Handler { Signal.Handler(rawValue: _SIG_HOLD) }
 }

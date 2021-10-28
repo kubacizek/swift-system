@@ -77,7 +77,9 @@ public enum CInterop {
     
   public typealias SignalSet = sigset_t
     
-  public typealias SignalFunction = sig_t
+  public typealias SignalHandler = sig_t
+    
+  public typealias SignalAction = sigaction
   
   /// The platform process identifier.
   public typealias ProcessID = pid_t
