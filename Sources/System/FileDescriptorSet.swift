@@ -17,7 +17,7 @@ public extension FileDescriptor {
         internal private(set) var bytes: CInterop.FileDescriptorSet
                 
         @_alwaysEmitIntoClient
-        internal init(_ bytes: CInterop.FileDescriptorSet) {
+        public init(_ bytes: CInterop.FileDescriptorSet) {
             self.bytes = bytes
         }
         

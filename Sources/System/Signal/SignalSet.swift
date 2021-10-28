@@ -16,8 +16,7 @@ public extension Signal {
         @usableFromInline
         internal var bytes: CInterop.SignalSet
         
-        @usableFromInline
-        internal init(_ bytes: CInterop.SignalSet) {
+        public init(_ bytes: CInterop.SignalSet) {
             self.bytes = bytes
         }
         

@@ -67,7 +67,7 @@ public struct IPv4Address: Equatable, Hashable, Codable {
     internal let bytes: CInterop.IPv4Address
     
     @_alwaysEmitIntoClient
-    internal init(_ bytes: CInterop.IPv4Address) {
+    public init(_ bytes: CInterop.IPv4Address) {
         self.bytes = bytes
     }
     
@@ -118,7 +118,7 @@ public struct IPv6Address: Equatable, Hashable, Codable {
     internal let bytes: CInterop.IPv6Address
     
     @_alwaysEmitIntoClient
-    internal init(_ bytes: CInterop.IPv6Address) {
+    public init(_ bytes: CInterop.IPv6Address) {
         self.bytes = bytes
     }
     

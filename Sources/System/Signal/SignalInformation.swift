@@ -33,7 +33,7 @@ public extension Signal {
 
         public let band: Int
         
-        internal init(_ bytes: CInterop.SignalInformation) {
+        public init(_ bytes: CInterop.SignalInformation) {
             self.id = Signal(rawValue: bytes.si_signo)
             self.error = bytes.si_errno == 0 ? nil : Errno(rawValue: bytes.si_errno)
             self.code = bytes.si_code
