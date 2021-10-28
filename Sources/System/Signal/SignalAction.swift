@@ -60,17 +60,36 @@ public extension Signal {
     /// Sets a signal handler for the specified signal and returns the old signal handler.
     @discardableResult
     @_alwaysEmitIntoClient
-    func handle(_ handler: Handler, retryOnInterrupt: Bool = true) throws -> Signal.Action {
+    func handle(
+        _ handler: Handler,
+        retryOnInterrupt: Bool = true
+    ) throws -> Signal.Action {
         return try _handle(handler, retryOnInterrupt: retryOnInterrupt).get()
     }
     
+    /// Sets a signal action for the specified signal and returns the old signal handler.
+    @discardableResult
+    @_alwaysEmitIntoClient
+    func action(
+        _ action: Action,
+        retryOnInterrupt: Bool = true
+    ) throws -> Signal.Action {
+        return try _action(action, retryOnInterrupt: retryOnInterrupt).get()
+    }
+    
     @usableFromInline
-    internal func _handle(_ handler: Handler, retryOnInterrupt: Bool) -> Result<Signal.Action, Errno> {
+    internal func _handle(
+        _ handler: Handler,
+        retryOnInterrupt: Bool
+    ) -> Result<Signal.Action, Errno> {
         _action(Action(handler: handler), retryOnInterrupt: retryOnInterrupt)
     }
     
     @usableFromInline
-    internal func _action(_ action: Signal.Action, retryOnInterrupt: Bool) -> Result<Signal.Action, Errno> {
+    internal func _action(
+        _ action: Signal.Action,
+        retryOnInterrupt: Bool
+    ) -> Result<Signal.Action, Errno> {
         var oldAction = Signal.Action()
         return nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
             withUnsafePointer(to: action.bytes) { actionPointer in
