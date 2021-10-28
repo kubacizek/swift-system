@@ -52,10 +52,14 @@ extension IPAddress: RawRepresentable {
     }
 }
 
-extension IPAddress: CustomStringConvertible {
+extension IPAddress: CustomStringConvertible, CustomDebugStringConvertible {
     
     public var description: String {
         return rawValue
+    }
+    
+    public var debugDescription: String {
+        return description
     }
 }
 
@@ -79,6 +83,24 @@ public struct IPv4Address: Equatable, Hashable, Codable {
 
 public extension IPv4Address {
     
+    /// Initialize with raw bytes.
+    @_alwaysEmitIntoClient
+    init(_ byte0: UInt8, _ byte1: UInt8, _ byte2: UInt8, _ byte3: UInt8) {
+        self.init(unsafeBitCast((byte0, byte1, byte2, byte3), to: CInterop.IPv4Address.self))
+    }
+}
+
+public extension IPAddress {
+    
+    /// Initialize with a IP v4 address.
+    @_alwaysEmitIntoClient
+    init(_ byte0: UInt8, _ byte1: UInt8, _ byte2: UInt8, _ byte3: UInt8) {
+        self = .v4(IPv4Address(byte0, byte1, byte2, byte3))
+    }
+}
+
+public extension IPv4Address {
+    
     @_alwaysEmitIntoClient
     static var any: IPv4Address { IPv4Address(_INADDR_ANY) }
     
@@ -90,7 +112,7 @@ extension IPv4Address: RawRepresentable {
     
     @_alwaysEmitIntoClient
     public init?(rawValue: String) {
-        guard let bytes = try? CInterop.IPv4Address(rawValue) else {
+        guard let bytes = CInterop.IPv4Address(rawValue) else {
             return nil
         }
         self.init(bytes)
@@ -102,11 +124,14 @@ extension IPv4Address: RawRepresentable {
     }
 }
 
-extension IPv4Address: CustomStringConvertible {
+extension IPv4Address: CustomStringConvertible, CustomDebugStringConvertible {
     
-    @_alwaysEmitIntoClient
     public var description: String {
         return rawValue
+    }
+    
+    public var debugDescription: String {
+        return description
     }
 }
 
@@ -130,6 +155,24 @@ public struct IPv6Address: Equatable, Hashable, Codable {
 
 public extension IPv6Address {
     
+    /// Initialize with bytes
+    @_alwaysEmitIntoClient
+    init(_ byte0: UInt16, _ byte1: UInt16, _ byte2: UInt16, _ byte3: UInt16, _ byte4: UInt16, _ byte5: UInt16, _ byte6: UInt16, _ byte7: UInt16) {
+        self.init(unsafeBitCast((byte0.bigEndian, byte1.bigEndian, byte2.bigEndian, byte3.bigEndian, byte4.bigEndian, byte5.bigEndian, byte6.bigEndian, byte7.bigEndian), to: CInterop.IPv6Address.self))
+    }
+}
+
+public extension IPAddress {
+    
+    /// Initialize with a IP v6 address.
+    @_alwaysEmitIntoClient
+    init(_ byte0: UInt16, _ byte1: UInt16, _ byte2: UInt16, _ byte3: UInt16, _ byte4: UInt16, _ byte5: UInt16, _ byte6: UInt16, _ byte7: UInt16) {
+        self = .v6(IPv6Address(byte0, byte1, byte2, byte3, byte4, byte5, byte6, byte7))
+    }
+}
+
+public extension IPv6Address {
+    
     @_alwaysEmitIntoClient
     static var any: IPv6Address { IPv6Address(_INADDR6_ANY) }
     
@@ -141,7 +184,7 @@ extension IPv6Address: RawRepresentable {
     
     @_alwaysEmitIntoClient
     public init?(rawValue: String) {
-        guard let bytes = try? CInterop.IPv6Address(rawValue) else {
+        guard let bytes = CInterop.IPv6Address(rawValue) else {
             return nil
         }
         self.init(bytes)
@@ -153,10 +196,13 @@ extension IPv6Address: RawRepresentable {
     }
 }
 
-extension IPv6Address: CustomStringConvertible {
+extension IPv6Address: CustomStringConvertible, CustomDebugStringConvertible {
     
-    @_alwaysEmitIntoClient
     public var description: String {
         return rawValue
+    }
+    
+    public var debugDescription: String {
+        return description
     }
 }
