@@ -530,6 +530,99 @@ internal var _SEEK_DATA: CInt { SEEK_DATA }
 #endif
 
 @_alwaysEmitIntoClient
+internal var _SIGHUP: CInt { SIGHUP }
+
+@_alwaysEmitIntoClient
+internal var _SIGINT: CInt { SIGINT }
+
+@_alwaysEmitIntoClient
+internal var _SIGQUIT: CInt { SIGQUIT }
+
+@_alwaysEmitIntoClient
+internal var _SIGILL: CInt { SIGILL }
+
+@_alwaysEmitIntoClient
+internal var _SIGTRAP: CInt { SIGTRAP }
+
+@_alwaysEmitIntoClient
+internal var _SIGABRT: CInt { SIGABRT }
+
+@_alwaysEmitIntoClient
+internal var _SIGEMT: CInt { SIGEMT }
+
+@_alwaysEmitIntoClient
+internal var _SIGFPE: CInt { SIGFPE }
+
+@_alwaysEmitIntoClient
+internal var _SIGKILL: CInt { SIGKILL }
+
+@_alwaysEmitIntoClient
+internal var _SIGBUS: CInt { SIGBUS }
+
+@_alwaysEmitIntoClient
+internal var _SIGSEGV: CInt { SIGSEGV }
+
+@_alwaysEmitIntoClient
+internal var _SIGSYS: CInt { SIGSYS }
+
+@_alwaysEmitIntoClient
+internal var _SIGPIPE: CInt { SIGPIPE }
+
+@_alwaysEmitIntoClient
+internal var _SIGALRM: CInt { SIGALRM }
+
+@_alwaysEmitIntoClient
+internal var _SIGTERM: CInt { SIGTERM }
+
+@_alwaysEmitIntoClient
+internal var _SIGURG: CInt { SIGURG }
+
+@_alwaysEmitIntoClient
+internal var _SIGSTOP: CInt { SIGSTOP }
+
+@_alwaysEmitIntoClient
+internal var _SIGTSTP: CInt { SIGTSTP }
+
+@_alwaysEmitIntoClient
+internal var _SIGCONT: CInt { SIGCONT }
+
+@_alwaysEmitIntoClient
+internal var _SIGCHLD: CInt { SIGCHLD }
+
+@_alwaysEmitIntoClient
+internal var _SIGTTIN: CInt { SIGTTIN }
+
+@_alwaysEmitIntoClient
+internal var _SIGTTOU: CInt { SIGTTOU }
+
+@_alwaysEmitIntoClient
+internal var _SIGIO: CInt { SIGIO }
+
+@_alwaysEmitIntoClient
+internal var _SIGXCPU: CInt { SIGXCPU }
+
+@_alwaysEmitIntoClient
+internal var _SIGXFSZ: CInt { SIGXFSZ }
+
+@_alwaysEmitIntoClient
+internal var _SIGVTALRM: CInt { SIGVTALRM }
+
+@_alwaysEmitIntoClient
+internal var _SIGPROF: CInt { SIGPROF }
+
+@_alwaysEmitIntoClient
+internal var _SIGWINCH: CInt { SIGWINCH }
+
+@_alwaysEmitIntoClient
+internal var _SIGINFO: CInt { SIGINFO }
+
+@_alwaysEmitIntoClient
+internal var _SIGUSR1: CInt { SIGUSR1 }
+
+@_alwaysEmitIntoClient
+internal var _SIGUSR2: CInt { SIGUSR2 }
+
+@_alwaysEmitIntoClient
 internal var _FD_CLOEXEC: CInt { FD_CLOEXEC }
 
 @_alwaysEmitIntoClient
