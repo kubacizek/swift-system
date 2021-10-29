@@ -5,9 +5,12 @@
 //  Created by Alsey Coleman Miller on 5/15/20.
 //
 
-import Foundation
 import XCTest
+#if SYSTEM_PACKAGE
 @testable import SystemPackage
+#else
+@testable import System
+#endif
 
 final class InternetProtocolTests: XCTestCase {
     
