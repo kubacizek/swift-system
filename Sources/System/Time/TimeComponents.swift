@@ -175,7 +175,7 @@ internal extension String {
         self.init(_unsafeUninitializedCapacity: 26) { buffer in
             buffer.withMemoryRebound(to: CChar.self) { cString in
                 withUnsafePointer(to: timeComponents) {
-                    system_strlen(.init(system_asctime_r($0, cString.baseAddress!)))
+                    system_strlen(.init(system_asctime_r($0, cString.baseAddress!))) - 1
                 }
             }
         }
