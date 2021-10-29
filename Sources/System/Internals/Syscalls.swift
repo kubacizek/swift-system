@@ -169,6 +169,19 @@ internal func system_clock() -> CInterop.Clock {
 }
 
 @available(macOS 10.12, *)
+@usableFromInline
+internal func system_clock_getres(
+    _ id: CInterop.ClockID,
+    _ time: UnsafeMutablePointer<CInterop.TimeIntervalNanoseconds>
+) -> Int32 {
+  #if ENABLE_MOCKING
+  if mockingEnabled { return _mock(id.rawValue, time) }
+  #endif
+  return clock_getres(id, time)
+}
+
+@available(macOS 10.12, *)
+@usableFromInline
 internal func system_clock_gettime(
     _ id: CInterop.ClockID,
     _ time: UnsafeMutablePointer<CInterop.TimeIntervalNanoseconds>
@@ -180,6 +193,7 @@ internal func system_clock_gettime(
 }
 
 @available(macOS 10.12, *)
+@usableFromInline
 internal func system_clock_settime(
     _ id: CInterop.ClockID,
     _ time: UnsafePointer<CInterop.TimeIntervalNanoseconds>

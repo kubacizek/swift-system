@@ -21,6 +21,35 @@ public struct Clock: RawRepresentable, Equatable, Hashable, Codable {
 }
 
 @available(macOS 10.12, *)
+public extension Clock {
+    
+    /// Get the precision.
+    @_alwaysEmitIntoClient
+    func precision(
+        retryOnInterrupt: Bool = true
+    ) throws -> TimeInterval.Nanoseconds {
+        return try getValue(system_clock_getres, retryOnInterrupt: retryOnInterrupt).get()
+    }
+    
+    /// Get the current time.
+    @_alwaysEmitIntoClient
+    func time(
+        retryOnInterrupt: Bool = true
+    ) throws -> TimeInterval.Nanoseconds {
+        return try getValue(system_clock_gettime, retryOnInterrupt: retryOnInterrupt).get()
+    }
+    
+    /// Set the current time.
+    @_alwaysEmitIntoClient
+    func setTime(
+        _ newValue: TimeInterval.Nanoseconds,
+        retryOnInterrupt: Bool = true
+    ) throws {
+        try setValue(newValue, system_clock_settime, retryOnInterrupt: retryOnInterrupt).get()
+    }
+}
+
+@available(macOS 10.12, *)
 internal extension Clock {
     
     @_alwaysEmitIntoClient
@@ -32,42 +61,27 @@ internal extension Clock {
     var bytes: CInterop.ClockID {
         return .init(rawValue: self.rawValue)
     }
-}
-
-@available(macOS 10.12, *)
-public extension Clock {
     
-    /// Get the current time.
-    func time(
-        retryOnInterrupt: Bool = true
-    ) throws -> TimeInterval.Nanoseconds {
-        return try _time(retryOnInterrupt: retryOnInterrupt).get()
-    }
-    
-    internal func _time(
+    @usableFromInline
+    func getValue(
+        _ function: (CInterop.ClockID, UnsafeMutablePointer<CInterop.TimeIntervalNanoseconds>) -> Int32,
         retryOnInterrupt: Bool
     ) -> Result<TimeInterval.Nanoseconds, Errno> {
         var time = CInterop.TimeIntervalNanoseconds()
         return nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
-            system_clock_gettime(self.bytes, &time)
+            function(self.bytes, &time)
         }.map { TimeInterval.Nanoseconds(time) }
     }
     
-    /// Set the current time.
-    func setTime(
+    @usableFromInline
+    func setValue(
         _ newValue: TimeInterval.Nanoseconds,
-        retryOnInterrupt: Bool = true
-    ) throws {
-        try _setTime(newValue, retryOnInterrupt: retryOnInterrupt).get()
-    }
-    
-    internal func _setTime(
-        _ newValue: TimeInterval.Nanoseconds,
+        _ function: (CInterop.ClockID, UnsafePointer<CInterop.TimeIntervalNanoseconds>) -> Int32,
         retryOnInterrupt: Bool
     ) -> Result<(), Errno> {
         withUnsafePointer(to: newValue.bytes) { time in
             nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
-                system_clock_settime(self.bytes, time)
+                function(self.bytes, time)
             }
         }
     }
