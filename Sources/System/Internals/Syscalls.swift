@@ -163,6 +163,32 @@ internal func system_dup2(_ fd: Int32, _ fd2: Int32) -> Int32 {
   return dup2(fd, fd2)
 }
 
+internal func system_gettimeofday(
+    _ time: UnsafeMutablePointer<CInterop.TimeIntervalMicroseconds>,
+    _ tz: UnsafeMutableRawPointer?
+) -> Int32 {
+  #if ENABLE_MOCKING
+  if mockingEnabled { return _mock(time, tz) }
+  #endif
+  return gettimeofday(time, tz)
+}
+
+internal func system_settimeofday(
+    _ time: UnsafePointer<CInterop.TimeIntervalMicroseconds>,
+    _ tz: UnsafePointer<timezone>?
+) -> Int32 {
+  #if ENABLE_MOCKING
+  if mockingEnabled { return _mock(time, tz) }
+  #endif
+  return settimeofday(time, tz)
+}
+
+internal func system_modf(_ value: Double) -> (Double, Double) {
+    var integerValue: Double = 0
+    let decimalValue = modf(value, &integerValue)
+    return (decimalValue, integerValue)
+}
+
 internal func system_inet_pton(
     _ family: Int32,
     _ cString: UnsafePointer<CInterop.PlatformChar>,
