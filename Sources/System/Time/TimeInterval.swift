@@ -7,74 +7,38 @@
  See https://swift.org/LICENSE.txt for license information
 */
 
-/// Time Interval
+/// POSIX Time
 @frozen
-public enum TimeInterval {
+public struct TimeInterval: Equatable, Hashable, Codable {
     
-    case seconds(Time)
-    case microseconds(Microseconds)
-    case nanoseconds(Nanoseconds)
+    public var seconds: Time
+    
+    public init(seconds: Time) {
+        self.seconds = seconds
+    }
 }
-
-// MARK: - Time Conversion
 
 public extension TimeInterval {
     
-    /// Returns the seconds value of the time interval.
-    var seconds: Time {
-        switch self {
-        case let .seconds(time):
-            return time
-        case let .microseconds(value):
-            return value.seconds
-        case let .nanoseconds(value):
-            return value.seconds
-        }
+    static var zero: TimeInterval {
+        return .init(seconds: 0)
     }
     
-    /// Forceably converts a time interval to seconds precision.
-    init(seconds other: TimeInterval) {
-        self = .seconds(other.seconds)
+    static var min: TimeInterval {
+        return .init(seconds: .min)
     }
     
-    /// Forceably converts a time interval to microseconds precision.
-    init(microseconds other: TimeInterval) {
-        self = .microseconds(.init(timeInverval: other))
-    }
-    
-    /// Forceably converts a time interval to nanoseconds precision.
-    init(nanoseconds other: TimeInterval) {
-        self = .nanoseconds(.init(timeInverval: other))
+    static var max: TimeInterval {
+        return .init(seconds: .max)
     }
 }
 
-public extension TimeInterval.Microseconds {
-    
-    /// Forceably converts a time interval to microseconds precision.
-    init(timeInverval: TimeInterval) {
-        switch timeInverval {
-        case let .seconds(seconds):
-            self = .init(seconds: seconds, microseconds: 0)
-        case let .microseconds(microseconds):
-            self = microseconds
-        case let .nanoseconds(nanoseconds):
-            self = .init(seconds: nanoseconds.bytes.seconds)
-        }
-    }
-}
+// MARK: - CustomStringConvertible
 
-public extension TimeInterval.Nanoseconds {
+extension TimeInterval: CustomStringConvertible {
     
-    /// Forceably converts a time interval to nanoseconds precision.
-    init(timeInverval: TimeInterval) {
-        switch timeInverval {
-        case let .seconds(seconds):
-            self = .init(seconds: seconds, nanoseconds: 0)
-        case let .microseconds(microseconds):
-            self = .init(seconds: microseconds.bytes.seconds)
-        case let .nanoseconds(nanoseconds):
-            self = nanoseconds
-        }
+    public var description: String {
+        return "\(seconds)s"
     }
 }
 
@@ -86,9 +50,9 @@ public extension TimeInterval {
     static func timeInvervalSince1970(
         retryOnInterrupt: Bool = true
     ) throws -> TimeInterval {
-        return try .microseconds(
+        return TimeInterval(seconds: try TimeInterval.Microseconds
             .timeInvervalSince1970(retryOnInterrupt: retryOnInterrupt)
-        )
+            .seconds)
     }
     
     /// Sets the system time (since Unix epoch).
@@ -96,25 +60,9 @@ public extension TimeInterval {
         _ timeInverval: TimeInterval,
         retryOnInterrupt: Bool = true
     ) throws {
-        try Microseconds(timeInverval: self)
+        try Microseconds(seconds: timeInverval.seconds, microseconds: 0)
             .bytes
             .setTime(retryOnInterrupt: retryOnInterrupt)
             .get()
-    }
-}
-
-// MARK: - CustomStringConvertible
-
-extension TimeInterval: CustomStringConvertible {
-    
-    public var description: String {
-        switch self {
-        case let .seconds(seconds):
-            return "\(seconds)s"
-        case let .microseconds(microseconds):
-            return microseconds.description
-        case let .nanoseconds(nanoseconds):
-            return nanoseconds.description
-        }
     }
 }
