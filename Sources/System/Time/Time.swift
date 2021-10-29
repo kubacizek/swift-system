@@ -18,6 +18,21 @@ public struct Time: RawRepresentable, Equatable, Hashable, Codable {
     }
 }
 
+public extension Time {
+    
+    static var zero: Time {
+        return 0
+    }
+    
+    static var min: Time {
+        return .init(rawValue: .min)
+    }
+    
+    static var max: Time {
+        return .init(rawValue: .max)
+    }
+}
+
 // MARK: - ExpressibleByIntegerLiteral
 
 extension Time: ExpressibleByIntegerLiteral {

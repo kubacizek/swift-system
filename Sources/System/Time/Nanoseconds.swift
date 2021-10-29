@@ -9,7 +9,7 @@
 
 public extension Time {
     
-    /// POSIX Time
+    /// Nanoseconds
     @frozen
     struct Nanoseconds: RawRepresentable, Equatable, Hashable, Codable {
         
@@ -18,6 +18,21 @@ public extension Time {
         public init(rawValue: CInterop.Nanoseconds) {
             self.rawValue = rawValue
         }
+    }
+}
+
+public extension Time.Nanoseconds {
+    
+    static var zero: Time.Nanoseconds {
+        return 0
+    }
+    
+    static var min: Time.Nanoseconds {
+        return .init(rawValue: .min)
+    }
+    
+    static var max: Time.Nanoseconds {
+        return .init(rawValue: .max)
     }
 }
 

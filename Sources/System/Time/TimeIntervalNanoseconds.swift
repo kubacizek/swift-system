@@ -24,6 +24,21 @@ public extension TimeInterval {
     }
 }
 
+public extension TimeInterval.Nanoseconds {
+    
+    static var zero: TimeInterval.Nanoseconds {
+        return .init(seconds: 0, nanoseconds: 0)
+    }
+    
+    static var min: TimeInterval.Nanoseconds {
+        return .init(seconds: .min, nanoseconds: .min)
+    }
+    
+    static var max: TimeInterval.Nanoseconds {
+        return .init(seconds: .max, nanoseconds: .max)
+    }
+}
+
 // MARK: - Time Conversion
 
 public extension TimeInterval.Nanoseconds {

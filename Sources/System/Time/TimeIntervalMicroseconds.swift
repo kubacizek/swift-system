@@ -33,6 +33,21 @@ public extension TimeInterval.Microseconds {
     }
 }
 
+public extension TimeInterval.Microseconds {
+    
+    static var zero: TimeInterval.Microseconds {
+        return .init(seconds: 0, microseconds: 0)
+    }
+    
+    static var min: TimeInterval.Microseconds {
+        return .init(seconds: .min, microseconds: .min)
+    }
+    
+    static var max: TimeInterval.Microseconds {
+        return .init(seconds: .max, microseconds: .max)
+    }
+}
+
 // MARK: - CustomStringConvertible
 
 extension TimeInterval.Microseconds: CustomStringConvertible {
