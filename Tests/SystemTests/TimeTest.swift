@@ -54,4 +54,11 @@ final class TimeTest: XCTestCase {
         XCTAssertEqual(TimeInterval.microseconds(.init(seconds: 1, microseconds: 12345)).description, "1s 12345µs")
         XCTAssertEqual(TimeInterval.nanoseconds(.init(seconds: 1, nanoseconds: 12345)).description, "1s 12345ns")
     }
+    
+    func testClock() {
+        XCTAssertEqual(Clock.realtime.description, "Clock.realtime")
+        XCTAssertEqual(try! Clock.realtime.precision(), .init(seconds: 0, nanoseconds: 1000))
+        XCTAssertEqual(try! Clock.monotonic.precision(), .init(seconds: 0, nanoseconds: 1000))
+        XCTAssertNotEqual(try! Clock.realtime.time(), .zero)
+    }
 }
