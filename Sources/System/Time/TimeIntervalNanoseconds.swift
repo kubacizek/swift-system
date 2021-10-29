@@ -24,6 +24,8 @@ public extension TimeInterval {
     }
 }
 
+// MARK: - Time Conversion
+
 public extension TimeInterval.Nanoseconds {
     
     init(seconds: Double) {
@@ -39,6 +41,8 @@ extension TimeInterval.Nanoseconds: CustomStringConvertible {
         return "\(seconds)s \(nanoseconds)ns"
     }
 }
+
+// MARK: - C Interop
 
 internal extension TimeInterval.Nanoseconds {
     

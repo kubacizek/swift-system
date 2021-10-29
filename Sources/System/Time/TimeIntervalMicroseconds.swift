@@ -24,6 +24,8 @@ public extension TimeInterval {
     }
 }
 
+// MARK: - Time Conversion
+
 public extension TimeInterval.Microseconds {
     
     init(seconds: Double) {
@@ -40,21 +42,7 @@ extension TimeInterval.Microseconds: CustomStringConvertible {
     }
 }
 
-public extension TimeInterval.Microseconds {
-    
-    static func timeInvervalSince1970(
-        retryOnInterrupt: Bool = true
-    ) throws -> TimeInterval.Microseconds {
-        return try .init(._getTime(retryOnInterrupt: retryOnInterrupt).get())
-    }
-    
-    func setTimeInvervalSince1970(
-        _ timeInverval: TimeInterval.Microseconds,
-        retryOnInterrupt: Bool = true
-    ) throws {
-        
-    }
-}
+// MARK: - C Interop
 
 internal extension TimeInterval.Microseconds {
     
@@ -70,10 +58,30 @@ internal extension TimeInterval.Microseconds {
     }
 }
 
+// MARK: - Get and Set Current Time
+
+public extension TimeInterval.Microseconds {
+    
+    /// Returns the system time (since Unix epoch).
+    static func timeInvervalSince1970(
+        retryOnInterrupt: Bool = true
+    ) throws -> TimeInterval.Microseconds {
+        return try .init(.getTime(retryOnInterrupt: retryOnInterrupt).get())
+    }
+    
+    /// Sets the system time (since Unix epoch).
+    func setTimeInvervalSince1970(
+        _ timeInverval: TimeInterval.Microseconds,
+        retryOnInterrupt: Bool = true
+    ) throws {
+        try bytes.setTime(retryOnInterrupt: retryOnInterrupt).get()
+    }
+}
+
 internal extension CInterop.TimeIntervalMicroseconds {
     
     @usableFromInline
-    static func _getTime(retryOnInterrupt: Bool) -> Result<CInterop.TimeIntervalMicroseconds, Errno> {
+    static func getTime(retryOnInterrupt: Bool) -> Result<CInterop.TimeIntervalMicroseconds, Errno> {
         var time = CInterop.TimeIntervalMicroseconds()
         return nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
             // The use of the timezone structure is obsolete; the tz argument
@@ -82,7 +90,7 @@ internal extension CInterop.TimeIntervalMicroseconds {
         }.map { time }
     }
     
-    func _setTime(retryOnInterrupt: Bool) -> Result<(), Errno> {
+    func setTime(retryOnInterrupt: Bool) -> Result<(), Errno> {
         withUnsafePointer(to: self) { time in
             nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
                 system_settimeofday(time, nil)
