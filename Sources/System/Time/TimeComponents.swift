@@ -56,6 +56,7 @@ extension TimeComponents: CustomStringConvertible {
 
 public extension TimeComponents {
     
+    @frozen
     enum Component {
         case second
         case minute
@@ -95,28 +96,20 @@ public extension TimeComponents {
             switch component {
             case .second:
                 second = newValue
-                break
             case .minute:
                 minute = newValue
-                break
             case .hour:
                 hour = newValue
-                break
             case .dayOfMonth:
                 dayOfMonth = newValue
-                break
             case .month:
                 month = newValue
-                break
             case .year:
                 year = newValue
-                break
             case .weekday:
                 weekday = newValue
-                break
             case .dayOfYear:
                 dayOfYear = newValue
-                break
             }
         }
     }
