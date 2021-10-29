@@ -183,6 +183,54 @@ internal func system_settimeofday(
   return settimeofday(time, tz)
 }
 
+@discardableResult
+internal func system_gmtime_r(
+    _ time: UnsafePointer<CInterop.Time>,
+    _ timeComponents: UnsafeMutablePointer<CInterop.TimeComponents>
+) -> UnsafeMutablePointer<CInterop.TimeComponents> {
+  #if ENABLE_MOCKING
+  if mockingEnabled {
+      let _ = _mock(time, timeComponents)
+      return timeComponents
+  }
+  #endif
+  return gmtime_r(time, timeComponents)
+}
+
+internal func system_timegm(
+    _ time: UnsafePointer<CInterop.TimeComponents>
+) -> CInterop.Time {
+    return timegm(.init(mutating: time))
+}
+
+@discardableResult
+internal func system_localtime_r(
+    _ time: UnsafePointer<CInterop.Time>,
+    _ timeComponents: UnsafeMutablePointer<CInterop.TimeComponents>
+) -> UnsafeMutablePointer<CInterop.TimeComponents> {
+  #if ENABLE_MOCKING
+  if mockingEnabled {
+      let _ = _mock(time, timeComponents)
+      return timeComponents
+  }
+  #endif
+  return localtime_r(time, timeComponents)
+}
+
+@discardableResult
+internal func system_asctime_r(
+    _ timeComponents: UnsafePointer<CInterop.TimeComponents>,
+    _ string: UnsafeMutablePointer<CChar>
+) -> UnsafeMutablePointer<CChar> {
+  return asctime_r(timeComponents, string)
+}
+
+internal func system_timelocal(
+    _ time: UnsafePointer<CInterop.TimeComponents>
+) -> CInterop.Time {
+  return timelocal(.init(mutating: time))
+}
+
 internal func system_modf(_ value: Double) -> (Double, Double) {
     var integerValue: Double = 0
     let decimalValue = modf(value, &integerValue)
