@@ -11,24 +11,43 @@
 public enum TimeInterval {
     
     case seconds(Time)
-    case microseconds(Time, Time.Microseconds)
-    case nanoseconds(Time, Time.Nanoseconds)
+    case microseconds(Microseconds)
+    case nanoseconds(Nanoseconds)
 }
 
 public extension TimeInterval {
     
-    init(_ cTime: CInterop.TimeIntervalMicroseconds) {
-        self = .microseconds(
-            .init(rawValue: cTime.tv_sec),
-            .init(rawValue: cTime.tv_usec)
-        )
+    var seconds: Time {
+        switch self {
+        case let .seconds(time):
+            return time
+        case let .microseconds(value):
+            return value.seconds
+        case let .nanoseconds(value):
+            return value.seconds
+        }
     }
     
-    init(_ cTime: CInterop.TimeIntervalNanoseconds) {
-        self = .nanoseconds(
-            .init(rawValue: cTime.tv_sec),
-            .init(rawValue: cTime.tv_nsec)
-        )
+    init(microseconds other: TimeInterval) {
+        switch other {
+        case let .seconds(seconds):
+            self = .microseconds(.init(seconds: seconds, microseconds: 0))
+        case let .microseconds(microseconds):
+            self = .microseconds(microseconds)
+        case let .nanoseconds(nanoseconds):
+            self = .microseconds(.init(seconds: nanoseconds.bytes.seconds))
+        }
+    }
+    
+    init(nanoseconds other: TimeInterval) {
+        switch other {
+        case let .seconds(seconds):
+            self = .nanoseconds(.init(seconds: seconds, nanoseconds: 0))
+        case let .microseconds(microseconds):
+            self = .nanoseconds(.init(seconds: microseconds.bytes.seconds))
+        case let .nanoseconds(nanoseconds):
+            self = .nanoseconds(nanoseconds)
+        }
     }
 }
 
@@ -40,10 +59,10 @@ extension TimeInterval: CustomStringConvertible {
         switch self {
         case let .seconds(seconds):
             return "\(seconds)s"
-        case let .microseconds(seconds, microseconds):
-            return "\(seconds)s \(microseconds)µs"
-        case let .nanoseconds(seconds, nanoseconds):
-            return "\(seconds)s \(nanoseconds)ns"
+        case let .microseconds(microseconds):
+            return microseconds.description
+        case let .nanoseconds(nanoseconds):
+            return nanoseconds.description
         }
     }
 }
