@@ -163,6 +163,11 @@ internal func system_dup2(_ fd: Int32, _ fd2: Int32) -> Int32 {
   return dup2(fd, fd2)
 }
 
+@inline(__always)
+internal func system_clock() -> CInterop.Clock {
+  return clock()
+}
+
 internal func system_gettimeofday(
     _ time: UnsafeMutablePointer<CInterop.TimeIntervalMicroseconds>,
     _ tz: UnsafeMutableRawPointer?

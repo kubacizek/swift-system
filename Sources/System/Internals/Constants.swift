@@ -530,6 +530,9 @@ internal var _SEEK_DATA: CInt { SEEK_DATA }
 #endif
 
 @_alwaysEmitIntoClient
+internal var _CLOCKS_PER_SEC: CInt { CLOCKS_PER_SEC }
+
+@_alwaysEmitIntoClient
 internal var _SIGHUP: CInt { SIGHUP }
 
 @_alwaysEmitIntoClient
