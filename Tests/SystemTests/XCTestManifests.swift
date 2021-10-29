@@ -132,10 +132,12 @@ extension TimeTest {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__TimeTest = [
+        ("testClock", testClock),
         ("testMicroseconds", testMicroseconds),
         ("testNanoseconds", testNanoseconds),
         ("testProcessorTime", testProcessorTime),
         ("testTime", testTime),
+        ("testTimeComponents", testTimeComponents),
         ("testTimeInterval", testTimeInterval),
     ]
 }
