@@ -63,6 +63,15 @@ public enum CInterop {
   /// on API.
   public typealias PlatformUnicodeEncoding = UTF8
   #endif
+    
+  /// The C `clock_t` type
+  public typealias Clock = clock_t
+    
+  /// The C `time_t` type
+  public typealias Time = time_t
+    
+  /// The C `tm` type
+  public typealias TimeComponents = tm
   
   /// The C `timeval` type
   public typealias TimeIntervalMicroseconds = timeval
@@ -75,7 +84,9 @@ public enum CInterop {
   #elseif os(Linux)
   public typealias Microseconds = __suseconds_t
   #endif
-    
+  
+  public typealias Nanoseconds = CLong
+  
   public typealias UserID = uid_t
 
   /// The platform file descriptor set.
