@@ -7,119 +7,106 @@
  See https://swift.org/LICENSE.txt for license information
 */
 
-/// Type capable of representing the processor time used by a process.
+/// Clock
+@available(macOS 10.12, *)
 @frozen
 public struct Clock: RawRepresentable, Equatable, Hashable, Codable {
     
-    public var rawValue: CInterop.Clock
+    public let rawValue: CInterop.ClockID.RawValue
     
-    public init(rawValue: CInterop.Clock) {
+    @_alwaysEmitIntoClient
+    public init(rawValue: CInterop.ClockID.RawValue) {
         self.rawValue = rawValue
     }
 }
 
+@available(macOS 10.12, *)
+internal extension Clock {
+    
+    @_alwaysEmitIntoClient
+    init(_ bytes: CInterop.ClockID) {
+        self.init(rawValue: bytes.rawValue)
+    }
+    
+    @_alwaysEmitIntoClient
+    var bytes: CInterop.ClockID {
+        return .init(rawValue: self.rawValue)
+    }
+}
+
+@available(macOS 10.12, *)
 public extension Clock {
     
-    /// Returns the approximate processor time used by the process
-    /// since the beginning of an implementation-defined era related to the program's execution.
-    static var current: Clock {
-        return .init(rawValue: system_clock())
-    }
-}
-
-public extension Clock {
-    
-    init(seconds: Double) {
-        self.init(rawValue: .init(seconds * Double(_CLOCKS_PER_SEC)))
+    /// Get the current time.
+    func time(
+        retryOnInterrupt: Bool = true
+    ) throws -> TimeInterval.Nanoseconds {
+        return try _time(retryOnInterrupt: retryOnInterrupt).get()
     }
     
-    var seconds: Double {
-        return Double(rawValue) / Double(_CLOCKS_PER_SEC)
-    }
-}
-
-// MARK: - ExpressibleByIntegerLiteral
-
-extension Clock: ExpressibleByIntegerLiteral {
-    
-    public init(integerLiteral value: RawValue) {
-        self.init(rawValue: value)
-    }
-}
-
-// MARK: - CustomStringConvertible
-
-extension Clock: CustomStringConvertible, CustomDebugStringConvertible {
-    
-    public var description: String {
-        return rawValue.description
+    internal func _time(
+        retryOnInterrupt: Bool
+    ) -> Result<TimeInterval.Nanoseconds, Errno> {
+        var time = CInterop.TimeIntervalNanoseconds()
+        return nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
+            system_clock_gettime(self.bytes, &time)
+        }.map { TimeInterval.Nanoseconds(time) }
     }
     
-    public var debugDescription: String {
-        return description
+    /// Set the current time.
+    func setTime(
+        _ newValue: TimeInterval.Nanoseconds,
+        retryOnInterrupt: Bool = true
+    ) throws {
+        try _setTime(newValue, retryOnInterrupt: retryOnInterrupt).get()
     }
-}
-
-// MARK: - Clock ID
-
-public extension Clock {
     
-    /// Clock ID
-    struct ID: RawRepresentable, Equatable, Hashable, Codable {
-        
-        public let rawValue: CInterop.ClockID.RawValue
-        
-        @_alwaysEmitIntoClient
-        public init(rawValue: CInterop.ClockID.RawValue) {
-            self.rawValue = rawValue
-        }
-        
-        @_alwaysEmitIntoClient
-        private init(_ bytes: CInterop.ClockID) {
-            self.init(rawValue: bytes.rawValue)
+    internal func _setTime(
+        _ newValue: TimeInterval.Nanoseconds,
+        retryOnInterrupt: Bool
+    ) -> Result<(), Errno> {
+        withUnsafePointer(to: newValue.bytes) { time in
+            nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
+                system_clock_settime(self.bytes, time)
+            }
         }
     }
 }
 
-public extension Clock.ID {
+// MARK: - Definitions
+
+@available(macOS 10.12, *)
+public extension Clock {
     
     /// System-wide realtime clock. Setting this clock requires appropriate privileges.
-    @available(macOS 10.12, *)
     @_alwaysEmitIntoClient
-    static var realtime: Clock.ID { Clock.ID(_CLOCK_REALTIME) }
+    static var realtime: Clock { Clock(_CLOCK_REALTIME) }
     
     /// Clock that cannot be set and represents monotonic time since some unspecified starting point.
-    @available(macOS 10.12, *)
     @_alwaysEmitIntoClient
-    static var monotonic: Clock.ID { Clock.ID(_CLOCK_MONOTONIC) }
+    static var monotonic: Clock { Clock(_CLOCK_MONOTONIC) }
     
     /// High-resolution per-process timer from the CPU.
-    @available(macOS 10.12, *)
     @_alwaysEmitIntoClient
-    static var processCPUTime: Clock.ID { Clock.ID(_CLOCK_PROCESS_CPUTIME_ID) }
+    static var processCPUTime: Clock { Clock(_CLOCK_PROCESS_CPUTIME_ID) }
     
     /// Thread-specific CPU-time clock.
-    @available(macOS 10.12, *)
     @_alwaysEmitIntoClient
-    static var threadCPUTime: Clock.ID { Clock.ID(_CLOCK_THREAD_CPUTIME_ID) }
+    static var threadCPUTime: Clock { Clock(_CLOCK_THREAD_CPUTIME_ID) }
         
     ///
-    @available(macOS 10.12, *)
     @_alwaysEmitIntoClient
-    static var monotonicRaw: Clock.ID { Clock.ID(_CLOCK_MONOTONIC_RAW) }
+    static var monotonicRaw: Clock { Clock(_CLOCK_MONOTONIC_RAW) }
     
     ///
-    @available(macOS 10.12, *)
     @_alwaysEmitIntoClient
-    static var monotonicRawApproximated: Clock.ID { Clock.ID(_CLOCK_MONOTONIC_RAW_APPROX) }
+    static var monotonicRawApproximated: Clock { Clock(_CLOCK_MONOTONIC_RAW_APPROX) }
     
     ///
-    @available(macOS 10.12, *)
     @_alwaysEmitIntoClient
-    static var uptimeRaw: Clock.ID { Clock.ID(_CLOCK_UPTIME_RAW) }
+    static var uptimeRaw: Clock { Clock(_CLOCK_UPTIME_RAW) }
     
     ///
-    @available(macOS 10.12, *)
     @_alwaysEmitIntoClient
-    static var uptimeRawApproximated: Clock.ID { Clock.ID(_CLOCK_UPTIME_RAW_APPROX) }
+    static var uptimeRawApproximated: Clock { Clock(_CLOCK_UPTIME_RAW_APPROX) }
 }

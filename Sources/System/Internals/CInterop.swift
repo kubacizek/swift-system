@@ -66,6 +66,9 @@ public enum CInterop {
     
   /// The C `clock_t` type
   public typealias Clock = clock_t
+  
+  /// The C `clockid_t` type
+  public typealias ClockID = clockid_t
     
   /// The C `time_t` type
   public typealias Time = time_t
