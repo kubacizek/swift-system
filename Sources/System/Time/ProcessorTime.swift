@@ -47,7 +47,7 @@ public extension ProcessorTime {
     }
     
     static func + (lhs: ProcessorTime, rhs: ProcessorTime) -> ProcessorTime {
-        return .init(rawValue: lhs.rawValue - rhs.rawValue)
+        return .init(rawValue: lhs.rawValue + rhs.rawValue)
     }
 }
 
