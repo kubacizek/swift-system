@@ -8,7 +8,7 @@
 */
 
 /// Clock
-@available(macOS 10.12, *)
+@available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *)
 @frozen
 public struct Clock: RawRepresentable, Equatable, Hashable, Codable {
     
@@ -20,7 +20,7 @@ public struct Clock: RawRepresentable, Equatable, Hashable, Codable {
     }
 }
 
-@available(macOS 10.12, *)
+@available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *)
 public extension Clock {
     
     /// Get the precision.
@@ -40,6 +40,9 @@ public extension Clock {
     }
     
     /// Set the current time.
+    @available(iOS, unavailable)
+    @available(watchOS, unavailable)
+    @available(tvOS, unavailable)
     @_alwaysEmitIntoClient
     func setTime(
         _ newValue: TimeInterval.Nanoseconds,
@@ -49,7 +52,7 @@ public extension Clock {
     }
 }
 
-@available(macOS 10.12, *)
+@available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *)
 internal extension Clock {
     
     @_alwaysEmitIntoClient
@@ -89,7 +92,7 @@ internal extension Clock {
 
 // MARK: - Definitions
 
-@available(macOS 10.12, *)
+@available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *)
 public extension Clock {
     
     /// System-wide realtime clock. Setting this clock requires appropriate privileges.

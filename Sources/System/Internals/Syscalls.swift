@@ -168,7 +168,7 @@ internal func system_clock() -> CInterop.Clock {
   return clock()
 }
 
-@available(macOS 10.12, *)
+@available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *)
 @usableFromInline
 internal func system_clock_getres(
     _ id: CInterop.ClockID,
@@ -180,7 +180,7 @@ internal func system_clock_getres(
   return clock_getres(id, time)
 }
 
-@available(macOS 10.12, *)
+@available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *)
 @usableFromInline
 internal func system_clock_gettime(
     _ id: CInterop.ClockID,
@@ -193,6 +193,9 @@ internal func system_clock_gettime(
 }
 
 @available(macOS 10.12, *)
+@available(iOS, unavailable)
+@available(watchOS, unavailable)
+@available(tvOS, unavailable)
 @usableFromInline
 internal func system_clock_settime(
     _ id: CInterop.ClockID,
