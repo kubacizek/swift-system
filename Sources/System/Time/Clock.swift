@@ -59,3 +59,67 @@ extension Clock: CustomStringConvertible, CustomDebugStringConvertible {
         return description
     }
 }
+
+// MARK: - Clock ID
+
+public extension Clock {
+    
+    /// Clock ID
+    struct ID: RawRepresentable, Equatable, Hashable, Codable {
+        
+        public let rawValue: CInterop.ClockID.RawValue
+        
+        @_alwaysEmitIntoClient
+        public init(rawValue: CInterop.ClockID.RawValue) {
+            self.rawValue = rawValue
+        }
+        
+        @_alwaysEmitIntoClient
+        private init(_ bytes: CInterop.ClockID) {
+            self.init(rawValue: bytes.rawValue)
+        }
+    }
+}
+
+public extension Clock.ID {
+    
+    /// System-wide realtime clock. Setting this clock requires appropriate privileges.
+    @available(macOS 10.12, *)
+    @_alwaysEmitIntoClient
+    static var realtime: Clock.ID { Clock.ID(_CLOCK_REALTIME) }
+    
+    /// Clock that cannot be set and represents monotonic time since some unspecified starting point.
+    @available(macOS 10.12, *)
+    @_alwaysEmitIntoClient
+    static var monotonic: Clock.ID { Clock.ID(_CLOCK_MONOTONIC) }
+    
+    /// High-resolution per-process timer from the CPU.
+    @available(macOS 10.12, *)
+    @_alwaysEmitIntoClient
+    static var processCPUTime: Clock.ID { Clock.ID(_CLOCK_PROCESS_CPUTIME_ID) }
+    
+    /// Thread-specific CPU-time clock.
+    @available(macOS 10.12, *)
+    @_alwaysEmitIntoClient
+    static var threadCPUTime: Clock.ID { Clock.ID(_CLOCK_THREAD_CPUTIME_ID) }
+        
+    ///
+    @available(macOS 10.12, *)
+    @_alwaysEmitIntoClient
+    static var monotonicRaw: Clock.ID { Clock.ID(_CLOCK_MONOTONIC_RAW) }
+    
+    ///
+    @available(macOS 10.12, *)
+    @_alwaysEmitIntoClient
+    static var monotonicRawApproximated: Clock.ID { Clock.ID(_CLOCK_MONOTONIC_RAW_APPROX) }
+    
+    ///
+    @available(macOS 10.12, *)
+    @_alwaysEmitIntoClient
+    static var uptimeRaw: Clock.ID { Clock.ID(_CLOCK_UPTIME_RAW) }
+    
+    ///
+    @available(macOS 10.12, *)
+    @_alwaysEmitIntoClient
+    static var uptimeRawApproximated: Clock.ID { Clock.ID(_CLOCK_UPTIME_RAW_APPROX) }
+}

@@ -532,6 +532,38 @@ internal var _SEEK_DATA: CInt { SEEK_DATA }
 @_alwaysEmitIntoClient
 internal var _CLOCKS_PER_SEC: CInt { CLOCKS_PER_SEC }
 
+@available(macOS 10.12, *)
+@_alwaysEmitIntoClient
+internal var _CLOCK_REALTIME: CInterop.ClockID { CLOCK_REALTIME }
+
+@available(macOS 10.12, *)
+@_alwaysEmitIntoClient
+internal var _CLOCK_MONOTONIC: CInterop.ClockID { CLOCK_MONOTONIC }
+
+@available(macOS 10.12, *)
+@_alwaysEmitIntoClient
+internal var _CLOCK_MONOTONIC_RAW: CInterop.ClockID { CLOCK_MONOTONIC_RAW }
+
+@available(macOS 10.12, *)
+@_alwaysEmitIntoClient
+internal var _CLOCK_MONOTONIC_RAW_APPROX: CInterop.ClockID { CLOCK_MONOTONIC_RAW_APPROX }
+
+@available(macOS 10.12, *)
+@_alwaysEmitIntoClient
+internal var _CLOCK_UPTIME_RAW: CInterop.ClockID { CLOCK_UPTIME_RAW }
+
+@available(macOS 10.12, *)
+@_alwaysEmitIntoClient
+internal var _CLOCK_UPTIME_RAW_APPROX: CInterop.ClockID { CLOCK_UPTIME_RAW_APPROX }
+
+@available(macOS 10.12, *)
+@_alwaysEmitIntoClient
+internal var _CLOCK_PROCESS_CPUTIME_ID: CInterop.ClockID { CLOCK_PROCESS_CPUTIME_ID }
+
+@available(macOS 10.12, *)
+@_alwaysEmitIntoClient
+internal var _CLOCK_THREAD_CPUTIME_ID: CInterop.ClockID { CLOCK_THREAD_CPUTIME_ID }
+
 @_alwaysEmitIntoClient
 internal var _SIGHUP: CInt { SIGHUP }
 
