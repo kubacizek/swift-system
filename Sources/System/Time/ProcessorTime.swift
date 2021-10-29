@@ -38,6 +38,40 @@ public extension ProcessorTime {
     }
 }
 
+// MARK: - Arithmetic
+
+public extension ProcessorTime {
+    
+    static func - (lhs: ProcessorTime, rhs: ProcessorTime) -> ProcessorTime {
+        return .init(rawValue: lhs.rawValue - rhs.rawValue)
+    }
+    
+    static func + (lhs: ProcessorTime, rhs: ProcessorTime) -> ProcessorTime {
+        return .init(rawValue: lhs.rawValue - rhs.rawValue)
+    }
+}
+
+// MARK: - Comparable
+
+extension ProcessorTime: Comparable {
+    
+    public static func < (lhs: ProcessorTime, rhs: ProcessorTime) -> Bool {
+        return lhs.rawValue < rhs.rawValue
+    }
+    
+    public static func <= (lhs: ProcessorTime, rhs: ProcessorTime) -> Bool {
+        return lhs.rawValue <= rhs.rawValue
+    }
+    
+    public static func >= (lhs: ProcessorTime, rhs: ProcessorTime) -> Bool {
+        return lhs.rawValue >= rhs.rawValue
+    }
+    
+    public static func > (lhs: ProcessorTime, rhs: ProcessorTime) -> Bool {
+        return lhs.rawValue > rhs.rawValue
+    }
+}
+
 // MARK: - ExpressibleByIntegerLiteral
 
 extension ProcessorTime: ExpressibleByIntegerLiteral {
