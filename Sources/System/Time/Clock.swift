@@ -90,6 +90,28 @@ internal extension Clock {
     }
 }
 
+@available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *)
+extension Clock: CustomStringConvertible, CustomDebugStringConvertible {
+    
+    public var description: String {
+        let descriptions: [Clock: String] = [
+            .realtime: "Clock.realtime",
+            .monotonic: "Clock.monotonic",
+            .processCPUTime: "Clock.processCPUTime",
+            .threadCPUTime: "Clock.threadCPUTime",
+            .monotonicRaw: "Clock.monotonicRaw",
+            .monotonicRawApproximated: "Clock.monotonicRawApproximated",
+            .uptimeRaw: "Clock.uptimeRaw",
+            .uptimeRawApproximated: "Clock.uptimeRawApproximated"
+        ]
+        return descriptions[self] ?? "Clock(rawValue: \(rawValue))"
+    }
+    
+    public var debugDescription: String {
+        return description
+    }
+}
+
 // MARK: - Definitions
 
 @available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *)
