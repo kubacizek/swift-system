@@ -63,6 +63,18 @@ public enum CInterop {
   /// on API.
   public typealias PlatformUnicodeEncoding = UTF8
   #endif
+  
+  /// The C `timeval` type
+  public typealias TimeIntervalMicroseconds = timeval
+    
+  /// The C `timespec` type
+  public typealias TimeIntervalNanoseconds = timespec
+  
+  #if os(OSX) || os(iOS) || os(watchOS) || os(tvOS)
+  public typealias Microseconds = __darwin_suseconds_t
+  #elseif os(Linux)
+  public typealias Microseconds = __suseconds_t
+  #endif
     
   public typealias UserID = uid_t
 
