@@ -57,8 +57,20 @@ final class TimeTest: XCTestCase {
     
     func testClock() {
         XCTAssertEqual(Clock.realtime.description, "Clock.realtime")
-        XCTAssertEqual(try! Clock.realtime.precision(), .init(seconds: 0, nanoseconds: 1000))
-        XCTAssertEqual(try! Clock.monotonic.precision(), .init(seconds: 0, nanoseconds: 1000))
-        XCTAssertNotEqual(try! Clock.realtime.time(), .zero)
+        XCTAssertEqual(try? Clock.realtime.precision(), .init(seconds: 0, nanoseconds: 1000))
+        XCTAssertEqual(try? Clock.monotonic.precision(), .init(seconds: 0, nanoseconds: 1000))
+        XCTAssertNotEqual(try? Clock.realtime.time(), .zero)
+    }
+    
+    func testTimeComponents() {
+        let timeComponents = TimeComponents(time: 1635539546)
+        XCTAssertEqual(timeComponents.description, "Fri Oct 29 20:32:26 2021")
+        XCTAssertEqual(timeComponents[.year], 2021)
+        XCTAssertEqual(timeComponents[.month], 10)
+        XCTAssertEqual(timeComponents[.dayOfMonth], 29)
+        XCTAssertEqual(timeComponents[.weekday], 5)
+        XCTAssertEqual(timeComponents[.hour], 20)
+        XCTAssertEqual(timeComponents[.minute], 32)
+        XCTAssertEqual(timeComponents[.second], 26)
     }
 }
