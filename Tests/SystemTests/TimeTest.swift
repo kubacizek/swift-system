@@ -59,8 +59,8 @@ final class TimeTest: XCTestCase {
         XCTAssertEqual(ns(seconds: 1, nanoseconds: 12345).description, "1s 12345ns")
         XCTAssertEqual(Double(µs(seconds: 1, microseconds: 1000)), 1.001)
         XCTAssertEqual(Double(ns(seconds: 1, nanoseconds: 1000)), 1.000001)
-        XCTAssertEqual(µs(seconds: 1.1), µs(seconds: 1, microseconds: 100000))
-        XCTAssertEqual(ns(seconds: 1.1), ns(seconds: 1, nanoseconds: 100000000))
+        XCTAssertEqual(µs(seconds: 1.1), TimeInterval(seconds: 1) + µs(seconds: 0, microseconds: 100000))
+        XCTAssertEqual(ns(seconds: 1.1), TimeInterval(seconds: 1) + ns(seconds: 0, nanoseconds: 100000000))
     }
     
     func testClock() {
