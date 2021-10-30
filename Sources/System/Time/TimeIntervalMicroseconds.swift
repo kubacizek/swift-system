@@ -29,7 +29,21 @@ public extension TimeInterval {
 public extension TimeInterval.Microseconds {
     
     init(seconds: Double) {
-        self.init(.init(seconds: seconds))
+        let (integerValue, decimalValue) = system_modf(seconds)
+        let microseconds = decimalValue * 1_000_000.0
+        self.init(
+            seconds: Time(rawValue: Int(integerValue)),
+            microseconds: Time.Microseconds(rawValue: Int32(microseconds))
+        )
+    }
+}
+
+public extension Double {
+    
+    init(_ timeInterval: TimeInterval.Microseconds) {
+        let seconds = Double(timeInterval.seconds.rawValue)
+        let microseconds = Double(timeInterval.microseconds.rawValue) / 1_000_000.0
+        self = seconds + microseconds
     }
 }
 

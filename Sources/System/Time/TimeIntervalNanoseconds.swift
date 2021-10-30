@@ -44,7 +44,21 @@ public extension TimeInterval.Nanoseconds {
 public extension TimeInterval.Nanoseconds {
     
     init(seconds: Double) {
-        self.init(.init(seconds: seconds))
+        let (integerValue, decimalValue) = system_modf(seconds)
+        let nanoseconds = decimalValue * 1_000_000_000.0
+        self.init(
+            seconds: Time(rawValue: Int(integerValue)),
+            nanoseconds: Time.Nanoseconds(rawValue: Int(nanoseconds))
+        )
+    }
+}
+
+public extension Double {
+    
+    init(_ timeInterval: TimeInterval.Nanoseconds) {
+        let seconds = Double(timeInterval.seconds.rawValue)
+        let nanoseconds = Double(timeInterval.nanoseconds.rawValue) / 1_000_000_000.0
+        self = seconds + nanoseconds
     }
 }
 
