@@ -33,7 +33,7 @@ public extension TimeInterval.Microseconds {
         let microseconds = decimalValue * 1_000_000.0
         self.init(
             seconds: Time(rawValue: Int(integerValue)),
-            microseconds: Time.Microseconds(rawValue: Int32(microseconds))
+            microseconds: Time.Microseconds(rawValue: CInterop.Microseconds(microseconds))
         )
     }
 }

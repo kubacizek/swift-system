@@ -12,11 +12,38 @@
 @frozen
 public struct Clock: RawRepresentable, Equatable, Hashable, Codable {
     
-    public let rawValue: CInterop.ClockID.RawValue
-    
+    #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
+    public typealias RawValue = CInterop.ClockID.RawValue
+    #else
+    public typealias RawValue = CInterop.ClockID
+    #endif
+
+    public let rawValue: RawValue
+
     @_alwaysEmitIntoClient
-    public init(rawValue: CInterop.ClockID.RawValue) {
+    public init(rawValue: RawValue) {
         self.rawValue = rawValue
+    }
+}
+
+internal extension Clock {
+
+    @usableFromInline
+    init(_ raw: CInterop.ClockID) {
+        #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
+        self.init(rawValue: raw.rawValue)
+        #else
+        self.init(rawValue: raw)
+        #endif
+    }
+
+    @usableFromInline
+    var _rawValue: CInterop.ClockID {
+        #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
+        return .init(rawValue: rawValue)
+        #else
+        return rawValue
+        #endif
     }
 }
 
@@ -55,16 +82,6 @@ public extension Clock {
 @available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *)
 internal extension Clock {
     
-    @_alwaysEmitIntoClient
-    init(_ bytes: CInterop.ClockID) {
-        self.init(rawValue: bytes.rawValue)
-    }
-    
-    @_alwaysEmitIntoClient
-    var bytes: CInterop.ClockID {
-        return .init(rawValue: self.rawValue)
-    }
-    
     @usableFromInline
     func getValue(
         _ function: (CInterop.ClockID, UnsafeMutablePointer<CInterop.TimeIntervalNanoseconds>) -> Int32,
@@ -72,7 +89,7 @@ internal extension Clock {
     ) -> Result<TimeInterval.Nanoseconds, Errno> {
         var time = CInterop.TimeIntervalNanoseconds()
         return nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
-            function(self.bytes, &time)
+            function(_rawValue, &time)
         }.map { TimeInterval.Nanoseconds(time) }
     }
     
@@ -84,7 +101,7 @@ internal extension Clock {
     ) -> Result<(), Errno> {
         withUnsafePointer(to: newValue.bytes) { time in
             nothingOrErrno(retryOnInterrupt: retryOnInterrupt) {
-                function(self.bytes, time)
+                function(_rawValue, time)
             }
         }
     }
@@ -94,6 +111,7 @@ internal extension Clock {
 extension Clock: CustomStringConvertible, CustomDebugStringConvertible {
     
     public var description: String {
+        #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
         let descriptions: [Clock: String] = [
             .realtime: "Clock.realtime",
             .monotonic: "Clock.monotonic",
@@ -104,6 +122,15 @@ extension Clock: CustomStringConvertible, CustomDebugStringConvertible {
             .uptimeRaw: "Clock.uptimeRaw",
             .uptimeRawApproximated: "Clock.uptimeRawApproximated"
         ]
+        #else
+        let descriptions: [Clock: String] = [
+            .realtime: "Clock.realtime",
+            .monotonic: "Clock.monotonic",
+            .processCPUTime: "Clock.processCPUTime",
+            .threadCPUTime: "Clock.threadCPUTime",
+            .monotonicRaw: "Clock.monotonicRaw"
+        ]
+        #endif
         return descriptions[self] ?? "Clock(rawValue: \(rawValue))"
     }
     
@@ -133,10 +160,11 @@ public extension Clock {
     @_alwaysEmitIntoClient
     static var threadCPUTime: Clock { Clock(_CLOCK_THREAD_CPUTIME_ID) }
         
-    ///
+    /// Monotonic Raw
     @_alwaysEmitIntoClient
     static var monotonicRaw: Clock { Clock(_CLOCK_MONOTONIC_RAW) }
     
+    #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
     ///
     @_alwaysEmitIntoClient
     static var monotonicRawApproximated: Clock { Clock(_CLOCK_MONOTONIC_RAW_APPROX) }
@@ -148,4 +176,5 @@ public extension Clock {
     ///
     @_alwaysEmitIntoClient
     static var uptimeRawApproximated: Clock { Clock(_CLOCK_UPTIME_RAW_APPROX) }
+    #endif
 }

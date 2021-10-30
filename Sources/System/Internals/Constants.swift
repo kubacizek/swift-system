@@ -530,7 +530,7 @@ internal var _SEEK_DATA: CInt { SEEK_DATA }
 #endif
 
 @_alwaysEmitIntoClient
-internal var _CLOCKS_PER_SEC: CInt { CLOCKS_PER_SEC }
+internal var _CLOCKS_PER_SEC: CInterop.Clock { CLOCKS_PER_SEC }
 
 @available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *)
 @_alwaysEmitIntoClient
@@ -546,6 +546,15 @@ internal var _CLOCK_MONOTONIC_RAW: CInterop.ClockID { CLOCK_MONOTONIC_RAW }
 
 @available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *)
 @_alwaysEmitIntoClient
+internal var _CLOCK_PROCESS_CPUTIME_ID: CInterop.ClockID { CLOCK_PROCESS_CPUTIME_ID }
+
+@available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *)
+@_alwaysEmitIntoClient
+internal var _CLOCK_THREAD_CPUTIME_ID: CInterop.ClockID { CLOCK_THREAD_CPUTIME_ID }
+
+#if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
+@available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *)
+@_alwaysEmitIntoClient
 internal var _CLOCK_MONOTONIC_RAW_APPROX: CInterop.ClockID { CLOCK_MONOTONIC_RAW_APPROX }
 
 @available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *)
@@ -555,14 +564,7 @@ internal var _CLOCK_UPTIME_RAW: CInterop.ClockID { CLOCK_UPTIME_RAW }
 @available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *)
 @_alwaysEmitIntoClient
 internal var _CLOCK_UPTIME_RAW_APPROX: CInterop.ClockID { CLOCK_UPTIME_RAW_APPROX }
-
-@available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *)
-@_alwaysEmitIntoClient
-internal var _CLOCK_PROCESS_CPUTIME_ID: CInterop.ClockID { CLOCK_PROCESS_CPUTIME_ID }
-
-@available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *)
-@_alwaysEmitIntoClient
-internal var _CLOCK_THREAD_CPUTIME_ID: CInterop.ClockID { CLOCK_THREAD_CPUTIME_ID }
+#endif
 
 @_alwaysEmitIntoClient
 internal var _SIGHUP: CInt { SIGHUP }
