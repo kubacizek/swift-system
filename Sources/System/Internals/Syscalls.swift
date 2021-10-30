@@ -278,7 +278,7 @@ internal func system_timelocal(
 internal func system_modf(_ value: Double) -> (Double, Double) {
     var integerValue: Double = 0
     let decimalValue = modf(value, &integerValue)
-    return (decimalValue, integerValue)
+    return (integerValue, decimalValue)
 }
 
 internal func system_inet_pton(
