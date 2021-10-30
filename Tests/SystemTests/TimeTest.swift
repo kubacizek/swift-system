@@ -73,12 +73,12 @@ final class TimeTest: XCTestCase {
     func testTimeComponents() {
         let timeComponents = TimeComponents(time: 1635539546)
         XCTAssertEqual(timeComponents.description, "Fri Oct 29 20:32:26 2021")
-        XCTAssertEqual(timeComponents[.year], 2021)
-        XCTAssertEqual(timeComponents[.month], 10)
-        XCTAssertEqual(timeComponents[.dayOfMonth], 29)
-        XCTAssertEqual(timeComponents[.weekday], 5)
-        XCTAssertEqual(timeComponents[.hour], 20)
-        XCTAssertEqual(timeComponents[.minute], 32)
-        XCTAssertEqual(timeComponents[.second], 26)
+        XCTAssertEqual(timeComponents.year, 2021)
+        XCTAssertEqual(timeComponents.month, .october)
+        XCTAssertEqual(timeComponents.dayOfMonth, 29)
+        XCTAssertEqual(timeComponents.weekday, .friday)
+        XCTAssertEqual(timeComponents.hour, 20)
+        XCTAssertEqual(timeComponents.minute, 32)
+        XCTAssertEqual(timeComponents.second, 26)
     }
 }
