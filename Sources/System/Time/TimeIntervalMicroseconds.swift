@@ -71,6 +71,28 @@ extension TimeInterval.Microseconds: CustomStringConvertible {
     }
 }
 
+// MARK: - Arithmetic
+
+public extension TimeInterval.Microseconds {
+    
+    static func + (lhs: TimeInterval.Microseconds, rhs: TimeInterval.Microseconds) -> TimeInterval.Microseconds {
+        return .init(
+            seconds: lhs.seconds + rhs.seconds,
+            microseconds: lhs.microseconds + rhs.microseconds
+        )
+    }
+}
+
+public extension TimeInterval {
+    
+    static func + (lhs: TimeInterval, rhs: TimeInterval.Microseconds) -> TimeInterval.Microseconds {
+        return .init(
+            seconds: lhs.seconds + rhs.seconds,
+            microseconds: rhs.microseconds
+        )
+    }
+}
+
 // MARK: - C Interop
 
 internal extension TimeInterval.Microseconds {

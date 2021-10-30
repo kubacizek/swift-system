@@ -57,3 +57,37 @@ extension Time.Nanoseconds: CustomStringConvertible, CustomDebugStringConvertibl
         return description
     }
 }
+
+// MARK: - Arithmetic
+
+public extension Time.Nanoseconds {
+    
+    static func - (lhs: Time.Nanoseconds, rhs: Time.Nanoseconds) -> Time.Nanoseconds {
+        return .init(rawValue: lhs.rawValue - rhs.rawValue)
+    }
+    
+    static func + (lhs: Time.Nanoseconds, rhs: Time.Nanoseconds) -> Time.Nanoseconds {
+        return .init(rawValue: lhs.rawValue + rhs.rawValue)
+    }
+}
+
+// MARK: - Comparable
+
+extension Time.Nanoseconds: Comparable {
+    
+    public static func < (lhs: Time.Nanoseconds, rhs: Time.Nanoseconds) -> Bool {
+        return lhs.rawValue < rhs.rawValue
+    }
+    
+    public static func <= (lhs: Time.Nanoseconds, rhs: Time.Nanoseconds) -> Bool {
+        return lhs.rawValue <= rhs.rawValue
+    }
+    
+    public static func >= (lhs: Time.Nanoseconds, rhs: Time.Nanoseconds) -> Bool {
+        return lhs.rawValue >= rhs.rawValue
+    }
+    
+    public static func > (lhs: Time.Nanoseconds, rhs: Time.Nanoseconds) -> Bool {
+        return lhs.rawValue > rhs.rawValue
+    }
+}

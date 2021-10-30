@@ -42,6 +42,23 @@ extension TimeInterval: CustomStringConvertible {
     }
 }
 
+// MARK: - Arithmetic
+
+public extension TimeInterval {
+    
+    static func - (lhs: TimeInterval, rhs: TimeInterval) -> TimeInterval {
+        return .init(
+            seconds: lhs.seconds - rhs.seconds
+        )
+    }
+    
+    static func + (lhs: TimeInterval, rhs: TimeInterval) -> TimeInterval {
+        return .init(
+            seconds: lhs.seconds + rhs.seconds
+        )
+    }
+}
+
 // MARK: - Get and Set Current Time
 
 public extension TimeInterval {

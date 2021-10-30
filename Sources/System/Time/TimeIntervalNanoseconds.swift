@@ -71,6 +71,28 @@ extension TimeInterval.Nanoseconds: CustomStringConvertible {
     }
 }
 
+// MARK: - Arithmetic
+
+public extension TimeInterval.Nanoseconds {
+    
+    static func + (lhs: TimeInterval.Nanoseconds, rhs: TimeInterval.Nanoseconds) -> TimeInterval.Nanoseconds {
+        return .init(
+            seconds: lhs.seconds + rhs.seconds,
+            nanoseconds: lhs.nanoseconds + rhs.nanoseconds
+        )
+    }
+}
+
+public extension TimeInterval {
+    
+    static func + (lhs: TimeInterval, rhs: TimeInterval.Nanoseconds) -> TimeInterval.Nanoseconds {
+        return .init(
+            seconds: lhs.seconds + rhs.seconds,
+            nanoseconds: rhs.nanoseconds
+        )
+    }
+}
+
 // MARK: - C Interop
 
 internal extension TimeInterval.Nanoseconds {

@@ -54,3 +54,37 @@ extension Time: CustomStringConvertible, CustomDebugStringConvertible {
         return description
     }
 }
+
+// MARK: - Arithmetic
+
+public extension Time {
+    
+    static func - (lhs: Time, rhs: Time) -> Time {
+        return .init(rawValue: lhs.rawValue - rhs.rawValue)
+    }
+    
+    static func + (lhs: Time, rhs: Time) -> Time {
+        return .init(rawValue: lhs.rawValue + rhs.rawValue)
+    }
+}
+
+// MARK: - Comparable
+
+extension Time: Comparable {
+    
+    public static func < (lhs: Time, rhs: Time) -> Bool {
+        return lhs.rawValue < rhs.rawValue
+    }
+    
+    public static func <= (lhs: Time, rhs: Time) -> Bool {
+        return lhs.rawValue <= rhs.rawValue
+    }
+    
+    public static func >= (lhs: Time, rhs: Time) -> Bool {
+        return lhs.rawValue >= rhs.rawValue
+    }
+    
+    public static func > (lhs: Time, rhs: Time) -> Bool {
+        return lhs.rawValue > rhs.rawValue
+    }
+}

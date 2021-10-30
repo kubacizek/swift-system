@@ -57,3 +57,37 @@ extension Time.Microseconds: CustomStringConvertible, CustomDebugStringConvertib
         return description
     }
 }
+
+// MARK: - Arithmetic
+
+public extension Time.Microseconds {
+    
+    static func - (lhs: Time.Microseconds, rhs: Time.Microseconds) -> Time.Microseconds {
+        return .init(rawValue: lhs.rawValue - rhs.rawValue)
+    }
+    
+    static func + (lhs: Time.Microseconds, rhs: Time.Microseconds) -> Time.Microseconds {
+        return .init(rawValue: lhs.rawValue + rhs.rawValue)
+    }
+}
+
+// MARK: - Comparable
+
+extension Time.Microseconds: Comparable {
+    
+    public static func < (lhs: Time.Microseconds, rhs: Time.Microseconds) -> Bool {
+        return lhs.rawValue < rhs.rawValue
+    }
+    
+    public static func <= (lhs: Time.Microseconds, rhs: Time.Microseconds) -> Bool {
+        return lhs.rawValue <= rhs.rawValue
+    }
+    
+    public static func >= (lhs: Time.Microseconds, rhs: Time.Microseconds) -> Bool {
+        return lhs.rawValue >= rhs.rawValue
+    }
+    
+    public static func > (lhs: Time.Microseconds, rhs: Time.Microseconds) -> Bool {
+        return lhs.rawValue > rhs.rawValue
+    }
+}
