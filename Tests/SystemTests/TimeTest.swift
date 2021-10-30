@@ -49,10 +49,18 @@ final class TimeTest: XCTestCase {
     }
     
     func testTimeInterval() {
+        
+        typealias µs = SystemPackage.TimeInterval.Microseconds
+        typealias ns = SystemPackage.TimeInterval.Nanoseconds
+        
         XCTAssertNoThrow({ try TimeInterval.timeInvervalSince1970() })
         XCTAssertEqual(TimeInterval(seconds: 10).description, "10s")
-        XCTAssertEqual(TimeInterval.Microseconds(seconds: 1, microseconds: 12345).description, "1s 12345µs")
-        XCTAssertEqual(TimeInterval.Nanoseconds(seconds: 1, nanoseconds: 12345).description, "1s 12345ns")
+        XCTAssertEqual(µs(seconds: 1, microseconds: 12345).description, "1s 12345µs")
+        XCTAssertEqual(ns(seconds: 1, nanoseconds: 12345).description, "1s 12345ns")
+        XCTAssertEqual(Double(µs(seconds: 1, microseconds: 1000)), 1.001)
+        XCTAssertEqual(Double(ns(seconds: 1, nanoseconds: 1000)), 1.000001)
+        XCTAssertEqual(µs(seconds: 1.1), µs(seconds: 1, microseconds: 100000))
+        XCTAssertEqual(ns(seconds: 1.1), ns(seconds: 1, nanoseconds: 100000000))
     }
     
     func testClock() {
