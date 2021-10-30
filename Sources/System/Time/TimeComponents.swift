@@ -11,24 +11,21 @@
 @frozen
 public struct TimeComponents: Equatable, Hashable, Codable {
     
-    public var second: Int32 = 0
+    public let second: Int
     
-    public var minute: Int32 = 0
+    public let minute: Int
     
-    public var hour: Int32 = 0
+    public let hour: Int
     
-    public var dayOfMonth: Int32 = 1
+    public let dayOfMonth: Int
     
-    public var month: Int32 = 1
+    public let month: Month
     
-    public var year: Int32 = 0
+    public let year: Int
     
-    public var weekday: Int32 = 0
+    public let weekday: Weekday
     
-    public var dayOfYear: Int32 = 1
-    
-    @_alwaysEmitIntoClient
-    public init() { }
+    public let dayOfYear: Int
 }
 
 public extension TimeComponents {
@@ -47,71 +44,44 @@ public extension Time {
     }
 }
 
+// MARK: - Supporting Types
+
+public extension TimeComponents {
+    
+    enum Weekday: Int, Codable, CaseIterable {
+        
+        case sunday
+        case monday
+        case tuesday
+        case wednesday
+        case thursday
+        case friday
+        case saturday
+    }
+    
+    enum Month: Int, Codable, CaseIterable {
+        
+        case january
+        case february
+        case march
+        case abril
+        case may
+        case june
+        case july
+        case august
+        case september
+        case october
+        case november
+        case december
+    }
+}
+
+// MARK: - CustomStringConvertible
+
 extension TimeComponents: CustomStringConvertible {
     
     public var description: String {
         return String(CInterop.TimeComponents(self))
-    }
-}
-
-public extension TimeComponents {
-    
-    @frozen
-    enum Component {
-        case second
-        case minute
-        case hour
-        case dayOfMonth
-        case month
-        case year
-        case weekday
-        case dayOfYear
-    }
-    
-    /// Get the value for the specified component.
-    subscript(component: Component) -> Int32 {
-        
-        get {
-            switch component {
-            case .second:
-                return second
-            case .minute:
-                return minute
-            case .hour:
-                return hour
-            case .dayOfMonth:
-                return dayOfMonth
-            case .month:
-                return month
-            case .year:
-                return year
-            case .weekday:
-                return weekday
-            case .dayOfYear:
-                return dayOfYear
-            }
-        }
-        
-        set {
-            switch component {
-            case .second:
-                second = newValue
-            case .minute:
-                minute = newValue
-            case .hour:
-                hour = newValue
-            case .dayOfMonth:
-                dayOfMonth = newValue
-            case .month:
-                month = newValue
-            case .year:
-                year = newValue
-            case .weekday:
-                weekday = newValue
-            case .dayOfYear:
-                dayOfYear = newValue
-            }
-        }
     }
 }
 
@@ -121,14 +91,14 @@ internal extension TimeComponents {
     
     @usableFromInline
     init(_ cValue: CInterop.TimeComponents) {
-        self.second = cValue.tm_sec
-        self.minute = cValue.tm_min
-        self.hour = cValue.tm_hour
-        self.dayOfMonth = cValue.tm_mday
-        self.month = cValue.tm_mon + 1
-        self.year = 1900 + cValue.tm_year
-        self.weekday = cValue.tm_wday
-        self.dayOfYear = cValue.tm_yday
+        self.second = numericCast(cValue.tm_sec)
+        self.minute = numericCast(cValue.tm_min)
+        self.hour = numericCast(cValue.tm_hour)
+        self.dayOfMonth = numericCast(cValue.tm_mday)
+        self.month = TimeComponents.Month(rawValue: numericCast(cValue.tm_mon)) ?? .january
+        self.year = 1900 + numericCast(cValue.tm_year)
+        self.weekday = TimeComponents.Weekday(rawValue: numericCast(cValue.tm_wday)) ?? .sunday
+        self.dayOfYear = numericCast(cValue.tm_yday)
     }
 }
 
@@ -137,14 +107,14 @@ internal extension CInterop.TimeComponents {
     @usableFromInline
     init(_ value: TimeComponents) {
         self.init(
-            tm_sec: value.second,
-            tm_min: value.minute,
-            tm_hour: value.hour,
-            tm_mday: value.dayOfMonth,
-            tm_mon: value.month - 1,
-            tm_year: value.year - 1900,
-            tm_wday: value.weekday,
-            tm_yday: value.dayOfYear,
+            tm_sec: numericCast(value.second),
+            tm_min: numericCast(value.minute),
+            tm_hour: numericCast(value.hour),
+            tm_mday: numericCast(value.dayOfMonth),
+            tm_mon: numericCast(value.month.rawValue),
+            tm_year: numericCast(value.year - 1900),
+            tm_wday: numericCast(value.weekday.rawValue),
+            tm_yday: numericCast(value.dayOfYear),
             tm_isdst: -1,
             tm_gmtoff: 0,
             tm_zone: nil
