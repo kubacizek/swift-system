@@ -33,13 +33,28 @@ public extension FileDescriptor {
     ///
     /// The corresponding C function is `read`.
     @_alwaysEmitIntoClient
-    func read(
-      into buffer: UnsafeMutableRawBufferPointer,
+    func read<S>(
+      into sequence: inout S,
       retryOnInterrupt: Bool = true,
       sleepOnBlock sleep: UInt64 = 1000
-    ) async throws -> Int {
+    ) async throws -> Int where S: MutableCollection, S.Element == UInt8  {
+        try await _read(
+            into: &sequence,
+            retryOnInterrupt: retryOnInterrupt,
+            sleepOnBlock: sleep
+        )
+    }
+    
+    @usableFromInline
+    internal func _read<S>(
+      into sequence: inout S,
+      retryOnInterrupt: Bool,
+      sleepOnBlock sleep: UInt64
+    ) async throws -> Int where S: MutableCollection, S.Element == UInt8 {
         try await retryOnBlock(sleep: sleep) {
-            _read(into: buffer, retryOnInterrupt: retryOnInterrupt)
+            sequence._withMutableRawBufferPointer { buffer in
+                _read(into: buffer, retryOnInterrupt: retryOnInterrupt)
+            }
         }.get()
     }
     
@@ -62,13 +77,28 @@ public extension FileDescriptor {
     ///
     /// The corresponding C function is `write`.
     @_alwaysEmitIntoClient
-    func write(
-      _ buffer: UnsafeRawBufferPointer,
-      retryOnInterrupt: Bool = true,
-      sleepOnBlock sleep: UInt64 = 1000
-    ) async throws -> Int {
+    func write<S>(
+        _ bytes: S,
+        retryOnInterrupt: Bool = true,
+        sleepOnBlock sleep: UInt64 = 1000
+    ) async throws -> Int where S: Sequence, S.Element == UInt8 {
+        return try await _write(
+            bytes,
+            retryOnInterrupt: retryOnInterrupt,
+            sleepOnBlock: sleep
+        )
+    }
+    
+    @usableFromInline
+    internal func _write<S>(
+        _ bytes: S,
+        retryOnInterrupt: Bool,
+        sleepOnBlock sleep: UInt64
+    ) async throws -> Int where S: Sequence, S.Element == UInt8 {
         try await retryOnBlock(sleep: sleep) {
-            _write(buffer, retryOnInterrupt: retryOnInterrupt)
+            bytes._withRawBufferPointer { buffer in
+                _write(buffer, retryOnInterrupt: retryOnInterrupt)
+            }
         }.get()
     }
 }

@@ -76,6 +76,20 @@ extension Sequence {
   }
 }
 
+extension MutableCollection {
+  // Tries to recast contiguous pointer if available, otherwise allocates memory.
+  internal mutating func _withMutableRawBufferPointer<R>(
+    _ body: (UnsafeMutableRawBufferPointer) throws -> R
+  ) rethrows -> R {
+    guard let result = try self.withContiguousMutableStorageIfAvailable({
+      try body(UnsafeMutableRawBufferPointer($0))
+    }) else {
+        fatalError()
+    }
+    return result
+  }
+}
+
 extension OptionSet {
   // Helper method for building up a comma-separated list of options
   //
