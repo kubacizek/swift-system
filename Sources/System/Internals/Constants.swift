@@ -530,7 +530,7 @@ internal var _SEEK_DATA: CInt { SEEK_DATA }
 #endif
 
 @_alwaysEmitIntoClient
-internal var _CLOCKS_PER_SEC: CInterop.Clock { CLOCKS_PER_SEC }
+internal var _CLOCKS_PER_SEC: CInterop.Clock { numericCast(CLOCKS_PER_SEC) }
 
 @available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *)
 @_alwaysEmitIntoClient

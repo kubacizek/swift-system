@@ -175,7 +175,7 @@ internal func system_clock_getres(
     _ time: UnsafeMutablePointer<CInterop.TimeIntervalNanoseconds>
 ) -> Int32 {
   #if ENABLE_MOCKING
-  if mockingEnabled { return _mock(id, time) }
+    //if mockingEnabled { return _mock(id) }
   #endif
   return clock_getres(id, time)
 }
@@ -187,7 +187,7 @@ internal func system_clock_gettime(
     _ time: UnsafeMutablePointer<CInterop.TimeIntervalNanoseconds>
 ) -> Int32 {
   #if ENABLE_MOCKING
-    if mockingEnabled { return _mock(id, time) }
+    //if mockingEnabled { return _mock(id) }
   #endif
   return clock_gettime(id, time)
 }
@@ -202,7 +202,7 @@ internal func system_clock_settime(
     _ time: UnsafePointer<CInterop.TimeIntervalNanoseconds>
 ) -> Int32 {
   #if ENABLE_MOCKING
-  if mockingEnabled { return _mock(id, time) }
+  //if mockingEnabled { return _mock(id) }
   #endif
   return clock_settime(id, time)
 }
