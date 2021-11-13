@@ -141,3 +141,51 @@ extension Array where Element == FileDescriptor.Poll {
         try FileDescriptor._poll(&self, timeout: CInt(timeout), retryOnInterrupt: retryOnInterrupt).get()
     }
 }
+
+#if swift(>=5.5)
+@available(macOS 12, iOS 15, *)
+public extension FileDescriptor {
+    
+    /// Wait for some event on a file descriptor.
+    ///
+    /// - Parameters:
+    ///   - events: A bit mask specifying the events the application is interested in for the file descriptor.
+    ///   - timeout: Specifies the minimum number of milliseconds that this method will block. Specifying a negative value in timeout means an infinite timeout. Specifying a timeout of zero causes this method to return immediately.
+    ///   - retryOnInterrupt: Whether to retry the receive operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    /// - Returns: A bitmask filled by the kernel with the events that actually occurred.
+    ///
+    /// The corresponding C function is `poll`.
+    func poll(
+        for events: FileEvents,
+        timeout: Int = 0,
+        sleep nanoseconds: UInt64 = 1000,
+        retryOnInterrupt: Bool = true
+    ) async throws -> FileEvents {
+        assert(timeout > 0, "\(#function) Must specify a timeout")
+        assert(events.isEmpty == false, "Must specify a set of events")
+        repeat {
+            try Task.checkCancellation()
+            let result = _poll(
+                events: events,
+                timeout: 0,
+                retryOnInterrupt: retryOnInterrupt
+            )
+            switch result {
+            case let .success(events):
+                guard events.isEmpty else {
+                    return events
+                }
+                try await Task.sleep(nanoseconds: nanoseconds)
+            case let .failure(error):
+                guard error.isBlocking else {
+                    throw error
+                }
+                try await Task.sleep(nanoseconds: nanoseconds)
+            }
+        } while true
+    }
+}
+#endif
