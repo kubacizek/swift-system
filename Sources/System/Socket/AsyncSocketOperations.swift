@@ -48,12 +48,12 @@ public extension FileDescriptor {
     /// The corresponding C function is `accept`.
     @_alwaysEmitIntoClient
     func accept<Address: SocketAddress>(
-        _ address: Address,
+        _ address: Address.Type,
         retryOnInterrupt: Bool = true,
         sleep: UInt64 = 1_000_000
     ) async throws -> (FileDescriptor, Address) {
         try await retry(sleep: sleep) {
-            _accept(Address.self, retryOnInterrupt: retryOnInterrupt)
+            _accept(address, retryOnInterrupt: retryOnInterrupt)
         }.get()
     }
     
@@ -66,7 +66,7 @@ public extension FileDescriptor {
     ///     The default is `true`.
     ///     Pass `false` to try only once and throw an error upon interruption.
     ///   - sleep: The number of nanoseconds to sleep if the operation
-    ///     throws ``Errno/wouldBlock`` or other async I/O errors..
+    ///     throws ``Errno/wouldBlock`` or other async I/O errors.
     /// - Returns: The file descriptor of the new connection.
     ///
     /// The corresponding C function is `connect`.
