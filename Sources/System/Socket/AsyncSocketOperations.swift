@@ -18,7 +18,7 @@ public extension FileDescriptor {
     ///     if it throws ``Errno/interrupted``.
     ///     The default is `true`.
     ///     Pass `false` to try only once and throw an error upon interruption.
-    ///   - sleepOnBlock: The number of nanoseconds to sleep if the operation
+    ///   - sleep: The number of nanoseconds to sleep if the operation
     ///     throws ``Errno/wouldBlock`` or other async I/O errors..
     /// - Returns: The file descriptor of the new connection.
     ///
@@ -26,9 +26,9 @@ public extension FileDescriptor {
     @_alwaysEmitIntoClient
     func accept(
         retryOnInterrupt: Bool = true,
-        sleepOnBlock sleep: UInt64 = 1000
+        sleep: UInt64 = 1_000_000
     ) async throws -> FileDescriptor {
-        try await retryOnBlock(sleep: sleep) {
+        try await retry(sleep: sleep) {
             _accept(retryOnInterrupt: retryOnInterrupt)
         }.get()
     }
@@ -41,7 +41,7 @@ public extension FileDescriptor {
     ///     if it throws ``Errno/interrupted``.
     ///     The default is `true`.
     ///     Pass `false` to try only once and throw an error upon interruption.
-    ///   - sleepOnBlock: The number of nanoseconds to sleep if the operation
+    ///   - sleep: The number of nanoseconds to sleep if the operation
     ///     throws ``Errno/wouldBlock`` or other async I/O errors.
     /// - Returns: A tuple containing the file descriptor and address of the new connection.
     ///
@@ -50,9 +50,9 @@ public extension FileDescriptor {
     func accept<Address: SocketAddress>(
         _ address: Address,
         retryOnInterrupt: Bool = true,
-        sleepOnBlock sleep: UInt64 = 1000
+        sleep: UInt64 = 1_000_000
     ) async throws -> (FileDescriptor, Address) {
-        try await retryOnBlock(sleep: sleep) {
+        try await retry(sleep: sleep) {
             _accept(Address.self, retryOnInterrupt: retryOnInterrupt)
         }.get()
     }
@@ -65,7 +65,7 @@ public extension FileDescriptor {
     ///     if it throws ``Errno/interrupted``.
     ///     The default is `true`.
     ///     Pass `false` to try only once and throw an error upon interruption.
-    ///   - sleepOnBlock: The number of nanoseconds to sleep if the operation
+    ///   - sleep: The number of nanoseconds to sleep if the operation
     ///     throws ``Errno/wouldBlock`` or other async I/O errors..
     /// - Returns: The file descriptor of the new connection.
     ///
@@ -74,9 +74,9 @@ public extension FileDescriptor {
     func connect<Address: SocketAddress>(
         to address: Address,
         retryOnInterrupt: Bool = true,
-        sleepOnBlock sleep: UInt64 = 1000
+        sleep: UInt64 = 1_000_000
     ) async throws {
-        try await retryOnBlock(sleep: sleep) {
+        try await retry(sleep: sleep) {
             _connect(to: address, retryOnInterrupt: retryOnInterrupt)
         }.get()
     }

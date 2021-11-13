@@ -17,7 +17,9 @@ public extension TimeInterval {
         
         public var nanoseconds: Time.Nanoseconds
         
-        public init(seconds: Time, nanoseconds: Time.Nanoseconds) {
+        public init(seconds: Time,
+                    nanoseconds: Time.Nanoseconds) {
+            
             self.seconds = seconds
             self.nanoseconds = nanoseconds
         }

@@ -117,7 +117,6 @@ extension FileDescriptor {
     }
 }
 
-
 extension Array where Element == FileDescriptor.Poll {
     
     /// Wait for some event on a set of file descriptors.
@@ -150,7 +149,7 @@ public extension FileDescriptor {
     ///
     /// - Parameters:
     ///   - events: A bit mask specifying the events the application is interested in for the file descriptor.
-    ///   - timeout: Specifies the minimum number of milliseconds that this method will block. Specifying a negative value in timeout means an infinite timeout. Specifying a timeout of zero causes this method to return immediately.
+    ///   - timeout: Specifies the minimum number of milliseconds that this method will wait.
     ///   - retryOnInterrupt: Whether to retry the receive operation
     ///     if it throws ``Errno/interrupted``.
     ///     The default is `true`.
@@ -160,32 +159,57 @@ public extension FileDescriptor {
     /// The corresponding C function is `poll`.
     func poll(
         for events: FileEvents,
-        timeout: Int = 0,
-        sleep nanoseconds: UInt64 = 1000,
+        timeout: UInt = 1_000, // ms / 1sec
+        sleep: UInt64 = 1_000_000, // ns / 1ms
         retryOnInterrupt: Bool = true
     ) async throws -> FileEvents {
-        assert(timeout > 0, "\(#function) Must specify a timeout")
         assert(events.isEmpty == false, "Must specify a set of events")
-        repeat {
-            try Task.checkCancellation()
-            let result = _poll(
+        return try await retry(
+            sleep: sleep,
+            timeout: timeout,
+            condition: { $0.isEmpty == false }) {
+            _poll(
                 events: events,
                 timeout: 0,
                 retryOnInterrupt: retryOnInterrupt
             )
-            switch result {
-            case let .success(events):
-                guard events.isEmpty else {
-                    return events
-                }
-                try await Task.sleep(nanoseconds: nanoseconds)
-            case let .failure(error):
-                guard error.isBlocking else {
-                    throw error
-                }
-                try await Task.sleep(nanoseconds: nanoseconds)
-            }
-        } while true
+        }
     }
 }
+
+@available(macOS 12, iOS 15, *)
+extension Array where Element == FileDescriptor.Poll {
+    
+    /// Wait for some event on a set of file descriptors.
+    ///
+    /// - Parameters:
+    ///   - fileDescriptors: An array of bit mask specifying the events the application is interested in for the file descriptors.
+    ///   - timeout: Specifies the minimum number of milliseconds that this method will block.
+    ///   - retryOnInterrupt: Whether to retry the receive operation
+    ///     if it throws ``Errno/interrupted``.
+    ///     The default is `true`.
+    ///     Pass `false` to try only once and throw an error upon interruption.
+    /// - Returns:A array of bitmasks filled by the kernel with the events that actually occurred
+    ///     for the corresponding file descriptors.
+    ///
+    /// The corresponding C function is `poll`.
+    mutating func poll(
+        timeout: UInt = 1_000, // ms / 1sec
+        sleep: UInt64 = 1_000_000, // ns / 1ms
+        retryOnInterrupt: Bool = true
+    ) async throws {
+        guard isEmpty else { return }
+        return try await retry(
+            sleep: sleep,
+            timeout: timeout
+        ) {
+            FileDescriptor._poll(
+                &self,
+                timeout: 0,
+                retryOnInterrupt: retryOnInterrupt
+            )
+        }
+    }
+}
+
 #endif

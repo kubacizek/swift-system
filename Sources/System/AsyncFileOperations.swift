@@ -19,7 +19,7 @@ public extension FileDescriptor {
     ///     if it throws ``Errno/interrupted``.
     ///     The default is `true`.
     ///     Pass `false` to try only once and throw an error upon interruption.
-    ///   - sleepOnBlock: The number of nanoseconds to sleep if the operation
+    ///   - sleep: The number of nanoseconds to sleep if the operation
     ///     throws ``Errno/wouldBlock`` or other async I/O errors.
     /// - Returns: The number of bytes that were read.
     ///
@@ -36,12 +36,12 @@ public extension FileDescriptor {
     func read<S>(
       into sequence: inout S,
       retryOnInterrupt: Bool = true,
-      sleepOnBlock sleep: UInt64 = 1000
+      sleep: UInt64 = 1_000_000
     ) async throws -> Int where S: MutableCollection, S.Element == UInt8  {
         try await _read(
             into: &sequence,
             retryOnInterrupt: retryOnInterrupt,
-            sleepOnBlock: sleep
+            sleep: sleep
         )
     }
     
@@ -49,9 +49,9 @@ public extension FileDescriptor {
     internal func _read<S>(
       into sequence: inout S,
       retryOnInterrupt: Bool,
-      sleepOnBlock sleep: UInt64
+      sleep: UInt64
     ) async throws -> Int where S: MutableCollection, S.Element == UInt8 {
-        try await retryOnBlock(sleep: sleep) {
+        try await retry(sleep: sleep) {
             sequence._withMutableRawBufferPointer { buffer in
                 _read(into: buffer, retryOnInterrupt: retryOnInterrupt)
             }
@@ -66,7 +66,7 @@ public extension FileDescriptor {
     ///     if it throws ``Errno/interrupted``.
     ///     The default is `true`.
     ///     Pass `false` to try only once and throw an error upon interruption.
-    ///   - sleepOnBlock: The number of nanoseconds to sleep if the operation
+    ///   - sleep: The number of nanoseconds to sleep if the operation
     ///     throws ``Errno/wouldBlock`` or other async I/O errors.
     /// - Returns: The number of bytes that were written.
     ///
@@ -80,12 +80,12 @@ public extension FileDescriptor {
     func write<S>(
         _ bytes: S,
         retryOnInterrupt: Bool = true,
-        sleepOnBlock sleep: UInt64 = 1000
+        sleep: UInt64 = 1_000_000
     ) async throws -> Int where S: Sequence, S.Element == UInt8 {
         return try await _write(
             bytes,
             retryOnInterrupt: retryOnInterrupt,
-            sleepOnBlock: sleep
+            sleep: sleep
         )
     }
     
@@ -93,9 +93,9 @@ public extension FileDescriptor {
     internal func _write<S>(
         _ bytes: S,
         retryOnInterrupt: Bool,
-        sleepOnBlock sleep: UInt64
+        sleep: UInt64
     ) async throws -> Int where S: Sequence, S.Element == UInt8 {
-        try await retryOnBlock(sleep: sleep) {
+        try await retry(sleep: sleep) {
             bytes._withRawBufferPointer { buffer in
                 _write(buffer, retryOnInterrupt: retryOnInterrupt)
             }
@@ -103,28 +103,64 @@ public extension FileDescriptor {
     }
 }
 
+/// Pauses the current task if the operation throws ``Errno/wouldBlock`` or other async I/O errors.
 @available(macOS 12, iOS 15, *)
-internal extension FileDescriptor {
-    
-    /// Pauses the current task if the operation throws ``Errno/wouldBlock`` or other async I/O errors.
-    @usableFromInline
-    func retryOnBlock<T>(
-        sleep nanoseconds: UInt64,
-        _ body: () -> Result<T, Errno>
-    ) async throws -> Result<T, Errno> {
-        repeat {
-            try Task.checkCancellation()
-            switch body() {
-            case let .success(result):
-                return .success(result)
-            case let .failure(error):
-                guard error.isBlocking else {
-                    return .failure(error)
-                }
-                try await Task.sleep(nanoseconds: nanoseconds)
+@usableFromInline
+func retry<T>(
+    sleep nanoseconds: UInt64,
+    _ body: () -> Result<T, Errno>
+) async throws -> Result<T, Errno> {
+    repeat {
+        try Task.checkCancellation()
+        switch body() {
+        case let .success(result):
+            return .success(result)
+        case let .failure(error):
+            guard error.isBlocking else {
+                return .failure(error)
             }
-        } while true
-    }
+            try await Task.sleep(nanoseconds: nanoseconds)
+        }
+    } while true
+}
+
+@available(macOS 12, iOS 15, *)
+@usableFromInline
+func retry<T>(
+    sleep: UInt64, // ns
+    timeout: UInt, // ms
+    condition: (T) -> (Bool) = { _ in return true },
+    _ body: () -> Result<T, Errno>
+) async throws -> T {
+    assert(timeout > 0, "\(#function) Must specify a timeout")
+    // convert ms to ns
+    var timeRemaining = UInt64(timeout) * 1_000_000
+    // use new Date type https://github.com/apple/swift-evolution/blob/main/proposals/0329-clock-instant-date-duration.md
+    //let timeoutDate = try Clock.monotonic.time() + timeout
+    repeat {
+        // immediately get poll results
+        switch body() {
+        case let .success(events):
+            // sleep if no events
+            guard condition(events) == false else {
+                return events
+            }
+        case let .failure(error):
+            // sleep if blocking error is thrown
+            guard error.isBlocking else {
+                throw error
+            }
+        }
+        // check for cancellation
+        try Task.checkCancellation()
+        // check if we have time remaining
+        guard timeRemaining > sleep else {
+            throw Errno.timedOut
+        }
+        // check clock?
+        timeRemaining -= sleep
+        try await Task.sleep(nanoseconds: sleep) // checks for cancelation
+    } while true
 }
 
 internal extension Errno {

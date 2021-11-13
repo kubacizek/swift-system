@@ -11,7 +11,7 @@
 @frozen
 public struct ProcessorTime: RawRepresentable, Equatable, Hashable, Codable {
     
-    public var rawValue: CInterop.Clock
+    public let rawValue: CInterop.Clock
     
     public init(rawValue: CInterop.Clock) {
         self.rawValue = rawValue
