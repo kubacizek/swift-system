@@ -54,6 +54,18 @@ extension FileDescriptor {
       }
   }
   
+  #if swift(>=5.5)
+  @available(macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0, *)
+  public func closeIfThrows<R>(_ body: () async throws -> R) async throws -> R {
+      do {
+        return try await body()
+      } catch {
+        _ = self._close() // Squash close error and throw closure's
+        throw error
+      }
+  }
+  #endif
+  
   @usableFromInline
   internal func _closeIfThrows<R>(_ body: () -> Result<R, Errno>) -> Result<R, Errno> {
       return body().mapError {
