@@ -890,7 +890,7 @@ internal var _AF_SMC: CInt { AF_SMC }
 
 //@_alwaysEmitIntoClient
 //internal var _AF_XDP: CInt { AF_XDP }
-//#endif
+#endif
 
 #if os(Windows)
 @_alwaysEmitIntoClient
