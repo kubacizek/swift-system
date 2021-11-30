@@ -888,9 +888,9 @@ internal var _AF_QIPCRTR: CInt { AF_QIPCRTR }
 @_alwaysEmitIntoClient
 internal var _AF_SMC: CInt { AF_SMC }
 
-@_alwaysEmitIntoClient
-internal var _AF_XDP: CInt { AF_XDP }
-#endif
+//@_alwaysEmitIntoClient
+//internal var _AF_XDP: CInt { AF_XDP }
+//#endif
 
 #if os(Windows)
 @_alwaysEmitIntoClient
